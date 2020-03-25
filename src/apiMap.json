@@ -1,0 +1,118 @@
+{
+  "alpha": {
+    "slider": {
+      "url": "/api/component/detail/name/slider",
+      "method": "get"
+    },
+    "hotline": {
+      "url": "/api/component/detail/name/hotline",
+      "method": "get"
+    },
+    "categoryList": {
+      "url": "/api/category",
+      "method": "get"
+    },
+    "categoryProducts": {
+      "url": "/api/product?category=categoryId",
+      "method": "get"
+    },
+    "categoryDetail": {
+      "url": "/api/category/:id",
+      "method": "get"
+    },
+    "productSearch": {
+      "url": "/api/search?key=searchValue",
+      "method": "get"
+    },
+    "productDetail": {
+      "url": "/api/product/:id",
+      "method": "get"
+    },
+    "productList": {
+      "url": "/api/product",
+      "mehod": "get"
+    },
+    "signup": {
+      "url": "/customer/auth/register",
+      "method": "post"
+    },
+    "signin": {
+      "url": "/customer/auth/login",
+      "method": "post"
+    },
+    "getCurrentCustomerData": {
+      "url": "/customer/api/detail",
+      "method": "get"
+    },
+    "updateCurrentCustomerData": {
+      "url": "/customer/api/update",
+      "method": "post"
+    },
+    "createOrder": {
+      "url": "/customer/api/order/add",
+      "method": "post"
+    },
+    "getCurrentUserOrders": {
+      "url": "/customer/api/order/list",
+      "method": "get"
+    },
+    "logout": {
+      "url": "/customer/auth/logout",
+      "method": "get"
+    }
+  },
+  "wooCommerce": {
+    "categoryList": {
+      "url": "/wp-json/wc/v3/products/categories?orderby=count&order=desc",
+      "method": "get"
+    },
+    "categoryProducts": {
+      "url": "/wp-json/wc/v3/products?category=categoryId",
+      "method": "get"
+    },
+    "productList": {
+      "url": "/wp-json/wc/v3/products",
+      "method": "get"
+    },
+    "categoryDetail": {
+      "url": "/wp-json/wc/v3/products/categories/:id",
+      "method": "get"
+    },
+    "productSearch": {
+      "url": "/wp-json/wc/v3/products?search=searchValue",
+      "method": "get"
+    },
+    "productDetail": {
+      "url": "/wp-json/wc/v3/products/:id",
+      "method": "get"
+    },
+    "createOrder": {
+      "url": "/wp-json/wc/v3/orders",
+      "method": "post"
+    },
+    "updateCurrentCustomerData": {
+      "url": "/wp-json/wc/v3/customers/:id",
+      "method": "post"
+    },
+    "currentCustomerData": {
+      "url": "/wp-json/wc/v3/customers/:id",
+      "method": "get"
+    },
+    "signup": {
+      "url": "/wp-json/wc/v3/customers?email=signupEmail&password=signupPassword",
+      "method": "post"
+    },
+    "signin": {
+      "url": "/api/user/generate_auth_cookie?username=signinUsername&password=signinPassword",
+      "method": "get"
+    },
+    "currentUserInfo": {
+      "url": "/api/user/get_userinfo/?user_id=userId",
+      "method": "get"
+    },
+    "currentUserOrders": {
+      "url": "/wp-json/wc/v3/orders?customer=customerId",
+      "method": "get"
+    }
+  }
+}
