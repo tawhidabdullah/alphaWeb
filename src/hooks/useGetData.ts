@@ -2,7 +2,7 @@ import { useEffect, useReducer } from 'react';
 import Connector from '../lib/connector.js';
 
 type TInitialData = any;
-type Tdependecies = string[] | [];
+type Tdependecies = any[] | [];
 type TItem = string;
 type IFormat = string | undefined;
 
@@ -27,14 +27,14 @@ const dataFetchReducer = (state: IState, action: Actions) => {
         isLoading: true,
         error: {
           isError: false,
-          error: {},
-        },
+          error: {}
+        }
       };
     case 'FETCH_SUCCESS':
       return {
         ...state,
         isLoading: false,
-        data: action.payload,
+        data: action.payload
       };
     case 'FETCH_FAILURE':
       return {
@@ -42,8 +42,8 @@ const dataFetchReducer = (state: IState, action: Actions) => {
         isLoading: false,
         error: {
           isError: true,
-          error: action.payload,
-        },
+          error: action.payload
+        }
       };
     default:
       throw new Error();
@@ -61,9 +61,9 @@ const useGetData = (
     isLoading: false,
     error: {
       isError: false,
-      error: {},
+      error: {}
     },
-    data: initialData,
+    data: initialData
   };
   const [state, dispatch] = useReducer(dataFetchReducer, initialState);
 

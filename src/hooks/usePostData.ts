@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from 'react';
+import { useReducer } from 'react';
 import Connector from '../lib/connector.js';
 
 type TInitialData = any;
@@ -25,14 +25,14 @@ const dataFetchReducer = (state: IState, action: Actions) => {
         isLoading: true,
         error: {
           isError: false,
-          error: {},
-        },
+          error: {}
+        }
       };
     case 'FETCH_SUCCESS':
       return {
         ...state,
         isLoading: false,
-        data: action.payload,
+        data: action.payload
       };
     case 'FETCH_FAILURE':
       return {
@@ -40,27 +40,30 @@ const dataFetchReducer = (state: IState, action: Actions) => {
         isLoading: false,
         error: {
           isError: true,
-          error: action.payload,
-        },
+          error: action.payload
+        }
       };
     default:
       throw new Error();
   }
 };
 
-const usePostData = (initialData: TInitialData, item: TItem): [IState, (values: any) => void] => {
+const usePostData = (
+  initialData: TInitialData,
+  item: TItem
+): [IState, (values: any) => void] => {
   const initialState: IState = {
     isLoading: false,
     error: {
       isError: false,
-      error: {},
+      error: {}
     },
-    data: initialData,
+    data: initialData
   };
 
   const [state, dispatch] = useReducer(dataFetchReducer, initialState);
 
-  const handlePost = async options => {
+  const handlePost = async (options: any) => {
     dispatch({ type: 'FETCH_INIT' });
 
     try {
