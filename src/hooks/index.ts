@@ -1,4 +1,4 @@
-import useGetData from './useGetData';
-import usePostData from "./usePostData";
+import useFetch from './useFetch';
+import useHandleFetch from './useHandleFetch';
 
-export { useGetData, usePostData };
+export { useFetch, useHandleFetch };

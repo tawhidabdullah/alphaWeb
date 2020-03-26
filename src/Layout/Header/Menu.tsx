@@ -1,13 +1,13 @@
 import React from 'react';
 import { Spinner } from '../../components/Loading';
-import { useGetData } from '../../hooks';
+import { useFetch } from '../../hooks';
 
 interface Props {
   history: any;
 }
 
 const Menu = ({ history }: Props) => {
-  const categoryState = useGetData([], [], 'categoryList');
+  const categoryState = useFetch([], [], 'categoryList');
 
   return (
     <div className='all-department'>

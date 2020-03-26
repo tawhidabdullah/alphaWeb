@@ -6,12 +6,15 @@
   box-sizing: border-box;
 }
 
-
 $color-nobab-light-1: #feffff;
 $color-nobab-light-2: #def2f1;
 $color-nobab-primary-1: #6b21ac;
 $color-nobab-primary-2: rgba(107, 33, 172, 0.9);
 $color-nobab-dark-2: #17252a;
+
+.singleProduct {
+  padding: 10px 0;
+}
 
 /* tag attributes start*/
 .attibutes {
@@ -207,7 +210,7 @@ $color-nobab-dark-2: #17252a;
 .small-product-item .small-product-info .small-product-price {
   font-weight: 700;
   font-size: 15px;
-  text-align:left;
+  text-align: left;
   margin-top: 5px;
   text-decoration: line-through;
   color: #888;
@@ -220,7 +223,6 @@ $color-nobab-dark-2: #17252a;
   margin-top: 5px;
 
   font-size: 15px;
-  
 }
 
 .small-product-item-box-img {

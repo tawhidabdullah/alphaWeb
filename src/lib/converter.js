@@ -31,31 +31,21 @@ class Converter {
    * @param {Object} data response objectc from alpha
    * @returns {Object}  converted data
    */
-  async categoryProducts(data) {
-    //map props
-    let generalFormat = dataMap[config['server']]['categoryProducts']; //get genereal format from dataMap
+  async categoryProducts(resData) {
+    const data = resData.data || [];
 
     const convertedData =
-      (data.length > 0 &&
-        data.map(item => {
-          return {
-            ...generalFormat,
-            id: item._id || item.id || '',
-            name: item.name || '',
-            description: data.description || data.description,
-            price: item.price || '',
-            image:
-              config['server'] !== 'wooCommerce'
-                ? (item.cover.medium &&
-                    `${config.baseURL}${item.cover.medium}`) ||
-                  `${config.baseURL}${item.cover.orginal}`
-                : (item.images &&
-                    item.images.length > 0 &&
-                    item.images.map(img => img.src)) ||
-                  []
-          };
-        })) ||
-      [];
+      data.length > 0 &&
+      data.map(product => {
+        return {
+          id: product._id || '',
+          name: product.name && product.name,
+          description: product.description && product.description,
+          cover: `${config['baseURL']}${product.cover.medium}`,
+          price: product.price,
+          offerPrice: product.offerPrice
+        };
+      });
 
     return convertedData;
   }
@@ -101,31 +91,21 @@ class Converter {
    * @param {Object} data response objectc from wc
    * @returns {Object}  converted data
    */
-  async productList(data) {
-    //map props
-    let generalFormat = dataMap[config['server']]['productList']; //get genereal format from dataMap
+  async productList(resData) {
+    const data = resData.data || [];
 
     const convertedData =
-      (data.length > 0 &&
-        data.map(item => {
-          return {
-            ...generalFormat,
-            id: item._id || item.id || '',
-            name: item.name || '',
-            description: data.description || data.description,
-            price: item.price || '',
-            image:
-              config['server'] !== 'wooCommerce'
-                ? (item.cover.medium &&
-                    `${config.baseURL}${item.cover.medium}`) ||
-                  `${config.baseURL}${item.cover.orginal}`
-                : (item.images &&
-                    item.images.length > 0 &&
-                    item.images.map(img => img.src)) ||
-                  []
-          };
-        })) ||
-      [];
+      data.length > 0 &&
+      data.map(product => {
+        return {
+          id: product._id || '',
+          name: product.name && product.name,
+          description: product.description && product.description,
+          cover: `${config['baseURL']}${product.cover.medium}`,
+          price: product.price,
+          offerPrice: product.offerPrice
+        };
+      });
 
     return convertedData;
   }
@@ -133,27 +113,26 @@ class Converter {
   /**
    * @public
    * @method productSearch convert api data from API to general format based on config server
-   * @param {Object} data response objectc from wc
+   * @param {Object} data response objectc from alpha
    * @returns {Object}  converted data
    */
   async productDetail(data) {
-    //map props
-    let generalFormat = dataMap[config['server']]['productDetail']; //get genereal format from dataMap
-
     const convertedData =
       (Object.keys(data).length > 0 && {
-        ...generalFormat,
         id: data._id || data.id || '',
         name: data.name || '',
         description: data.description.replace(/<[^>]+>/g, '') || '',
         price: data.price || '',
+        offerPrice: data.offerPrice,
+        category: data.category,
+        brand: data.brand,
+        tags: data.tags,
+        availableStock: data.availableStock,
         image:
-          config['server'] !== 'wooCommerce'
-            ? (data.image &&
-                data.image.length > 0 &&
-                data.image.map(img => `${config.baseURL}${img.medium}`)) ||
-              []
-            : (data.image && [data.image.src]) || []
+          (data.image &&
+            data.image.length > 0 &&
+            data.image.map(img => `${config.baseURL}${img.medium}`)) ||
+          []
       }) ||
       {};
 

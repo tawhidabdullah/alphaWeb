@@ -48,7 +48,7 @@ const dataFetchReducer = (state: IState, action: Actions) => {
   }
 };
 
-const usePostData = (
+const useHandleFetch = (
   initialData: TInitialData,
   item: TItem
 ): [IState, (values: any) => void] => {
@@ -70,6 +70,7 @@ const usePostData = (
       // @ts-ignore
       let data = await connector.request(item, 'json', options);
       dispatch({ type: 'FETCH_SUCCESS', payload: data });
+      return data;
     } catch (error) {
       dispatch({ type: 'FETCH_FAILURE', payload: error });
     }
@@ -78,4 +79,4 @@ const usePostData = (
   return [state, handlePost];
 };
 
-export default usePostData;
+export default useHandleFetch;

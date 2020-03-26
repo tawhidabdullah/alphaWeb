@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { useGetData } from '../../hooks';
+import { useFetch } from '../../hooks';
 interface Props {
   history: any;
 }
 
 const SearchBar = ({ history }: Props) => {
-  const categoryState = useGetData([], [], 'categoryList');
+  const categoryState = useFetch([], [], 'categoryList');
   const [searchBarValue, setSearchBarValue] = useState('');
   const [categorySelectValue, setCategorySelectValue] = useState('');
 
