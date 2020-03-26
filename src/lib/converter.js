@@ -2,31 +2,23 @@ import config from '../config.json';
 import dataMap from '../dataMap.json';
 
 class Converter {
-  constructor() {}
-
   /**
    * @public
    * @method categoryList convert api data from API to general format based on config server
-   * @param {Object} data response objectc from wc
+   * @param {Object} data response objectc from alpha
    * @returns {Object}  converted data
    */
-  async categoryList(dataFormat) {
-    //map props
-    let generalFormat = dataMap[config['server']]['categoryList']; //get genereal format from dataMap
+  async categoryList(resData) {
+    const data = resData.data || [];
+
     const formatedData =
-      dataFormat.length > 0 &&
-      dataFormat.map(data => {
+      data.length > 0 &&
+      data.map(category => {
         return {
-          ...generalFormat,
-          id: data.id || data._id || '',
-          name: data.name && data.name,
-          description: data.description && data.description,
-          productCount: data.productCount || data.count,
-          image:
-            config['server'] !== 'wooCommerce'
-              ? (data.cover.medium && `${config.baseURL}${data.cover.medium}`) ||
-                `${config.baseURL}${data.cover.orginal}`
-              : (data.image && [data.image.src]) || [],
+          id: category._id || '',
+          name: category.name && category.name,
+          description: category.description && category.description,
+          cover: `${config['baseURL']}${category.cover.medium}`
         };
       });
 
@@ -35,8 +27,8 @@ class Converter {
 
   /**
    * @public
-   * @method categoryList convert api data from API to general format based on config server
-   * @param {Object} data response objectc from wc
+   * @method categoryProducts convert api data from API to general format based on config server
+   * @param {Object} data response objectc from alpha
    * @returns {Object}  converted data
    */
   async categoryProducts(data) {
@@ -54,9 +46,13 @@ class Converter {
             price: item.price || '',
             image:
               config['server'] !== 'wooCommerce'
-                ? (item.cover.medium && `${config.baseURL}${item.cover.medium}`) ||
+                ? (item.cover.medium &&
+                    `${config.baseURL}${item.cover.medium}`) ||
                   `${config.baseURL}${item.cover.orginal}`
-                : (item.images && item.images.length > 0 && item.images.map(img => img.src)) || [],
+                : (item.images &&
+                    item.images.length > 0 &&
+                    item.images.map(img => img.src)) ||
+                  []
           };
         })) ||
       [];
@@ -85,9 +81,13 @@ class Converter {
             price: item.price || '',
             image:
               config['server'] !== 'wooCommerce'
-                ? (item.cover.medium && `${config.baseURL}${item.cover.medium}`) ||
+                ? (item.cover.medium &&
+                    `${config.baseURL}${item.cover.medium}`) ||
                   `${config.baseURL}${item.cover.orginal}`
-                : (item.images && item.images.length > 0 && item.images.map(img => img.src)) || [],
+                : (item.images &&
+                    item.images.length > 0 &&
+                    item.images.map(img => img.src)) ||
+                  []
           };
         })) ||
       [];
@@ -116,9 +116,13 @@ class Converter {
             price: item.price || '',
             image:
               config['server'] !== 'wooCommerce'
-                ? (item.cover.medium && `${config.baseURL}${item.cover.medium}`) ||
+                ? (item.cover.medium &&
+                    `${config.baseURL}${item.cover.medium}`) ||
                   `${config.baseURL}${item.cover.orginal}`
-                : (item.images && item.images.length > 0 && item.images.map(img => img.src)) || [],
+                : (item.images &&
+                    item.images.length > 0 &&
+                    item.images.map(img => img.src)) ||
+                  []
           };
         })) ||
       [];
@@ -149,7 +153,7 @@ class Converter {
                 data.image.length > 0 &&
                 data.image.map(img => `${config.baseURL}${img.medium}`)) ||
               []
-            : (data.image && [data.image.src]) || [],
+            : (data.image && [data.image.src]) || []
       }) ||
       {};
 
@@ -178,7 +182,7 @@ class Converter {
               data.image.length > 0 &&
               data.image.map(img => `${config.baseURL}${img.medium}`)) ||
             []
-          : (data.image && [data.image.src]) || [],
+          : (data.image && [data.image.src]) || []
     };
 
     return formatedData;
@@ -197,7 +201,7 @@ class Converter {
     const formatedData = {
       ...generalFormat,
       id: data.id || data._id || '',
-      total: data.total || 0,
+      total: data.total || 0
     };
 
     return formatedData;
@@ -214,7 +218,7 @@ class Converter {
     let generalFormat = dataMap[config['server']]['signup']; //get genereal format from dataMap
 
     return {
-      status: 'ok',
+      status: 'ok'
     };
   }
 
@@ -232,7 +236,7 @@ class Converter {
       ...generalFormat,
       status: data.status || 'ok',
       cookie: data.cookie,
-      user: data.user,
+      user: data.user
     };
 
     return formatedData;
@@ -254,7 +258,7 @@ class Converter {
       phone: data.phone,
       email: data.email,
       address: data.address,
-      created: data.created,
+      created: data.created
     };
 
     return formatedData;
@@ -271,7 +275,7 @@ class Converter {
     // let generalFormat = dataMap[config['server']]['currentCustomerData']; //get genereal format from dataMap
 
     const convertedData = {
-      ...data,
+      ...data
     };
 
     return convertedData;
@@ -293,7 +297,7 @@ class Converter {
       phone: data.user.phone,
       email: data.user.email,
       address: data.user.address,
-      created: data.user.created,
+      created: data.user.created
     };
 
     return convertedData;
@@ -318,7 +322,7 @@ class Converter {
             status: item.status,
             total: item.total,
             products: item.products,
-            date_created: item.date,
+            date_created: item.date
           };
         })) ||
       [];
@@ -345,7 +349,7 @@ class Converter {
             status: item.status,
             total: item.total,
             line_items: item.line_items,
-            date_created: item.date_created,
+            date_created: item.date_created
           };
         })) ||
       [];
@@ -371,7 +375,9 @@ class Converter {
     const images = sliderItems
       .map(item => item.image[0])
       .map(img =>
-        img.medium ? `${config.baseURL}${img.medium}` : `${config.baseURL}${img.orginal}`
+        img.medium
+          ? `${config.baseURL}${img.medium}`
+          : `${config.baseURL}${img.orginal}`
       );
 
     return images;
