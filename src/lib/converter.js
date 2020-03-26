@@ -112,6 +112,28 @@ class Converter {
 
   /**
    * @public
+   * @method tagList convert api data from API to general format based on config server
+   * @param {Object} data response objectc from alpha
+   * @returns {Object}  converted data
+   */
+  async tagList(resData) {
+    const data = resData.data || [];
+
+    const convertedData =
+      data.length > 0 &&
+      data.map(tag => {
+        return {
+          id: tag._id || '',
+          name: tag.name && tag.name,
+          description: tag.description && tag.description
+        };
+      });
+
+    return convertedData;
+  }
+
+  /**
+   * @public
    * @method productSearch convert api data from API to general format based on config server
    * @param {Object} data response objectc from alpha
    * @returns {Object}  converted data
@@ -338,50 +360,183 @@ class Converter {
 
   /**
    * @public
-   * @method slider convert api data from API to general format based on config server
-   * @param {Object} data response objectc from wc
+   * @method welcome convert api data from API to general format based on config server
+   * @param {Object} data response objectc from alpha
    * @returns {Object}  converted data
    */
-  async slider(data) {
-    //map props
-    // let generalFormat = dataMap[config['server']]['slider']; //get genereal format from dataMap
+  async welcome(data) {
+    return {
+      text: data.text
+    };
+  }
 
-    const sliderItems = data.items;
-    if (!sliderItems.length > 0) {
-      return sliderItems;
-    }
-
-    const images = sliderItems
-      .map(item => item.image[0])
-      .map(img =>
-        img.medium
-          ? `${config.baseURL}${img.medium}`
-          : `${config.baseURL}${img.orginal}`
-      );
-
-    return images;
+  /**
+   * @public
+   * @method logo convert api data from API to general format based on config server
+   * @param {Object} data response objectc from alpha
+   * @returns {Object}  converted data
+   */
+  async logo(data) {
+    const src =
+      data.image && data.image.length > 0
+        ? `${config['baseURL']}${data.image[0]['original']}`
+        : '';
+    return {
+      src,
+      target: data.target
+    };
   }
 
   /**
    * @public
    * @method hotline convert api data from API to general format based on config server
-   * @param {Object} data response objectc from wc
+   * @param {Object} data response objectc from alpha
    * @returns {Object}  converted data
    */
   async hotline(data) {
-    //map props
-    // let generalFormat = dataMap[config['server']]['hotline']; //get genereal format from dataMap
+    return {
+      text: data.text
+    };
+  }
 
-    const hotlineItems = data.items;
-    if (!hotlineItems.length > 0) {
-      return hotlineItems;
+  /**
+   * @public
+   * @method navLinks convert api data from API to general format based on config server
+   * @param {Object} data response objectc from wc
+   * @returns {Object}  converted data
+   */
+  async navLinks(data) {
+    const navLinkItems = data.items;
+    if (!navLinkItems.length > 0) {
+      return [];
     }
 
-    const convertedData = hotlineItems.map(hotlineItem => {
-      return hotlineItem.elements[0].value;
+    const items = navLinkItems.map(item => {
+      return {
+        text: item.name || item.text,
+        target: item.target
+      };
     });
 
-    return convertedData;
+    return items;
+  }
+
+  /**
+   * @public
+   * @method slider convert api data from API to general format based on config server
+   * @param {Object} data response objectc from wc
+   * @returns {Object}  converted data
+   */
+  async slider(data) {
+    const sliderItems = data.items;
+    if (!sliderItems.length > 0) {
+      return sliderItems;
+    }
+
+    const images = sliderItems.map(item => {
+      return {
+        target: item.target,
+        src: `${config['baseURL']}${item.image[0]['medium']}`
+      };
+    });
+    return images;
+  }
+
+  /**
+   * @public
+   * @method sliderRight convert api data from API to general format based on config server
+   * @param {Object} data response objectc from alpha
+   * @returns {Object}  converted data
+   */
+  async sliderRight(data) {
+    const sliderRightItems = data.items;
+    if (!sliderRightItems.length > 0) {
+      return sliderRightItems;
+    }
+
+    const images = sliderRightItems.map(item => {
+      return {
+        target: item.target,
+        src: `${config['baseURL']}${item.image[0]['medium']}`
+      };
+    });
+    return images;
+  }
+
+  /**
+   * @public
+   * @method address convert api data from API to general format based on config server
+   * @param {Object} data response objectc from alpha
+   * @returns {Object}  converted data
+   */
+  async address(data) {
+    return {
+      name: data.name,
+      text: data.text
+    };
+  }
+
+  /**
+   * @public
+   * @method Services convert api data from API to general format based on config server
+   * @param {Object} data response objectc from wc
+   * @returns {Object}  converted data
+   */
+  async Services(data) {
+    const servicesItems = data.items;
+    if (!servicesItems.length > 0) {
+      return servicesItems;
+    }
+
+    const items = servicesItems.map(item => {
+      return {
+        target: item.target,
+        name: item.name || item.text
+      };
+    });
+    return items;
+  }
+
+  /**
+   * @public
+   * @method Account convert api data from API to general format based on config server
+   * @param {Object} data response objectc from wc
+   * @returns {Object}  converted data
+   */
+  async Account(data) {
+    const accountItems = data.items;
+    if (!accountItems.length > 0) {
+      return accountItems;
+    }
+
+    const items = accountItems.map(item => {
+      return {
+        target: item.target,
+        name: item.name || item.text
+      };
+    });
+    return items;
+  }
+
+  /**
+   * @public
+   * @method 'About Us' convert api data from API to general format based on config server
+   * @param {Object} data response objectc from wc
+   * @returns {Object}  converted data
+   */
+  async 'About Us'(data) {
+    const aboutUsItems = data.items;
+    if (!aboutUsItems.length > 0) {
+      return aboutUsItems;
+    }
+
+    const items = aboutUsItems.map(item => {
+      return {
+        target: item.target,
+        name: item.name || item.text
+      };
+    });
+    return items;
   }
 }
 

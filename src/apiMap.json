@@ -1,11 +1,44 @@
 {
   "alpha": {
-    "slider": {
-      "url": "/api/component/detail/name/slider",
+    "logo": {
+      "url": "/api/component/logo",
       "method": "get"
     },
+    "welcome": {
+      "url": "/api/component/welcome",
+      "method": "get"
+    },
+
     "hotline": {
-      "url": "/api/component/detail/name/hotline",
+      "url": "/api/component/hotline",
+      "method": "get"
+    },
+    "navLinks": {
+      "url": "/api/component/navLinks",
+      "method": "get"
+    },
+    "slider": {
+      "url": "/api/component/slider",
+      "method": "get"
+    },
+    "sliderRight": {
+      "url": "/api/component/sliderRight",
+      "method": "get"
+    },
+    "address": {
+      "url": "/api/component/address",
+      "method": "get"
+    },
+    "Services": {
+      "url": "/api/component/Services",
+      "method": "get"
+    },
+    "Account": {
+      "url": "/api/component/Account",
+      "method": "get"
+    },
+    "About Us": {
+      "url": "/api/component/About Us",
       "method": "get"
     },
     "categoryList": {
@@ -31,6 +64,10 @@
     "productList": {
       "url": "/api/product",
       "mehod": "get"
+    },
+    "tagList": {
+      "url": "/api/tag",
+      "method": "get"
     },
     "signup": {
       "url": "/customer/auth/register",

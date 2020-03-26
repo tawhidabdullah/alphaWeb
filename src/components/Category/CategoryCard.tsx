@@ -1,9 +1,31 @@
 import React from 'react';
+import { withRouter } from 'react-router-dom';
 
-interface Props {}
+interface Props {
+  history: any;
+  category: any;
+}
 
-const CategoryCard = (props: Props) => {
-  return <div>CategoryCard</div>;
+const CategoryCard = ({ category, history }: Props) => {
+  const { cover, id, name } = category;
+  return (
+    <div className='category-card'>
+      <div className='category-top'>
+        <img src={cover} alt='category img' />
+        <div
+          className='category-top-overlay'
+          onClick={() => history.push(`/productsList/${id}`)}
+        ></div>
+      </div>
+
+      <div className='category-bottom text-center'>
+        <div className='ratingsandtitle'>
+          <h3 className='category-bottom-title'>{name}</h3>
+        </div>
+      </div>
+    </div>
+  );
 };
 
-export default CategoryCard;
+//@ts-ignore
+export default withRouter(CategoryCard);

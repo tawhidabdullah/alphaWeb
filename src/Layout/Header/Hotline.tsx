@@ -1,14 +1,20 @@
 import React from 'react';
+import { useFetch } from '../../hooks';
 
 interface Props {}
 
-const Hotline = ({}: Props) => {
+const Hotline = (props: Props) => {
+  const hotlineState = useFetch([], {}, 'hotline');
   return (
     <div className='navbar-center-phoneNumberbox'>
       <span className='phone'>
-        <i className='fa fa-phone' />
-        <span className='phoneText'>hotline</span>
-        <span className='phoneNumber'>01793706417</span>
+        {Object.keys(hotlineState.data).length > 0 && (
+          <>
+            <i className='fa fa-phone' />
+            <span className='phoneText'>hotline</span>
+            <span className='phoneNumber'>{hotlineState.data['text']}</span>
+          </>
+        )}
       </span>
     </div>
   );

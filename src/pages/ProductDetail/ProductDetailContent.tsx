@@ -3,8 +3,9 @@ import { numberWithCommas } from '../../utils';
 import { withRouter } from 'react-router-dom';
 import { Carousel } from 'react-responsive-carousel';
 
-// import react-responsive-carousel styles
+// import responsive carousel
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import 'react-multi-carousel/lib/styles.css';
 
 interface Props {
   product: any;

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useFetch } from '../../hooks';
 
 interface Props {
   history: any;
@@ -8,10 +9,20 @@ interface Props {
 }
 
 const TopHead = ({ isAuthenticate, user, history, logoutUser }: Props) => {
+  const welcomeState = useFetch([], {}, 'welcome');
+
   return (
     <div className='top-head-1'>
       <div className='top-left-content'>
-        <span>Welcome to Alphaweb</span>
+        <span>
+          {Object.keys(welcomeState.data).length > 0
+            ? welcomeState.data['text']
+            : ''}
+          {!(Object.keys(welcomeState.data).length > 0) &&
+          !welcomeState.isLoading
+            ? welcomeState.data['text']
+            : ''}
+        </span>
       </div>
       <div className='trackorderandauthlinks'>
         {(isAuthenticate && user && (
