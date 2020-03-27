@@ -1,6 +1,7 @@
 import React, { useState, useLayoutEffect, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import { useHandleFetch } from '../../hooks';
+import { SubCategoryCard } from '../../components/Category';
 
 // import productlisting components
 import SideFilterBar from './SideFilterBar';
@@ -9,13 +10,15 @@ import Products from './Products';
 interface Props {
   match: any;
   location: any;
+  history: any;
 }
 
-const ProductList = (props: Props) => {
+const ProductList = ({ match, location, history }: Props) => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
   const [tags, setTags] = useState([]);
+  const [brands, setBrands] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
 
@@ -29,12 +32,29 @@ const ProductList = (props: Props) => {
     'categoryList'
   );
 
+  const [tagListState, handleTagListFetch] = useHandleFetch([], 'tagList');
+
+  const [brandListState, handleBrandListFetch] = useHandleFetch(
+    [],
+    'brandList'
+  );
+
   const [categoryProductsState, handleCategoryProductsFetch] = useHandleFetch(
     [],
     'categoryProducts'
   );
 
-  const id = props.match.params.id;
+  const [tagProductsState, handleTagProductsFetch] = useHandleFetch(
+    [],
+    'tagProducts'
+  );
+
+  const [brandProductsState, handleBrandProductsFetch] = useHandleFetch(
+    [],
+    'brandProducts'
+  );
+
+  const id = match.params.id;
 
   const getWindowWidth = () => {
     return Math.max(
@@ -60,12 +80,15 @@ const ProductList = (props: Props) => {
   }, []);
 
   const getProducts = async () => {
+    setIsLoading(true);
     const products = await handleProductListFetch({});
     // @ts-ignore
     setProducts(products);
+    setIsLoading(false);
   };
 
-  const getCategoryProducts = async categoryId => {
+  const setCategoryProducts = async categoryId => {
+    setIsLoading(true);
     const products = await handleCategoryProductsFetch({
       urlOptions: {
         placeHolders: {
@@ -75,56 +98,370 @@ const ProductList = (props: Props) => {
     });
     // @ts-ignore
     setProducts(products);
+    setIsLoading(false);
+  };
+
+  const setTagProducts = async tagId => {
+    setIsLoading(true);
+    const products = await handleTagProductsFetch({
+      urlOptions: {
+        placeHolders: {
+          id: tagId
+        }
+      }
+    });
+    // @ts-ignore
+    setProducts(products);
+    setIsLoading(false);
+  };
+
+  const setBrandProducts = async brandId => {
+    setIsLoading(true);
+    const products = await handleBrandProductsFetch({
+      urlOptions: {
+        placeHolders: {
+          id: brandId
+        }
+      }
+    });
+    // @ts-ignore
+    setProducts(products);
+    setIsLoading(false);
   };
 
   const getCategories = async () => {
     // @ts-ignore
-    const categories: any[] = await handleCategoryListFetch({});
+    const categories: any[] = await handleCategoryListFetch({
+      urlOptions: {
+        params: {
+          isSubCategory: true
+        }
+      }
+    });
 
     const category = {
       name: 'All Categories',
       id: 'all',
-      [`isAll Categories}`]: id ? false : true
+      [`isall`]: id ? false : true
     };
 
-    const tempCategories = categories.map((cat, index) => {
-      return {
-        ...cat,
-        name: cat.name,
-        id: cat._id,
-        [`is${cat.name}`]: false
-      };
-    });
+    const tempCategories =
+      (categories.length > 0 &&
+        categories.map((cat: object) => {
+          return {
+            ...cat,
+            [`is${cat['id']}`]: false
+          };
+        })) ||
+      [];
 
     return [category, ...tempCategories];
   };
 
+  const getTags = async () => {
+    // @ts-ignore
+    const tags: any[] = await handleTagListFetch({});
+
+    const tag = {
+      name: 'All Tags',
+      id: 'all',
+      [`isall`]: id ? false : true
+    };
+
+    const tempTags =
+      (tags.length > 0 &&
+        tags.map((tagItem: object) => {
+          return {
+            ...tagItem,
+            [`is${tagItem['id']}`]: false
+          };
+        })) ||
+      [];
+
+    return [tag, ...tempTags];
+  };
+
+  const getBrands = async () => {
+    // @ts-ignore
+    const brands: any[] = await handleBrandListFetch({});
+
+    const brand = {
+      name: 'All Brands',
+      id: 'all',
+      [`isall`]: id ? false : true
+    };
+
+    const tempBrands =
+      (brands.length > 0 &&
+        brands.map((brandItem: object) => {
+          return {
+            ...brandItem,
+            [`is${brandItem['id']}`]: false
+          };
+        })) ||
+      [];
+
+    return [brand, ...tempBrands];
+  };
+
   React.useEffect(() => {
     const doMagic = async () => {
+      setIsLoading(true);
       let cat = [];
+
       if (!(categories && categories.length > 0)) {
+        // fetch and set the categories is they haven't been seted yet
         // @ts-ignore
         cat = await getCategories();
         setCategories(cat);
       }
 
+      let t = [];
+      if (!(tags && tags.length > 0)) {
+        // fetch and set the tags is they haven't been seted yet
+
+        // @ts-ignore
+        t = await getTags();
+        setTags(t);
+      }
+
+      let b = [];
+      if (!(brands && brands.length > 0)) {
+        // fetch and set the brands is they haven't been seted yet
+
+        // @ts-ignore
+        b = await getBrands();
+        setBrands(b);
+      }
       if (id === 'all') {
+        // if the id is all get all the products
         getProducts();
-      } else {
-        if (props.location.state && props.location.state.tagId) {
-        } else {
-          if (id) {
-            let categoryId = id;
-            getCategoryProducts(categoryId);
+      } else if (location.state && location.state.isCategory) {
+        // find the products by a category
+        if (id) {
+          let categoryId = id;
+
+          // if the user is selecting the category for the first time
+          // then set the select category to active category
+          if (cat && cat.length > 0) {
+            const newCategories = [...cat];
+            let subCategories = [];
+            newCategories.forEach(cat => {
+              if (cat['id'] === categoryId) {
+                // @ts-ignore
+                cat[`is${cat['id']}`] = true;
+                // @ts-ignore
+
+                if (cat['subCategory'] && cat['subCategory'].length > 0) {
+                  subCategories = cat['subCategory'];
+                }
+                // @ts-ignore
+              } else cat[`is${cat['id']}`] = false;
+            });
+
+            setCategories(newCategories);
+            setSubcategories(subCategories);
           }
+
+          setCategoryProducts(categoryId);
         }
+      } else if (location.state && location.state.isTag) {
+        // find the products by tag
+        if (id) {
+          let tagId = id;
+
+          // if the user is selecting the category for the first time
+          // then set the select category to active category
+          if (t && t.length > 0) {
+            const newTags = [...t];
+
+            newTags.forEach(tag => {
+              if (tag['id'] === tagId) {
+                // @ts-ignore
+                tag[`is${tag['id']}`] = true;
+                // @ts-ignore
+              } else tag[`is${tag['id']}`] = false;
+            });
+
+            setTags(newTags);
+          }
+
+          setTagProducts(tagId);
+        }
+      } else if (location.state && location.state.isBrand) {
+        // find the products by a brand
+        if (id) {
+          let brandId = id;
+
+          // if the user is selecting the brand for the first time
+          // then set the select brand to active brand
+          if (b && b.length > 0) {
+            const newBrands = [...b];
+
+            newBrands.forEach(brand => {
+              if (brand['id'] === brandId) {
+                // @ts-ignore
+                brand[`is${brand['id']}`] = true;
+                // @ts-ignore
+              } else brand[`is${brand['id']}`] = false;
+            });
+
+            setBrands(newBrands);
+          }
+
+          setBrandProducts(brandId);
+        }
+      } else {
+        setIsLoading(false);
+
+        return 'The magic ends here';
       }
     };
 
     doMagic();
   }, [id]);
 
-  const handleSelectCategory = () => {};
+  const setUiSelectItemDeactive = (type: string) => {
+    if (type === 'category') {
+      if (categories.length > 0) {
+        const newCategories = categories.map((cat: object) => {
+          return {
+            ...cat,
+            [`is${cat['id']}`]: false
+          };
+        });
+
+        // @ts-ignore
+        setCategories(newCategories);
+      }
+    } else if (type === 'tag') {
+      if (tags.length > 0) {
+        const newTags = tags.map((tag: object) => {
+          return {
+            ...tag,
+            [`is${tag['id']}`]: false
+          };
+        });
+
+        // @ts-ignore
+        setTags(newTags);
+      }
+    } else if (type === 'brand') {
+      if (brands.length > 0) {
+        const newBrands = brands.map((brand: object) => {
+          return {
+            ...brand,
+            [`is${brand['id']}`]: false
+          };
+        });
+
+        // @ts-ignore
+        setBrands(newBrands);
+      }
+    }
+  };
+
+  const handleUiSelectSubCategory = (subCatId: string) => {
+    const newSubCategories = [...subcategories];
+    newSubCategories &&
+      newSubCategories.forEach(subCat => {
+        if (subCat['id'] === subCatId) {
+          // @ts-ignore
+          subCat[`is${subCat['id']}`] = true;
+        } else {
+          // @ts-ignore
+          subCat[`is${subCat['id']}`] = false;
+        }
+      });
+
+    setSubcategories(newSubCategories);
+  };
+
+  const setUiSelectItemActive = (type: string, id: string) => {
+    if (type === 'category') {
+      if (categories.length > 0) {
+        const categoryId = id;
+        const newCategories = [...categories];
+        let subCategories = [];
+
+        newCategories.forEach(cat => {
+          if (cat['id'] === categoryId) {
+            // @ts-ignore
+            cat[`is${cat['id']}`] = true;
+            // @ts-ignore
+            if (cat['subCategory'] && cat['subCategory'].length > 0) {
+              subCategories = cat['subCategory'];
+            }
+            // @ts-ignore
+          } else cat[`is${cat['id']}`] = false;
+        });
+        setCategories(newCategories);
+        setSubcategories(subCategories);
+      }
+      setUiSelectItemDeactive('tag');
+      setUiSelectItemDeactive('brand');
+    } else if (type === 'tag') {
+      if (tags.length > 0) {
+        const tagId = id;
+        const tempTags = [...tags];
+        tempTags &&
+          tempTags.forEach(tag => {
+            if (tag['id'] === tagId) {
+              // @ts-ignore
+              tag[`is${tag['id']}`] = true;
+              // @ts-ignore
+            } else tag[`is${tag['id']}`] = false;
+          });
+        setTags(tempTags);
+      }
+      setSubcategories([]);
+      setUiSelectItemDeactive('category');
+      setUiSelectItemDeactive('brand');
+    } else if (type === 'brand') {
+      if (brands.length > 0) {
+        const brandId = id;
+        const tempBrands = [...brands];
+        tempBrands &&
+          tempBrands.forEach(brand => {
+            if (brand['id'] === brandId) {
+              // @ts-ignore
+              brand[`is${brand['id']}`] = true;
+              // @ts-ignore
+            } else brand[`is${brand['id']}`] = false;
+          });
+
+        setBrands(tempBrands);
+      }
+      setSubcategories([]);
+      setUiSelectItemDeactive('category');
+      setUiSelectItemDeactive('tag');
+    }
+  };
+
+  const handleSelectCategory = categoryId => {
+    history.push({
+      pathname: `/productList/${categoryId}`,
+      state: { isCategory: true }
+    });
+    setUiSelectItemActive('category', categoryId);
+  };
+
+  const handleSelectTag = tagId => {
+    history.push({
+      pathname: `/productList/${tagId}`,
+      state: { isTag: true }
+    });
+    setUiSelectItemActive('tag', tagId);
+  };
+
+  const handleSelectBrand = brandId => {
+    history.push({
+      pathname: `/productList/${brandId}`,
+      state: { isBrand: true }
+    });
+
+    setUiSelectItemActive('brand', brandId);
+  };
 
   return (
     <>
@@ -139,18 +476,28 @@ const ProductList = (props: Props) => {
             <SideFilterBar
               handleSelectCategory={handleSelectCategory}
               categories={categories}
+              handleSelectTag={handleSelectTag}
+              tags={tags}
+              handleSelectBrand={handleSelectBrand}
+              brands={brands}
+              windowWidth={windowWidth}
+              history={history}
             />
             <div className='col-sm-8 col-md-9'>
-              <Products products={products} isLoading={isLoading} />
-
-              <div className='notFoundProduct'>
-                <h3
-                  className='notFoundProductText'
-                  onClick={() => getCategories()}
-                >
-                  No Product Has Been Found!!
-                </h3>
+              <div className='row productListingSubCategooryContainer'>
+                {!isLoading &&
+                  subcategories.length > 0 &&
+                  subcategories.map(subCat => {
+                    return (
+                      <SubCategoryCard
+                        subCat={subCat}
+                        history={history}
+                        handleUiSelectSubCategory={handleUiSelectSubCategory}
+                      />
+                    );
+                  })}
               </div>
+              <Products products={products} isLoading={isLoading} />
             </div>
           </div>
         </div>

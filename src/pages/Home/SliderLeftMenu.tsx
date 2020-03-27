@@ -15,9 +15,12 @@ const SliderLefMenu = ({ history }: Props) => {
               return (
                 <li
                   key={category._id}
-                  onClick={() =>
-                    history.push(`/productsListing/${category._id}`)
-                  }
+                  onClick={() => {
+                    history.push({
+                      pathname: `/productList/${category.id}`,
+                      state: { isCategory: true }
+                    });
+                  }}
                 >
                   <a href='##'>{category.name}</a>
                 </li>

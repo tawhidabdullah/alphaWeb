@@ -42,15 +42,24 @@
       "method": "get"
     },
     "categoryList": {
-      "url": "/api/category",
+      "url": "/api/category?subCategory=isSubCategory",
       "method": "get"
     },
+
     "categoryProducts": {
       "url": "/api/category/:id/product",
       "method": "get"
     },
     "categoryDetail": {
       "url": "/api/category/:id",
+      "method": "get"
+    },
+    "tagProducts": {
+      "url": "/api/tag/:id/product",
+      "method": "get"
+    },
+    "brandProducts": {
+      "url": "/api/brand/:id/product",
       "method": "get"
     },
     "productSearch": {
@@ -67,6 +76,10 @@
     },
     "tagList": {
       "url": "/api/tag",
+      "method": "get"
+    },
+    "brandList": {
+      "url": "/api/brand",
       "method": "get"
     },
     "signup": {

@@ -18,7 +18,20 @@ class Converter {
           id: category._id || '',
           name: category.name && category.name,
           description: category.description && category.description,
-          cover: `${config['baseURL']}${category.cover.medium}`
+          cover: `${config['baseURL']}${category.cover.medium}`,
+          ...(category.subCategory &&
+            category.subCategory.length > 0 && {
+              subCategory: category.subCategory.map(subCat => {
+                return {
+                  id: subCat._id || '',
+                  name: subCat.name && subCat.name,
+                  description: subCat.description && subCat.description,
+                  cover: subCat.cover
+                    ? `${config['baseURL']}${subCat.cover.medium}`
+                    : ''
+                };
+              })
+            })
         };
       });
 
@@ -32,6 +45,56 @@ class Converter {
    * @returns {Object}  converted data
    */
   async categoryProducts(resData) {
+    const data = resData.data || [];
+
+    const convertedData =
+      data.length > 0 &&
+      data.map(product => {
+        return {
+          id: product._id || '',
+          name: product.name && product.name,
+          description: product.description && product.description,
+          cover: `${config['baseURL']}${product.cover.medium}`,
+          price: product.price,
+          offerPrice: product.offerPrice
+        };
+      });
+
+    return convertedData;
+  }
+
+  /**
+   * @public
+   * @method tagProducts convert api data from API to general format based on config server
+   * @param {Object} data response objectc from alpha
+   * @returns {Object}  converted data
+   */
+  async tagProducts(resData) {
+    const data = resData.data || [];
+
+    const convertedData =
+      data.length > 0 &&
+      data.map(product => {
+        return {
+          id: product._id || '',
+          name: product.name && product.name,
+          description: product.description && product.description,
+          cover: `${config['baseURL']}${product.cover.medium}`,
+          price: product.price,
+          offerPrice: product.offerPrice
+        };
+      });
+
+    return convertedData;
+  }
+
+  /**
+   * @public
+   * @method brandProducts convert api data from API to general format based on config server
+   * @param {Object} data response objectc from alpha
+   * @returns {Object}  converted data
+   */
+  async brandProducts(resData) {
     const data = resData.data || [];
 
     const convertedData =
@@ -126,6 +189,28 @@ class Converter {
           id: tag._id || '',
           name: tag.name && tag.name,
           description: tag.description && tag.description
+        };
+      });
+
+    return convertedData;
+  }
+
+  /**
+   * @public
+   * @method brandList convert api data from API to general format based on config server
+   * @param {Object} data response objectc from alpha
+   * @returns {Object}  converted data
+   */
+  async brandList(resData) {
+    const data = resData.data || [];
+
+    const convertedData =
+      data.length > 0 &&
+      data.map(brand => {
+        return {
+          id: brand._id || '',
+          name: brand.name && brand.name,
+          description: brand.description && brand.description
         };
       });
 

@@ -21,6 +21,12 @@ const Products = ({ products, isLoading }: Props) => {
           );
         })) ||
         (isLoading && <Spinner />)}
+
+      {!isLoading && !(products.length > 0) && (
+        <div className='notFoundProduct'>
+          <h3 className='notFoundProductText'>No Product Has Been Found!!</h3>
+        </div>
+      )}
     </div>
   );
 };

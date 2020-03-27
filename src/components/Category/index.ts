@@ -1,2 +1,3 @@
 import CategoryCard from './CategoryCard';
-export { CategoryCard };
+import SubCategoryCard from './SubCategoryCard';
+export { CategoryCard, SubCategoryCard };
