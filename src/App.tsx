@@ -23,7 +23,11 @@ const App = () => {
         <Switch>
           <Route exact path={'/'} component={Home} />
 
-          <Route exact path={'/products/:id'} component={ProductDetail} />
+          <Route
+            exact
+            path={'/product/:categoryName/:productName'}
+            component={ProductDetail}
+          />
 
           <Route
             exact

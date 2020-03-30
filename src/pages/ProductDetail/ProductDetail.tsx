@@ -9,14 +9,21 @@ interface Props {
 }
 
 const ProductDetail = (props: Props) => {
-  const productId = props.match.params.id;
-  const productState = useFetch([productId], {}, 'productDetail', {
-    urlOptions: {
-      placeHolders: {
-        id: productId.toString()
+  const categoryName = props.match.params && props.match.params['categoryName'];
+  const productName = props.match.params && props.match.params['productName'];
+  const productState = useFetch(
+    [categoryName, productName],
+    {},
+    'productDetail',
+    {
+      urlOptions: {
+        placeHolders: {
+          categoryName,
+          productName
+        }
       }
     }
-  });
+  );
   const [relatedProductsState, handleRelatedProductsFetch] = useHandleFetch(
     [],
     'categoryProducts'
@@ -73,7 +80,13 @@ const ProductDetail = (props: Props) => {
                                   textAlign: 'center'
                                 }}
                               >
-                                <h2>No Related Product Found</h2>
+                                <h2
+                                  style={{
+                                    lineHeight: 1.6
+                                  }}
+                                >
+                                  No Related Product Found
+                                </h2>
                               </div>
                             )}
                         </div>

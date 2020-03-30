@@ -15,7 +15,7 @@ interface Props {
 const ProductDetailContent = ({ product, history }: Props) => {
   const {
     name,
-    price,
+    regularPrice,
     description,
     image,
     offerPrice,
@@ -23,8 +23,6 @@ const ProductDetailContent = ({ product, history }: Props) => {
     category,
     tags
   } = product;
-
-  console.log('fuck', product);
 
   const onHandleAddToCartClick = () => {};
   return (
@@ -63,7 +61,7 @@ const ProductDetailContent = ({ product, history }: Props) => {
             <div className='product-reviews-summary'></div>
 
             <div className='product-price-box'>
-              {parseInt(offerPrice) ? (
+              {offerPrice && parseInt(offerPrice) ? (
                 <h2 className='special-price'>
                   ৳{numberWithCommas(offerPrice)}
                 </h2>
@@ -72,10 +70,12 @@ const ProductDetailContent = ({ product, history }: Props) => {
               )}
               <h2
                 className={
-                  !parseInt(offerPrice) ? 'special-price' : 'old-price'
+                  offerPrice && !parseInt(offerPrice)
+                    ? 'special-price'
+                    : 'old-price'
                 }
               >
-                ৳{numberWithCommas(price)}
+                ৳{numberWithCommas(regularPrice)}
               </h2>
             </div>
 
@@ -97,7 +97,12 @@ const ProductDetailContent = ({ product, history }: Props) => {
                   <span
                     key={item.name}
                     className='attibute'
-                    onClick={() => history.push(`/productsListing/${item._id}`)}
+                    onClick={() => {
+                      history.push({
+                        pathname: `/productList/${item.id}`,
+                        state: { isCategory: true }
+                      });
+                    }}
                   >
                     {item.name},
                   </span>
@@ -112,12 +117,12 @@ const ProductDetailContent = ({ product, history }: Props) => {
                   <span
                     key={item.name}
                     className='attibute'
-                    onClick={() =>
+                    onClick={() => {
                       history.push({
-                        pathname: `/productsListing/${item._id}`,
-                        state: { tagId: true }
-                      })
-                    }
+                        pathname: `/productList/${item.id}`,
+                        state: { isTag: true }
+                      });
+                    }}
                   >
                     {item.name},
                   </span>

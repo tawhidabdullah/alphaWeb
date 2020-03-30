@@ -55,8 +55,9 @@ class Converter {
           name: product.name && product.name,
           description: product.description && product.description,
           cover: `${config['baseURL']}${product.cover.medium}`,
-          price: product.price,
-          offerPrice: product.offerPrice
+          regularPrice: product.price && product.price['regular'],
+          offerPrice: product.price && product.price['offer'],
+          url: product.url
         };
       });
 
@@ -80,8 +81,9 @@ class Converter {
           name: product.name && product.name,
           description: product.description && product.description,
           cover: `${config['baseURL']}${product.cover.medium}`,
-          price: product.price,
-          offerPrice: product.offerPrice
+          regularPrice: product.price && product.price['regular'],
+          offerPrice: product.price && product.price['offer'],
+          url: product.url
         };
       });
 
@@ -105,8 +107,9 @@ class Converter {
           name: product.name && product.name,
           description: product.description && product.description,
           cover: `${config['baseURL']}${product.cover.medium}`,
-          price: product.price,
-          offerPrice: product.offerPrice
+          regularPrice: product.price && product.price['regular'],
+          offerPrice: product.price && product.price['offer'],
+          url: product.url
         };
       });
 
@@ -131,7 +134,9 @@ class Converter {
             id: item._id || item.id || '',
             name: item.name || '',
             description: data.description || data.description,
-            price: item.price || '',
+            regularPrice: data.price && data.price['regular'],
+            offerPrice: data.price && data.price['offer'],
+            url: data.url,
             image:
               config['server'] !== 'wooCommerce'
                 ? (item.cover.medium &&
@@ -165,8 +170,9 @@ class Converter {
           name: product.name && product.name,
           description: product.description && product.description,
           cover: `${config['baseURL']}${product.cover.medium}`,
-          price: product.price,
-          offerPrice: product.offerPrice
+          regularPrice: product.price && product.price['regular'],
+          offerPrice: product.price && product.price['offer'],
+          url: product.url
         };
       });
 
@@ -229,11 +235,39 @@ class Converter {
         id: data._id || data.id || '',
         name: data.name || '',
         description: data.description.replace(/<[^>]+>/g, '') || '',
-        price: data.price || '',
-        offerPrice: data.offerPrice,
-        category: data.category,
-        brand: data.brand,
-        tags: data.tags,
+        regularPrice: data.price && data.price['regular'],
+        offerPrice: data.price && data.price['offer'],
+        url: data.url,
+        category:
+          (data.category &&
+            data.category.length > 0 &&
+            data.category.map(cat => {
+              return {
+                id: cat._id,
+                name: cat.name
+              };
+            })) ||
+          data.category,
+        brand:
+          (data.brand &&
+            data.brand.length > 0 &&
+            data.brand.map(b => {
+              return {
+                id: b._id,
+                name: b.name
+              };
+            })) ||
+          data.brand,
+        tags:
+          (data.tags &&
+            data.tags.length > 0 &&
+            data.tags.map(tag => {
+              return {
+                id: tag._id,
+                name: tag.name
+              };
+            })) ||
+          data.tags,
         availableStock: data.availableStock,
         image:
           (data.image &&

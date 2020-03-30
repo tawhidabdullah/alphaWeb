@@ -67,7 +67,7 @@
       "method": "get"
     },
     "productDetail": {
-      "url": "/api/product/:id",
+      "url": "/api/product/:categoryName/:productName",
       "method": "get"
     },
     "productList": {

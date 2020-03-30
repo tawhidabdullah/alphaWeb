@@ -15,7 +15,7 @@ const ProductCard = ({
   AddCartContent,
   history
 }: Props) => {
-  const { name, price, cover, id, offerPrice } = product;
+  const { name, regularPrice, cover, url, offerPrice } = product;
 
   return (
     <div className='product-card'>
@@ -23,11 +23,11 @@ const ProductCard = ({
         <img src={cover} alt='product img' />
         <div
           className='product-top-overlay'
-          onClick={() => history.push(`/products/${id}`)}
+          onClick={() => history.push(url)}
         ></div>
 
         <div className='overlay-right'>
-          <Link to={`/products/${id}`} className='product__link'>
+          <Link to={url} className='product__link'>
             <button
               type='button'
               className='btn btn-secondary'
@@ -60,7 +60,7 @@ const ProductCard = ({
           <h3 className='product-bottom-title'>{name}</h3>
         </div>
         <h5 className='product-bottom-price'>
-          ৳{numberWithCommas(offerPrice ? offerPrice : price)}
+          ৳{numberWithCommas(offerPrice ? offerPrice : regularPrice)}
         </h5>
       </div>
     </div>
