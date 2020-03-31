@@ -242,7 +242,7 @@ const ProductSearch = ({ location, history }: Props) => {
       <div
         className={windowWidth < 770 ? 'container-fluid' : 'container'}
         style={{
-          padding: windowWidth < 770 ? '15px' : ''
+          padding: windowWidth < 770 ? '15px' : '0 0 20px 0'
         }}
       >
         <div className='row'>

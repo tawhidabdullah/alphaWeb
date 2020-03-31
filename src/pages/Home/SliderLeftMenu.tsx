@@ -14,7 +14,7 @@ const SliderLefMenu = ({ history }: Props) => {
           ? categoryState.data.slice(0, 5).map(category => {
               return (
                 <li
-                  key={category._id}
+                  key={category.id}
                   onClick={() => {
                     history.push({
                       pathname: `/productList/${category.id}`,

@@ -17,14 +17,14 @@ const AuthenticationModal = ({
       <Modal.Header closeButton>
         <Modal.Title>You are not Authenticated </Modal.Title>
       </Modal.Header>
-      <Modal.Body>In Checkout any Product You have to be Logged In</Modal.Body>
+      <Modal.Body>To Checkout any Product You have to be Loggedin</Modal.Body>
       <Modal.Footer>
         <Button
           variant='secondary'
           onClick={handleGoToLogin}
           className='fixedBoostrapButtonTobePrimaryColor'
         >
-          Login
+          Signin
         </Button>
         <Button variant='secondary' onClick={handleModalClose}>
           Cancel

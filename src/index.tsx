@@ -6,7 +6,7 @@ import AlertTemplate from 'react-alert-template-basic';
 import App from './App';
 
 // import store
-import configureStore from './state/store';
+import { store } from './state/store';
 
 // import css
 import './styles/main.scss';
@@ -21,10 +21,8 @@ const options = {
   transition: transitions.SCALE
 };
 
-const reduxStore = configureStore({});
-
 ReactDOM.render(
-  <ReduxProvider store={reduxStore}>
+  <ReduxProvider store={store}>
     <AlertProvider template={AlertTemplate} {...options}>
       <App />
     </AlertProvider>

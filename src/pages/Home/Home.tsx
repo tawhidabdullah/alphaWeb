@@ -39,7 +39,8 @@ const Home = ({ history }: Props) => {
 
   return (
     <>
-      <TopTags history={history} />
+      {windowWidth < 700 ? '' : <TopTags history={history} />}
+
       <section className='image-slider-section'>
         <div className='row'>
           <SliderLeftMenu history={history} />

@@ -201,7 +201,6 @@
 
 .primary-btn {
   border: none;
-  outline: none;
   padding: 12px 20px;
   border-radius: 20px;
   background: $color-dark-1;
@@ -214,6 +213,7 @@
 
 .primary-btn:hover {
   background: $color-primary-1;
+  outline: none;
 }
 
 /*

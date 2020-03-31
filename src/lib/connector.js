@@ -31,13 +31,13 @@ class Connector {
     this.options = {
       ...this.options,
       method: api.method,
-      headers: {
+      headers: new Headers({
         'Content-Type': 'application/json',
         credentials: 'include',
         ...(options.headers && {
           ...options.headers
         })
-      },
+      }),
       body: api.method !== 'get' ? JSON.stringify(options.body) : null
     };
 

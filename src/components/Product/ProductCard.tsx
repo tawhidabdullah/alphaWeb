@@ -7,7 +7,6 @@ import { numberWithCommas, checkIfItemExistsInCartItemById } from '../../utils';
 
 interface Props {
   product: any;
-  handleCartAction?: () => void;
   AddCartContent?: () => void;
   history: any;
   addToCart?: (object, number) => void;
@@ -17,7 +16,6 @@ interface Props {
 
 const ProductCard = ({
   product,
-  handleCartAction,
   history,
   alert,
   cartItems,
@@ -75,7 +73,7 @@ const ProductCard = ({
             type='button'
             className='btn btn-secondary'
             title='Add To Cart'
-            onClick={handleCartAction}
+            onClick={handleOnClickAddToCart}
           >
             <i className='fa fa-shopping-cart'></i>
           </button>

@@ -43,8 +43,7 @@ const Header = ({ history, cartItems }: Props) => {
 
   const handleGoToLogin = () => {
     setIsModalShown(false);
-    handleToggleCartBar();
-    history.push('/login');
+    history.push('/signin');
   };
 
   const getWindowWidth = () => {

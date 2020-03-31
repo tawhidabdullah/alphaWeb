@@ -23,7 +23,12 @@ const Menu = ({ history }: Props) => {
               return (
                 <li
                   key={item._id}
-                  onClick={() => history.push(`/productList/${item._id}`)}
+                  onClick={() => {
+                    history.push({
+                      pathname: `/productList/${item.id}`,
+                      state: { isCategory: true }
+                    });
+                  }}
                 >
                   {' '}
                   {item.name}

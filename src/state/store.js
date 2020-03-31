@@ -1,12 +1,23 @@
 import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 import * as reducers from './ducks';
 import { apiService, createLogger } from './middlewares';
 
-export default function configureStore(initialState) {
-  const rootReducer = combineReducers(reducers);
+// config of persist storage
+const persistConfig = {
+  key: 'cart',
+  storage: storage,
+  cart: ['cart'] // which reducer want to store
+};
 
+const rootReducer = combineReducers(reducers);
+
+const pReducer = persistReducer(persistConfig, rootReducer);
+
+function configureStore(initialState) {
   return createStore(
-    rootReducer,
+    pReducer,
     initialState,
     compose(
       applyMiddleware(apiService, createLogger(true)),
@@ -16,3 +27,8 @@ export default function configureStore(initialState) {
     )
   );
 }
+
+const store = configureStore({});
+
+const persistor = persistStore(store);
+export { persistor, store };

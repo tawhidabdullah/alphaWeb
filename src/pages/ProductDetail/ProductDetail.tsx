@@ -3,6 +3,7 @@ import { ProductPlaceholder } from '../../components/Placeholders';
 import { useFetch, useHandleFetch } from '../../hooks';
 import { Spinner } from '../../components/Loading';
 import ProductDetailContent from './ProductDetailContent';
+import SmallItem from '../../components/SmallItem';
 
 interface Props {
   match: any;
@@ -30,9 +31,9 @@ const ProductDetail = (props: Props) => {
   );
 
   useEffect(() => {
-    if (productState.data.length > 0) {
+    if (Object.keys(productState.data).length > 0) {
       const product = productState.data;
-      const categoryId = product.category && product.category[0]._id;
+      const categoryId = product.category && product.category[0].id;
       const setRelatedProducts = async () => {
         await handleRelatedProductsFetch({
           urlOptions: {
@@ -42,7 +43,9 @@ const ProductDetail = (props: Props) => {
           }
         });
       };
-      setRelatedProducts();
+      if (categoryId) {
+        setRelatedProducts();
+      }
     }
   }, [productState.data]);
 
@@ -67,10 +70,11 @@ const ProductDetail = (props: Props) => {
                         <div className='small-products-items'>
                           {(!relatedProductsState.isLoading &&
                             relatedProductsState.data.length > 0 &&
-                            relatedProductsState.data.map(item => {
-                              // return <SmallItem item={item} />;
-                              return <h2>{item.name}</h2>;
-                            })) ||
+                            relatedProductsState.data
+                              .slice(0, 6)
+                              .map(productItem => {
+                                return <SmallItem productItem={productItem} />;
+                              })) ||
                             (relatedProductsState.isLoading && <Spinner />)}
 
                           {!relatedProductsState.isLoading &&

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useFetch } from '../../hooks';
 
 interface Props {
   isShowMenuBar: boolean;
@@ -6,6 +7,7 @@ interface Props {
 }
 
 const MenuBar = ({ isShowMenuBar, handleToggleMenuBar }: Props) => {
+  const navLinksState = useFetch([], [], 'navLinks');
   return (
     <div className={isShowMenuBar ? 'show-menu-bar' : ''}>
       <div
@@ -17,15 +19,14 @@ const MenuBar = ({ isShowMenuBar, handleToggleMenuBar }: Props) => {
           <i className='fa fa-window-close'></i>
         </span>
         <ul className='menuItems'>
-          {['Home', 'Products', 'Wishlist', 'Offer'].map(item => {
-            return (
-              <li key={item}>
-                <a key={item} href={item}>
-                  {item}
-                </a>
-              </li>
-            );
-          })}
+          {Object.keys(navLinksState.data).length > 0 &&
+            navLinksState.data.map(item => {
+              return (
+                <li key={item.target}>
+                  <a href={item.target}>{item.text}</a>
+                </li>
+              );
+            })}
         </ul>
       </div>
     </div>

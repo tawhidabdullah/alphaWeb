@@ -48,6 +48,8 @@ const SmallItem = ({
     }
   }, []);
 
+  console.log('productItem', productItem);
+
   return isOrderDetails ? (
     (Object.keys(product).length > 0 && (
       <div key={product['id']} className='small-product-item'>
@@ -143,7 +145,7 @@ const SmallItem = ({
             }}
             className='small-product-offerPrice'
           >
-            ৳{numberWithCommas(productItem.price)}
+            ৳{numberWithCommas(productItem.regularPrice)}
           </h2>
         )}
       </div>
