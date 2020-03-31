@@ -1,9 +1,161 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+import { Modal, Button } from 'react-bootstrap';
+import { numberWithCommas } from '../../utils';
+import { cartOperations, cartSelectors } from '../../state/ducks/cart';
+import CartItem from './CartItem';
 
-interface Props {}
+interface Props {
+  history: any;
+  removeFromCart: (object) => void;
+  changeQuantity: (object, number) => void;
+  clearCart: () => void;
+  totalPrice: number;
+  cartItems: any;
+}
 
-const ShoppingCart = (props: Props) => {
-  return <div>ShoppingCart</div>;
+const ShoppingCart = ({
+  history,
+  removeFromCart,
+  totalPrice,
+  changeQuantity,
+  cartItems,
+  clearCart
+}: Props) => {
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => {
+    setShow(false);
+  };
+
+  const handleLogin = () => {
+    history.push('/signin');
+  };
+
+  const handleShow = () => setShow(true);
+  return (
+    <>
+      <Modal show={show} onHide={handleClose} animation={false}>
+        <Modal.Header closeButton>
+          <Modal.Title>You are not Authenticated </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          In Checkout any Product You have to be Logged In
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            className='fixedBoostrapButtonTobePrimaryColor'
+            variant='secondary'
+            onClick={handleLogin}
+          >
+            Login
+          </Button>
+          <Button variant='primary' onClick={handleClose}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <div className='container'>
+        <div className='card shopping-cart'>
+          <div className='card-header text-light shoppingCartAndHeaderBackground'>
+            <i className='fa fa-shopping-cart pr-2' aria-hidden='true' />
+            Shopping Cart
+            <div className='clearfix' />
+          </div>
+          <div className='card-body'>
+            {cartItems.length > 0 ? (
+              cartItems.map(cartItem => (
+                <React.Fragment key={cartItem._id}>
+                  <CartItem
+                    cartItem={cartItem}
+                    history={history}
+                    changeQuantity={changeQuantity}
+                    removeFromCart={removeFromCart}
+                  />
+                </React.Fragment>
+              ))
+            ) : (
+              <h1 className=' mt-5 text-center text404'>
+                There is no product in your cart
+              </h1>
+            )}
+          </div>
+
+          <div className='card-footer shoppingCartCardFooter' style={{}}>
+            {cartItems.length > 0 ? (
+              <>
+                <a
+                  href='##'
+                  onClick={e => {
+                    e.preventDefault();
+                    history.push('/');
+                  }}
+                  className='btn btn-primary fixedBoostrapButtonTobePrimaryColor'
+                >
+                  Continue Shopping
+                </a>
+                <a
+                  href='##'
+                  className='btn btn-primary fixedBoostrapButtonTobePrimaryColor'
+                  onClick={() => clearCart()}
+                >
+                  Clear Shopping Cart
+                </a>
+
+                <a
+                  href='##'
+                  onClick={e => {
+                    e.preventDefault();
+
+                    // if (isAuthenticate) {
+                    //   history.push('/checkout');
+                    // } else handleShow();
+                  }}
+                  className='btn btn-primary fixedBoostrapButtonTobePrimaryColor'
+                >
+                  checkout
+                </a>
+              </>
+            ) : (
+              <a
+                href='##'
+                onClick={e => {
+                  e.preventDefault();
+                  history.push('/');
+                }}
+                className='btn btn-primary fixedBoostrapButtonTobePrimaryColor'
+              >
+                Go Back and Shopping
+              </a>
+            )}
+
+            <div className='pull-right' style={{ margin: '10px', flexGrow: 1 }}>
+              <div className='pull-right' style={{ margin: '5px' }}>
+                Total price: <b>{numberWithCommas(totalPrice)}৳</b>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 };
 
-export default ShoppingCart;
+const mapStateToProps = state => ({
+  cartItems: state.cart,
+  totalPrice: cartSelectors.getTotalPriceOfCartItems(state.cart)
+});
+
+const mapDispatchToProps = {
+  removeFromCart: cartOperations.removeFromCart,
+  changeQuantity: cartOperations.changeQuantity,
+  clearCart: cartOperations.clearCart
+};
+
+// @ts-ignore
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+  // @ts-ignore
+)(withRouter(ShoppingCart));

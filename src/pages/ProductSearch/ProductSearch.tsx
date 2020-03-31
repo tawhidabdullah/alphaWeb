@@ -368,6 +368,7 @@ const ProductSearch = ({ location, history }: Props) => {
                 products.length > 0 &&
                 products.map(product => {
                   return (
+                    // @ts-ignore
                     <ProductCard product={product} productListing={true} />
                   );
                 })) ||

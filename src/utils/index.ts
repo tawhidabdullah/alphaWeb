@@ -28,3 +28,18 @@ export const isValuesEmpty = values => {
 
   return isEmpty;
 };
+
+export const isObjectEmpty = (value = {}) => {
+  return !(Object.keys(value).length > 0);
+};
+
+export const checkIfItemExistsInCartItemById: (
+  array: any[] | [],
+  id: number | string
+) => boolean = (array: any[] | [], id: number | string) => {
+  if (!(array.length > 0)) return false;
+
+  const item = array.find(item => item.product.id === id);
+
+  return (!isObjectEmpty(item) && true) || false;
+};

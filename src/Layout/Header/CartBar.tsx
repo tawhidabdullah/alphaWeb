@@ -1,14 +1,20 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+import { cartOperations, cartSelectors } from '../../state/ducks/cart';
+import { numberWithCommas } from '../../utils';
 import CartOverLayCartItem from './CartOverLayCartItem';
 
 interface Props {
   handleToggleCartBar: () => void;
   isShowCartBar: boolean;
   cartItems?: any[];
-  totalPrice?: number;
   isAuthenticate?: boolean;
   history: any;
-  handleModalShow: () => void;
+  handleModalShow?: () => void;
+  removeFromCart?: (object) => void;
+  totalPrice?: number;
+  changeQuantity?: (object, number) => void;
 }
 
 const CartBar = ({
@@ -18,7 +24,9 @@ const CartBar = ({
   totalPrice,
   history,
   isAuthenticate,
-  handleModalShow
+  handleModalShow,
+  removeFromCart,
+  changeQuantity
 }: Props) => {
   return (
     <div className={isShowCartBar ? 'show-cart-bar' : ''}>
@@ -37,7 +45,15 @@ const CartBar = ({
             cartItems.map(cartItem => {
               return (
                 <React.Fragment key={cartItem._id}>
-                  <CartOverLayCartItem />
+                  <CartOverLayCartItem
+                    cartItem={cartItem}
+                    handleToggleCartBar={handleToggleCartBar}
+                    history={history}
+                    // @ts-ignore
+                    removeFromCart={removeFromCart}
+                    // @ts-ignore
+                    changeQuantity={changeQuantity}
+                  />
                 </React.Fragment>
               );
             })) || (
@@ -55,7 +71,7 @@ const CartBar = ({
           <div className='cart-footer'>
             <div className='cart-total'>
               <h3>Your total :</h3>
-              <span>৳{totalPrice}</span>
+              <span>৳{numberWithCommas(totalPrice)}</span>
             </div>
             <button
               className='clear-cart banner-btn'
@@ -76,7 +92,7 @@ const CartBar = ({
                   history.push('/checkout');
                 } else {
                   handleToggleCartBar();
-                  handleModalShow();
+                  handleModalShow && handleModalShow();
                 }
               }}
             >
@@ -89,4 +105,19 @@ const CartBar = ({
   );
 };
 
-export default CartBar;
+const mapStateToProps = state => ({
+  cartItems: state.cart,
+  totalPrice: cartSelectors.getTotalPriceOfCartItems(state.cart)
+});
+
+const mapDispatchToProps = {
+  removeFromCart: cartOperations.removeFromCart,
+  changeQuantity: cartOperations.changeQuantity
+};
+
+// @ts-ignore
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+  // @ts-ignore
+)(withRouter(CartBar));

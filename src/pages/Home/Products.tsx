@@ -76,6 +76,7 @@ const Products = ({ windowWidth, categoryId }: Props) => {
               categoryProductsState.data.slice(0, 10).map(product => {
                 return (
                   <React.Fragment key={product._id}>
+                    // @ts-ignore
                     <ProductCard product={product} />
                   </React.Fragment>
                 );
@@ -95,6 +96,7 @@ const Products = ({ windowWidth, categoryId }: Props) => {
               categoryProductsState.data.slice(0, 10).map(product => {
                 return (
                   <React.Fragment key={product._id}>
+                    // @ts-ignore
                     <ProductCard product={product} />
                   </React.Fragment>
                 );

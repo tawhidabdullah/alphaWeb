@@ -114,6 +114,7 @@ const Header = ({ history }: Props) => {
       )}
 
       <CartBar
+        // @ts-ignore
         handleToggleCartBar={handleToggleCartBar}
         isShowCartBar={isShowCartBar}
         history={history}

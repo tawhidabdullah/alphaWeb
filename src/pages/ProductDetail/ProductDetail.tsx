@@ -54,7 +54,10 @@ const ProductDetail = (props: Props) => {
           <div className='container-fluid singleProduct__container'>
             <div className='row'>
               <div className='col-md-9'>
-                <ProductDetailContent product={productState.data} />
+                {
+                  // @ts-ignore
+                  <>{<ProductDetailContent product={productState.data} />}</>
+                }
               </div>
               <div className='col-md-3 '>
                 {(!relatedProductsState.isLoading &&

@@ -1,21 +1,56 @@
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import { numberWithCommas } from '../../utils';
+import { connect } from 'react-redux';
+import { withAlert } from 'react-alert';
+import { cartOperations } from '../../state/ducks/cart';
+import { numberWithCommas, checkIfItemExistsInCartItemById } from '../../utils';
 
 interface Props {
   product: any;
   handleCartAction?: () => void;
   AddCartContent?: () => void;
   history: any;
+  addToCart?: (object, number) => void;
+  cartItems?: any;
+  alert?: any;
 }
 
 const ProductCard = ({
   product,
   handleCartAction,
-  AddCartContent,
-  history
+  history,
+  alert,
+  cartItems,
+  addToCart
 }: Props) => {
-  const { name, regularPrice, cover, url, offerPrice } = product;
+  const {
+    name,
+    regularPrice,
+    cover,
+    url,
+    id,
+    offerPrice,
+    description
+  } = product;
+
+  const handleOnClickAddToCart = () => {
+    const product = {
+      name,
+      description,
+      cover,
+      price: offerPrice && parseInt(offerPrice) ? offerPrice : regularPrice,
+      id,
+      url
+    };
+
+    addToCart && addToCart(product, 1);
+
+    if (addToCart && checkIfItemExistsInCartItemById(cartItems, id)) {
+      alert.success('Product Has Been Removed From the Cart');
+    } else {
+      alert.success('Product Added To The Cart');
+    }
+  };
 
   return (
     <div className='product-card'>
@@ -48,11 +83,10 @@ const ProductCard = ({
       </div>
 
       <div className='product-bottom text-center'>
-        <div className='cart-btn' onClick={handleCartAction}>
+        <div className='cart-btn' onClick={handleOnClickAddToCart}>
           <button className='primary-btn'>
-            {/* {AddCartContent()}
-             */}
-            Add to Cart
+            {(checkIfItemExistsInCartItemById(cartItems, id) && 'Added') ||
+              'Add to Cart'}
           </button>
         </div>
 
@@ -67,5 +101,17 @@ const ProductCard = ({
   );
 };
 
+const mapStateToProps = state => ({
+  cartItems: state.cart
+});
+
+const mapDispatchToProps = {
+  addToCart: cartOperations.addToCart
+};
+
 // @ts-ignore
-export default withRouter(ProductCard);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+  // @ts-ignore
+)(withRouter(withAlert()(ProductCard)));

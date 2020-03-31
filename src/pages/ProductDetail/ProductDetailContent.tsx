@@ -2,6 +2,10 @@ import React from 'react';
 import { numberWithCommas } from '../../utils';
 import { withRouter } from 'react-router-dom';
 import { Carousel } from 'react-responsive-carousel';
+import { connect } from 'react-redux';
+import { withAlert } from 'react-alert';
+import { cartOperations } from '../../state/ducks/cart';
+import { checkIfItemExistsInCartItemById } from '../../utils';
 
 // import responsive carousel
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
@@ -10,9 +14,18 @@ import 'react-multi-carousel/lib/styles.css';
 interface Props {
   product: any;
   history: any;
+  addToCart?: (object, number) => void;
+  cartItems: any;
+  alert: any;
 }
 
-const ProductDetailContent = ({ product, history }: Props) => {
+const ProductDetailContent = ({
+  product,
+  history,
+  addToCart,
+  cartItems,
+  alert
+}: Props) => {
   const {
     name,
     regularPrice,
@@ -21,10 +34,30 @@ const ProductDetailContent = ({ product, history }: Props) => {
     offerPrice,
     brand,
     category,
-    tags
+    tags,
+    id,
+    cover,
+    url
   } = product;
 
-  const onHandleAddToCartClick = () => {};
+  const handleOnClickAddToCart = () => {
+    const product = {
+      name,
+      description,
+      cover,
+      price: offerPrice && parseInt(offerPrice) ? offerPrice : regularPrice,
+      id,
+      url
+    };
+
+    addToCart && addToCart(product, 1);
+
+    if (addToCart && checkIfItemExistsInCartItemById(cartItems, id)) {
+      alert.success('Product Has Been Removed From the Cart');
+    } else {
+      alert.success('Product Added To The Cart');
+    }
+  };
   return (
     <div className='row productDetailInfo'>
       <div className='col-md-6'>
@@ -138,13 +171,13 @@ const ProductDetailContent = ({ product, history }: Props) => {
               <div className='actions'>
                 <a
                   className='btn-add withbackground'
-                  onClick={onHandleAddToCartClick}
+                  onClick={handleOnClickAddToCart}
                   href='##'
                 >
-                  {/* {AddCartContent()} */}
-                  Add to Cart
+                  {(checkIfItemExistsInCartItemById(cartItems, id) &&
+                    'Added') ||
+                    'Add to Cart'}
                 </a>
-                {/* <a  className="btn-add withborder"><i className="fa fa-heart"></i></a>  */}
               </div>
             </div>
           </div>
@@ -154,5 +187,17 @@ const ProductDetailContent = ({ product, history }: Props) => {
   );
 };
 
+const mapStateToProps = state => ({
+  cartItems: state.cart
+});
+
+const mapDispatchToProps = {
+  addToCart: cartOperations.addToCart
+};
+
 // @ts-ignore
-export default withRouter(ProductDetailContent);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+  // @ts-ignore
+)(withRouter(withAlert()(ProductDetailContent)));

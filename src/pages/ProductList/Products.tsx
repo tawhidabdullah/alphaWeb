@@ -16,6 +16,7 @@ const Products = ({ products, isLoading }: Props) => {
         products.map(product => {
           return (
             <React.Fragment key={product._id}>
+              // @ts-ignore
               <ProductCard product={product} />
             </React.Fragment>
           );
