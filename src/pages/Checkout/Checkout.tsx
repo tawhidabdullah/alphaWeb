@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { RadioGroup, ReversedRadioButton } from 'react-radio-buttons';
 import { Button } from 'react-bootstrap';
+import { cartSelectors } from '../../state/ducks/cart';
+import SmallItem from '../../components/SmallItem';
 
 // import checkout component
 import CheckoutSuccessModal from './CheckoutSuccessModal';
@@ -41,9 +44,11 @@ const codInitialValues = { address: '' };
 
 interface Props {
   history: any;
+  cartItems: any;
+  totalPrice: number;
 }
 
-const Checkout = ({ history }: Props) => {
+const Checkout = ({ history, cartItems, totalPrice }: Props) => {
   const [paymentMethod, setPaymentMethod] = React.useState('cod');
   const [isModalShown, setIsModalShown] = useState(false);
 
@@ -198,20 +203,20 @@ const Checkout = ({ history }: Props) => {
                             Order Summary
                           </h2>
 
-                          {/* {cartItems.length > 0 ? (
+                          {cartItems.length > 0 ? (
                             <>
                               <div>
-                                {props.cartItems &&
-                                  props.cartItems.length > 0 &&
-                                  props.cartItems.map(item => {
+                                {cartItems &&
+                                  cartItems.length > 0 &&
+                                  cartItems.map(item => {
                                     return (
                                       <SmallItem item={item} isOrder={true} />
                                     );
                                   })}
                               </div>
                               <div className='order-summary-price'>
-                                <h3>{props.cartItems.length} items in Cart</h3>
-                                <span>৳{props.totalPrice}</span>
+                                <h3>{cartItems.length} items in Cart</h3>
+                                <span>৳{totalPrice}</span>
                               </div>
                             </>
                           ) : (
@@ -219,13 +224,13 @@ const Checkout = ({ history }: Props) => {
                               className='clear-cart banner-btn'
                               onClick={e => {
                                 e.preventDefault();
-                                props.history.push('/');
+                                history.push('/');
                               }}
                               // onClick={this.handleToggleCartBar}
                             >
                               Add Products
                             </button>
-                          )} */}
+                          )}
                         </div>
                       </div>
                     </div>
@@ -245,4 +250,14 @@ const Checkout = ({ history }: Props) => {
   );
 };
 
-export default withRouter(Checkout);
+const mapStateToProps = state => ({
+  cartItems: state.cart,
+  totalPrice: cartSelectors.getTotalPriceOfCartItems(state.cart)
+});
+
+// @ts-ignore
+export default connect(
+  mapStateToProps,
+  {}
+  // @ts-ignore
+)(withRouter(Checkout));

@@ -14,7 +14,12 @@ const CategoryCard = ({ category, history }: Props) => {
         <img src={cover} alt='category img' />
         <div
           className='category-top-overlay'
-          onClick={() => history.push(`/productsList/${id}`)}
+          onClick={() => {
+            history.push({
+              pathname: `/productList/${id}`,
+              state: { isCategory: true }
+            });
+          }}
         ></div>
       </div>
 

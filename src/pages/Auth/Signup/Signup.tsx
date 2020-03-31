@@ -65,7 +65,7 @@ const Signup = (props: Props) => {
   const [signupState, handlePost] = useHandleFetch({}, 'signup');
 
   const handleSubmit = async (values, actions) => {
-    await handlePost({
+    const signupRes = await handlePost({
       body: {
         phone: values.phone,
         email: values.email,
@@ -73,9 +73,17 @@ const Signup = (props: Props) => {
         password2: values.passwordConfirmation,
         address1: values.address1,
         firstName: values.firstName,
-        lastName: values.lastName
+        lastName: values.lastName,
+        country: values.country,
+        city: values.city
       }
     });
+
+    // @ts-ignore
+    if (signupRes && signupRes['status'] === 'ok') {
+      props.history.push('/signin');
+    }
+    console.log('signupRes', signupRes);
 
     actions.setSubmitting(false);
   };

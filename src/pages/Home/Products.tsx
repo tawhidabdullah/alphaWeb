@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import React, { useEffect } from 'react';
 import Carousel from 'react-multi-carousel';
 import { useHandleFetch } from '../../hooks';
@@ -73,11 +75,10 @@ const Products = ({ windowWidth, categoryId }: Props) => {
             }}
           >
             {categoryProductsState.data.length > 0 &&
-              categoryProductsState.data.slice(0, 10).map(product => {
+              categoryProductsState.data.slice(0, 10).map((product: any) => {
                 return (
                   <React.Fragment key={product._id}>
-                    // @ts-ignore
-                    <ProductCard product={product} />
+                    {<ProductCard product={product} />}
                   </React.Fragment>
                 );
               })}
@@ -96,7 +97,6 @@ const Products = ({ windowWidth, categoryId }: Props) => {
               categoryProductsState.data.slice(0, 10).map(product => {
                 return (
                   <React.Fragment key={product._id}>
-                    // @ts-ignore
                     <ProductCard product={product} />
                   </React.Fragment>
                 );

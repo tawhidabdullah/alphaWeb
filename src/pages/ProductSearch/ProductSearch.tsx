@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import React from 'react';
 import queryString from 'query-string';
 import { withRouter } from 'react-router-dom';
@@ -368,7 +370,6 @@ const ProductSearch = ({ location, history }: Props) => {
                 products.length > 0 &&
                 products.map(product => {
                   return (
-                    // @ts-ignore
                     <ProductCard product={product} productListing={true} />
                   );
                 })) ||

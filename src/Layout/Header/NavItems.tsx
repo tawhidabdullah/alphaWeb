@@ -12,9 +12,9 @@ const NavItems = ({}: Props) => {
       {Object.keys(navLinksState.data).length > 0 &&
         navLinksState.data.map(item => {
           return (
-            <Link key={item} to={item.target}>
+            <a key={item} href={item.target}>
               {item.text}
-            </Link>
+            </a>
           );
         })}
     </>

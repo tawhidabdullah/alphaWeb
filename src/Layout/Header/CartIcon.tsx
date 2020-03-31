@@ -2,9 +2,10 @@ import React from 'react';
 
 interface Props {
   handleToggleCartBar: () => void;
+  cartLength: number;
 }
 
-const CartIcon = ({ handleToggleCartBar }: Props) => {
+const CartIcon = ({ handleToggleCartBar, cartLength }: Props) => {
   return (
     <div
       className='navbar-center-cartBox'
@@ -16,9 +17,7 @@ const CartIcon = ({ handleToggleCartBar }: Props) => {
         <span className='nav-icon'>
           <i className='fa fa-shopping-cart'></i>
         </span>
-        <div className='cartt-items'>
-          {/* {this.props.cartLength ? ` ${this.props.cartLength}` : 0} */}0
-        </div>
+        <div className='cartt-items'>{cartLength ? ` ${cartLength}` : 0}</div>
       </div>
     </div>
   );

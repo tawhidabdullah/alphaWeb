@@ -31,12 +31,17 @@ const Signup = (props: Props) => {
   const [signinState, handlePost] = useHandleFetch({}, 'signin');
 
   const handleSubmit = async (values, actions) => {
-    await handlePost({
+    const signinRes = await handlePost({
       body: {
         username: values.username,
         password: values.password
       }
     });
+
+    // @ts-ignore
+    if (signinRes && signinRes['status'] === 'ok') {
+      props.history.push('/dashboard');
+    }
 
     actions.setSubmitting(false);
   };
@@ -134,7 +139,7 @@ const Signup = (props: Props) => {
       >
         Don't have an account?{' '}
         <span
-          onClick={() => props.history.push('/signin')}
+          onClick={() => props.history.push('/signup')}
           style={{
             color: '#6b21ac',
             cursor: 'pointer'

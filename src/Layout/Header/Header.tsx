@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 // import header components
 import TopHead from './TopHead';
@@ -16,9 +17,10 @@ import AuthenticationModal from './AuthenticationModal';
 
 interface Props {
   history: any;
+  cartItems: any;
 }
 
-const Header = ({ history }: Props) => {
+const Header = ({ history, cartItems }: Props) => {
   const [windowWidth, setWindowWidth] = useState(0);
   const [isShowCartBar, setIsShowCartBar] = useState(false);
   const [isShowMenuBar, setIsShowMenuBar] = useState(false);
@@ -85,7 +87,10 @@ const Header = ({ history }: Props) => {
           {windowWidth < 600 ? (
             ''
           ) : (
-            <CartIcon handleToggleCartBar={handleToggleCartBar} />
+            <CartIcon
+              handleToggleCartBar={handleToggleCartBar}
+              cartLength={cartItems.length}
+            />
           )}
         </div>
       </div>
@@ -135,4 +140,13 @@ const Header = ({ history }: Props) => {
   );
 };
 
-export default withRouter(Header);
+const mapStateToProps = state => ({
+  cartItems: state.cart
+});
+
+// @ts-ignore
+export default connect(
+  mapStateToProps,
+  {}
+  // @ts-ignore
+)(withRouter(Header));

@@ -228,6 +228,7 @@ class Converter {
         regularPrice: data.price && data.price['regular'],
         offerPrice: data.price && data.price['offer'],
         url: data.url,
+        cover: `${config['baseURL']}${data.cover.medium}`,
         category:
           (data.category &&
             data.category.length > 0 &&

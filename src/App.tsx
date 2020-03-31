@@ -13,6 +13,7 @@ import ShoppingCart from './pages/ShoppingCart';
 import Signin from './pages/Auth/Signin';
 import Signup from './pages/Auth/Signup';
 import Checkout from './pages/Checkout';
+import Dashboard from './Dashboard/container/Dashboard';
 import { NotFoundPage } from './pages/NotFound';
 
 const App = () => {
@@ -48,6 +49,8 @@ const App = () => {
           <Route exact path='/signin' component={Signin} />
           <Route exact path='/signup' component={Signup} />
           <Route exact path={'/checkout'} component={Checkout} />
+
+          <Route exact path={'/dashboard'} component={Dashboard} />
 
           <Route path='*' component={NotFoundPage} />
         </Switch>

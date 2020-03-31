@@ -19,7 +19,7 @@ const TopTags = ({ history }: Props) => {
                 key={tag._id}
                 onClick={() =>
                   history.push({
-                    pathname: `/productList/${tag._id}`,
+                    pathname: `/productList/${tag.id}`,
                     state: { isTag: true }
                   })
                 }
