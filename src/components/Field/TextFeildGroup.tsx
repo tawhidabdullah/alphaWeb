@@ -4,11 +4,11 @@ import classnames from 'classnames';
 interface Props {
   name: string;
   placeholder: string;
-  info: string;
+  info?: string;
   type: string;
-  onChange: () => void;
+  onChange: (e: any) => void;
   value: string;
-  disabled: boolean;
+  disabled?: boolean;
   errors: any;
   label: string;
 }
@@ -24,6 +24,7 @@ const TextFeildGroup = ({
   errors,
   label
 }: Props) => {
+  console.log('eror', errors);
   return (
     <div className='form'>
       {label ? <label className='label'>{label}</label> : ''}

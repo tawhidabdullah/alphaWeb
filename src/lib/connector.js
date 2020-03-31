@@ -1,4 +1,3 @@
-import { Buffer } from 'buffer';
 import config from '../config.json';
 import apiMap from '../apiMap.json';
 import Converter from './converter.js';
@@ -34,19 +33,12 @@ class Connector {
       method: api.method,
       headers: {
         'Content-Type': 'application/json',
-        ...(config.server === 'wooCommerce' && {
-          Authorization: `Basic ${new Buffer(config['ck'] + ':' + config['cs']).toString(
-            'base64'
-          )}`,
-        }),
-        ...(config.server === 'alpha' && {
-          credentials: 'include',
-        }),
+        credentials: 'include',
         ...(options.headers && {
-          ...options.headers,
-        }),
+          ...options.headers
+        })
       },
-      body: api.method !== 'get' ? JSON.stringify(options.body) : null,
+      body: api.method !== 'get' ? JSON.stringify(options.body) : null
     };
 
     //*replace variable parts in url with actual data if params exists |or| just return the url

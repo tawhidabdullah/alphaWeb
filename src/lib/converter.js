@@ -122,30 +122,20 @@ class Converter {
    * @param {Object} data response objectc from wc
    * @returns {Object}  converted data
    */
-  async productSearch(data) {
-    //map props
-    let generalFormat = dataMap[config['server']]['productSearch']; //get genereal format from dataMap
+  async productSearch(resData) {
+    const data = resData.data || [];
 
     const convertedData =
       (data.length > 0 &&
-        data.map(item => {
+        data.map(product => {
           return {
-            ...generalFormat,
-            id: item._id || item.id || '',
-            name: item.name || '',
-            description: data.description || data.description,
-            regularPrice: data.price && data.price['regular'],
-            offerPrice: data.price && data.price['offer'],
-            url: data.url,
-            image:
-              config['server'] !== 'wooCommerce'
-                ? (item.cover.medium &&
-                    `${config.baseURL}${item.cover.medium}`) ||
-                  `${config.baseURL}${item.cover.orginal}`
-                : (item.images &&
-                    item.images.length > 0 &&
-                    item.images.map(img => img.src)) ||
-                  []
+            id: product._id || '',
+            name: product.name && product.name,
+            description: product.description && product.description,
+            cover: `${config['baseURL']}${product.cover.medium}`,
+            regularPrice: product.price && product.price['regular'],
+            offerPrice: product.price && product.price['offer'],
+            url: product.url
           };
         })) ||
       [];

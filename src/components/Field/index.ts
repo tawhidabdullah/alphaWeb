@@ -1,2 +1,2 @@
 import TextFeildGroup from './TextFeildGroup';
-export default TextFeildGroup;
+export { TextFeildGroup };

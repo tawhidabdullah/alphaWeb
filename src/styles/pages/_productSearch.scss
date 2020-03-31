@@ -1,0 +1,116 @@
+$color-nobab-light-1: #feffff;
+$color-nobab-light-2: #def2f1;
+$color-nobab-primary-1: #6b21ac;
+$color-nobab-primary-2: rgba(107, 33, 172, 0.9);
+$color-nobal-light: #fefefe;
+$color-nobab-dark-2: #17252a;
+
+.category-filter {
+  text-align: left;
+  padding: 20px;
+}
+
+.productSearchFilterSideBar {
+  border-radius: 5px;
+  background-color: #fff;
+  padding: 0 !important;
+}
+
+.category-filter .category-filter-title {
+  text-align: left;
+  font-size: 18px;
+  font-weight: 500;
+  color: $color-nobab-dark-2;
+  margin-bottom: 13px;
+}
+.category-filter ul {
+  margin-left: 5px;
+}
+.category-filter ul li .category-filterText {
+  color: #878787;
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+
+  display: inline-block;
+  width: 150px;
+  line-height: 1.7;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.category-filter ul li .category-filterText.active {
+  color: $color-nobab-dark-2;
+  font-weight: 600;
+}
+
+.showResultHeader {
+  background-color: #fff;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 20px;
+  align-items: center;
+}
+
+.showResultText {
+  font-weight: 500;
+  font-size: 16px;
+  display: inline-block;
+  color: $color-nobab-dark-2;
+  line-height: 1.6;
+}
+
+.sortBySelectorsContainer {
+  display: flex;
+  align-items: center;
+}
+
+.sortBySelectorsSelects {
+  min-width: 200px;
+}
+
+.sortBySelectorsContainer-title {
+  font-weight: 700;
+  font-size: 16px;
+  display: inline-block;
+  color: $color-nobab-dark-2;
+  margin-right: 10px;
+  line-height: 1.5;
+}
+
+.sortBySelectorsContainer {
+  margin: 2px 0 !important;
+}
+
+@media screen and (max-width: 575px) {
+  .showResultHeader {
+    margin-top: 15px;
+    // flex-direction: ;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .sortBySelectorsContainer {
+    display: flex;
+    align-items: flex-start !important;
+    flex-direction: column;
+    justify-content: flex-start;
+    order: -1;
+    flex: 1;
+  }
+
+  .sortBySelectorsSelects {
+    margin-bottom: 10px;
+    min-width: 150px !important;
+    max-width: 150px !important;
+  }
+
+  .sortBySelectorsContainer-title {
+    margin-bottom: 5px;
+    font-weight: 400 !important;
+    font-size: 15px;
+  }
+}

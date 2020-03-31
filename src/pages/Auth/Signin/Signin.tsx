@@ -1,9 +1,150 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { withRouter } from 'react-router-dom';
+import { Formik } from 'formik';
+import { AuthButton } from '../../../components/Button';
+import * as Yup from 'yup';
+import { useHandleFetch } from '../../../hooks';
 
-interface Props {}
+// import input fields
+import { TextFeildGroup } from '../../../components/Field';
 
-const Signin = (props: Props) => {
-  return <div>Signin</div>;
+const validationSchema = Yup.object().shape({
+  username: Yup.string()
+    .label('Username')
+    .required('Username must have at least 3 characters'),
+  password: Yup.string()
+    .label('Password')
+    .required()
+    .min(4, 'Password must have at least 4 characters')
+});
+
+const initialValues = {
+  username: '',
+  password: ''
 };
 
-export default Signin;
+interface Props {
+  history: any;
+}
+
+const Signup = (props: Props) => {
+  const [signinState, handlePost] = useHandleFetch({}, 'signin');
+
+  const handleSubmit = async (values, actions) => {
+    await handlePost({
+      body: {
+        username: values.username,
+        password: values.password
+      }
+    });
+
+    actions.setSubmitting(false);
+  };
+
+  console.log(
+    'errors',
+    signinState.error['error'] && signinState.error['error']
+  );
+
+  return (
+    <div className='auth'>
+      <h1
+        className='display-4 text-center'
+        style={{
+          fontSize: '30px',
+          color: '#17252a',
+          fontWeight: 400
+        }}
+      >
+        Signin
+      </h1>
+      <p
+        className='lead text-center'
+        style={{
+          marginTop: '10px',
+          fontSize: '17px',
+          color: '#17252a',
+          fontWeight: 400
+        }}
+      >
+        Signin to MyStyle
+      </p>
+      <div className='formContainer'>
+        <Formik
+          initialValues={{ ...initialValues }}
+          onSubmit={(values, actions) => handleSubmit(values, actions)}
+          validationSchema={validationSchema}
+          validateOnChange={true}
+        >
+          {({
+            handleChange,
+            values,
+            handleSubmit,
+            errors,
+            isValid,
+            isSubmitting,
+            touched,
+            handleBlur
+          }) => (
+            <>
+              <TextFeildGroup
+                label='Username'
+                name='username'
+                placeholder='Enter your username'
+                type='text'
+                value={values.username}
+                onChange={handleChange('username')}
+                errors={
+                  errors.username ||
+                  (!isSubmitting && signinState.error['error']['username'])
+                }
+              />
+
+              <TextFeildGroup
+                label='Password'
+                name='password'
+                placeholder='Enter your password'
+                type='password'
+                value={values.password}
+                onChange={handleChange('password')}
+                errors={
+                  errors.password ||
+                  (!isSubmitting && signinState.error['error']['password'])
+                }
+              />
+
+              <AuthButton
+                onclick={handleSubmit}
+                disabled={!isValid || !values.username || !values.password}
+              >
+                {isSubmitting ? 'Signin...' : 'Signin'}
+              </AuthButton>
+            </>
+          )}
+        </Formik>
+      </div>
+      <p
+        className='lead text-center'
+        style={{
+          marginTop: '20px',
+          fontSize: '15px',
+          color: '#17252a',
+          fontWeight: 400
+        }}
+      >
+        Don't have an account?{' '}
+        <span
+          onClick={() => props.history.push('/signin')}
+          style={{
+            color: '#6b21ac',
+            cursor: 'pointer'
+          }}
+        >
+          Signup{' '}
+        </span>
+      </p>
+    </div>
+  );
+};
+
+export default withRouter(Signup);

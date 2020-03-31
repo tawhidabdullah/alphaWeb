@@ -43,8 +43,8 @@ const TopHead = ({ isAuthenticate, user, history, logoutUser }: Props) => {
         )) || (
           <p>
             <i className='fa fa-user'></i>
-            <span onClick={() => history.push('/login')}>Login</span> or{' '}
-            <span onClick={() => history.push('/register')}>Register</span>
+            <span onClick={() => history.push('/signin')}>Signin</span> or{' '}
+            <span onClick={() => history.push('/signup')}>Signup</span>
           </p>
         )}
       </div>

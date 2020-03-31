@@ -11,10 +11,9 @@ const SearchBar = ({ history }: Props) => {
 
   const handleSearch = e => {
     e.preventDefault();
-
     history.push({
       pathname: '/productSearch',
-      search: `?cat=${categorySelectValue}&key=${searchBarValue}`
+      search: `?searchCategory=${categorySelectValue}&query=${searchBarValue}`
     });
   };
 
@@ -51,7 +50,7 @@ const SearchBar = ({ history }: Props) => {
                     {categoryState.data.length > 0 &&
                       categoryState.data.map((item, index) => {
                         return (
-                          <option value={item._id} key={item._id}>
+                          <option value={item.id} key={item._id}>
                             {item.name.charAt(0).toUpperCase() +
                               item.name.slice(1)}
                           </option>

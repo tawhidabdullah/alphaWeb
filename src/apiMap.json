@@ -63,7 +63,7 @@
       "method": "get"
     },
     "productSearch": {
-      "url": "/api/search?key=searchValue",
+      "url": "/api/search?searchCategory=searchCategoryValue&query=queryValue",
       "method": "get"
     },
     "productDetail": {
