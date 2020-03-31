@@ -208,15 +208,24 @@ const Checkout = ({ history, cartItems, totalPrice }: Props) => {
                               <div>
                                 {cartItems &&
                                   cartItems.length > 0 &&
-                                  cartItems.map(item => {
+                                  cartItems.map(({ product }) => {
                                     return (
-                                      <SmallItem item={item} isOrder={true} />
+                                      <SmallItem
+                                        productItem={product}
+                                        isOrder={true}
+                                      />
                                     );
                                   })}
                               </div>
                               <div className='order-summary-price'>
                                 <h3>{cartItems.length} items in Cart</h3>
-                                <span>৳{totalPrice}</span>
+                                <span
+                                  style={{
+                                    fontWeight: 700
+                                  }}
+                                >
+                                  ৳{totalPrice}
+                                </span>
                               </div>
                             </>
                           ) : (

@@ -56,7 +56,7 @@ const SmallItem = ({
         <div
           className='small-product-item-box-img'
           onClick={() => {
-            history.push(`/products/${product['id']}`);
+            history.push(product['url']);
           }}
         >
           <img
@@ -116,7 +116,7 @@ const SmallItem = ({
       <div
         className='small-product-item-box-img'
         onClick={() => {
-          history.push(`/products/${productItem.id}`);
+          history.push(productItem.url);
         }}
       >
         <img
@@ -126,7 +126,14 @@ const SmallItem = ({
         />
       </div>
       <div className='small-product-info'>
-        <h2 className='small-product-title'>{productItem.name}</h2>
+        <h2
+          className='small-product-title'
+          onClick={() => {
+            history.push(productItem.url);
+          }}
+        >
+          {productItem.name}
+        </h2>
         {!isOrder && parseInt(productItem.offerPrice) ? (
           <h2
             style={{
@@ -145,7 +152,7 @@ const SmallItem = ({
             }}
             className='small-product-offerPrice'
           >
-            ৳{numberWithCommas(productItem.regularPrice)}
+            ৳{numberWithCommas(productItem.price)}
           </h2>
         )}
       </div>

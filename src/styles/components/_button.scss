@@ -21,6 +21,13 @@
   margin: 10px 10px;
 }
 
+.fixedBoostrapButtonTobePrimaryColor:hover {
+  background: #6b21ac;
+  border-color: #6b21ac;
+  color: #fff;
+  margin: 10px 10px;
+}
+
 .authButton {
   color: #fff;
   background: $color-primary-1;
