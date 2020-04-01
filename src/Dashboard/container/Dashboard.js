@@ -7,21 +7,26 @@ import { useHandleFetch } from '../../hooks';
 import Order from '../components/Order';
 
 const Dashboard = props => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const [customerDetailState, handleCustomerDetailFetch] = useHandleFetch(
     {},
     'getCurrentCustomerData'
   );
-  const getCheckAndSetCustomerData = async () => {
-    const customerData = await handleCustomerDetailFetch({});
-    console.log('customerData', customerData);
-  };
 
   useEffect(() => {
-    // getCheckAndSetCustomerData();
-  }, []);
+    const getCheckAndSetCustomerData = async () => {
+      setIsLoading(true);
+      const customerData = await handleCustomerDetailFetch({});
+      if (!customerData) {
+        props.history.push('/signin');
+      }
+      setIsLoading(false);
+    };
+    if (!props.session['isAuthenticated']) {
+      getCheckAndSetCustomerData();
+    }
+  }, [props.session['isAuthenticated']]);
 
   const [tabs, settabs] = React.useState({
     isOrders: true,
@@ -43,33 +48,44 @@ const Dashboard = props => {
 
   return (
     <>
-      <div className='container__of-dashboard'>
-        <div className='content'>
-          <nav className='sidebar' onClick={() => getCheckAndSetCustomerData()}>
-            <ul className='side-nav'>
-              <li
-                className={
-                  tabs.isOrders
-                    ? 'side-nav__item side-nav__item--active'
-                    : ' side-nav__item'
-                }
-                onClick={() => toggleTabs('isOrders')}
-              >
-                <a href='##' className='side-nav__link'>
-                  <i className='fa fa-first-order'></i>
-                  <span className='side-nav__text'>Orders</span>
-                </a>
-              </li>
-            </ul>
-          </nav>
-          <main className='dashboard__main-content'>
-            {tabs.isOrders ? <Order /> : ''}
-          </main>
+      {!isLoading && (
+        <div className='container__of-dashboard'>
+          <div className='content'>
+            <nav className='sidebar'>
+              <ul className='side-nav'>
+                <li
+                  className={
+                    tabs.isOrders
+                      ? 'side-nav__item side-nav__item--active'
+                      : ' side-nav__item'
+                  }
+                  onClick={() => toggleTabs('isOrders')}
+                >
+                  <a href='##' className='side-nav__link'>
+                    <i className='fa fa-first-order'></i>
+                    <span className='side-nav__text'>Orders</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+            <main className='dashboard__main-content'>
+              {tabs.isOrders ? <Order /> : ''}
+            </main>
+          </div>
         </div>
-      </div>
+      )}
       {isLoading && <Spinner />}
     </>
   );
 };
 
-export default withRouter(Dashboard);
+const mapStateToProps = state => ({
+  session: state.session
+});
+
+// @ts-ignore
+export default connect(
+  mapStateToProps,
+  {}
+  // @ts-ignore
+)(withRouter(Dashboard));

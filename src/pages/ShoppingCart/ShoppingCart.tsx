@@ -13,6 +13,7 @@ interface Props {
   clearCart: () => void;
   totalPrice: number;
   cartItems: any;
+  session: any;
 }
 
 const ShoppingCart = ({
@@ -21,7 +22,8 @@ const ShoppingCart = ({
   totalPrice,
   changeQuantity,
   cartItems,
-  clearCart
+  clearCart,
+  session
 }: Props) => {
   const [show, setShow] = useState(false);
 
@@ -41,7 +43,7 @@ const ShoppingCart = ({
           <Modal.Title>You are not Authenticated </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          In Checkout any Product You have to be Logged In
+          To Checkout any Product You have to be Logged In
         </Modal.Body>
         <Modal.Footer>
           <Button
@@ -51,7 +53,7 @@ const ShoppingCart = ({
           >
             Login
           </Button>
-          <Button variant='primary' onClick={handleClose}>
+          <Button variant='secondary' onClick={handleClose}>
             Cancel
           </Button>
         </Modal.Footer>
@@ -108,9 +110,9 @@ const ShoppingCart = ({
                   onClick={e => {
                     e.preventDefault();
 
-                    // if (isAuthenticate) {
-                    //   history.push('/checkout');
-                    // } else handleShow();
+                    if (session['isAuthenticated']) {
+                      history.push('/checkout');
+                    } else handleShow();
                   }}
                   className='btn btn-primary fixedBoostrapButtonTobePrimaryColor'
                 >
@@ -144,7 +146,8 @@ const ShoppingCart = ({
 
 const mapStateToProps = state => ({
   cartItems: state.cart,
-  totalPrice: cartSelectors.getTotalPriceOfCartItems(state.cart)
+  totalPrice: cartSelectors.getTotalPriceOfCartItems(state.cart),
+  session: state.session
 });
 
 const mapDispatchToProps = {

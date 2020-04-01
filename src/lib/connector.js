@@ -31,9 +31,9 @@ class Connector {
     this.options = {
       ...this.options,
       method: api.method,
+      credentials: 'include',
       headers: new Headers({
         'Content-Type': 'application/json',
-        credentials: 'include',
         ...(options.headers && {
           ...options.headers
         })

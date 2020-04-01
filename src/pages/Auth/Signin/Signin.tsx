@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 import { Formik } from 'formik';
 import { AuthButton } from '../../../components/Button';
 import * as Yup from 'yup';
 import { useHandleFetch } from '../../../hooks';
+import { sessionOperations } from '../../../state/ducks/session';
 
 // import input fields
 import { TextFeildGroup } from '../../../components/Field';
@@ -25,9 +27,10 @@ const initialValues = {
 
 interface Props {
   history: any;
+  login: () => void;
 }
 
-const Signup = (props: Props) => {
+const Signin = (props: Props) => {
   const [signinState, handlePost] = useHandleFetch({}, 'signin');
 
   const handleSubmit = async (values, actions) => {
@@ -40,6 +43,7 @@ const Signup = (props: Props) => {
 
     // @ts-ignore
     if (signinRes && signinRes['status'] === 'ok') {
+      props.login();
       props.history.push('/dashboard');
     }
 
@@ -152,4 +156,13 @@ const Signup = (props: Props) => {
   );
 };
 
-export default withRouter(Signup);
+const mapDispatchToProps = {
+  login: sessionOperations.login
+};
+
+// @ts-ignore
+export default connect(
+  null,
+  mapDispatchToProps
+  // @ts-ignore
+)(withRouter(Signin));

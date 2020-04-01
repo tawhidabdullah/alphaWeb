@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { sessionOperations } from '../../state/ducks/session';
 
 // import header components
 import TopHead from './TopHead';
@@ -18,9 +19,11 @@ import AuthenticationModal from './AuthenticationModal';
 interface Props {
   history: any;
   cartItems: any;
+  session: any;
+  logout: () => void;
 }
 
-const Header = ({ history, cartItems }: Props) => {
+const Header = ({ history, cartItems, session, logout }: Props) => {
   const [windowWidth, setWindowWidth] = useState(0);
   const [isShowCartBar, setIsShowCartBar] = useState(false);
   const [isShowMenuBar, setIsShowMenuBar] = useState(false);
@@ -71,7 +74,11 @@ const Header = ({ history, cartItems }: Props) => {
 
   return (
     <>
-      <TopHead history={history} />
+      <TopHead
+        history={history}
+        isAuthenticated={session['isAuthenticated']}
+        logout={logout}
+      />
 
       <div
         className='navbar'
@@ -123,6 +130,7 @@ const Header = ({ history, cartItems }: Props) => {
         isShowCartBar={isShowCartBar}
         history={history}
         handleModalShow={handleModalShow}
+        isAuthenticated={session['isAuthenticated']}
       />
 
       <MenuBar
@@ -139,13 +147,18 @@ const Header = ({ history, cartItems }: Props) => {
   );
 };
 
+const mapDispatchToProps = {
+  logout: sessionOperations.logout
+};
+
 const mapStateToProps = state => ({
-  cartItems: state.cart
+  cartItems: state.cart,
+  session: state.session
 });
 
 // @ts-ignore
 export default connect(
   mapStateToProps,
-  {}
+  mapDispatchToProps
   // @ts-ignore
 )(withRouter(Header));

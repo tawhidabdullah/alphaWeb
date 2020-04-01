@@ -1,16 +1,21 @@
 import React from 'react';
-import { useFetch } from '../../hooks';
+import { useFetch, useHandleFetch } from '../../hooks';
 
 interface Props {
   history: any;
-  isAuthenticate?: boolean;
-  user?: any;
-  logoutUser?: () => void;
+  isAuthenticated?: boolean;
+  logout: () => void;
 }
 
-const TopHead = ({ isAuthenticate, user, history, logoutUser }: Props) => {
+const TopHead = ({ isAuthenticated, history, logout }: Props) => {
   const welcomeState = useFetch([], {}, 'welcome');
+  const [logoutState, handleLogoutFetch] = useHandleFetch({}, 'logout');
 
+  const handleLogout = async () => {
+    await handleLogoutFetch({});
+
+    logout();
+  };
   return (
     <div className='top-head-1'>
       <div className='top-left-content'>
@@ -25,7 +30,7 @@ const TopHead = ({ isAuthenticate, user, history, logoutUser }: Props) => {
         </span>
       </div>
       <div className='trackorderandauthlinks'>
-        {(isAuthenticate && user && (
+        {(isAuthenticated && (
           <>
             <p>
               <i className='fa fa-dashboard'></i>
@@ -35,9 +40,7 @@ const TopHead = ({ isAuthenticate, user, history, logoutUser }: Props) => {
             </p>
             <p>
               <i className='fa fa-user'></i>
-              <span onClick={() => logoutUser && logoutUser()}>
-                Logout
-              </span>{' '}
+              <span onClick={handleLogout}>Logout</span>{' '}
             </p>
           </>
         )) || (

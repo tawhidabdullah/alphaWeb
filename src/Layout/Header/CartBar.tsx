@@ -9,7 +9,7 @@ interface Props {
   handleToggleCartBar: () => void;
   isShowCartBar: boolean;
   cartItems?: any[];
-  isAuthenticate?: boolean;
+  isAuthenticated: boolean;
   history: any;
   handleModalShow?: () => void;
   removeFromCart?: (object) => void;
@@ -23,7 +23,7 @@ const CartBar = ({
   cartItems,
   totalPrice,
   history,
-  isAuthenticate,
+  isAuthenticated,
   handleModalShow,
   removeFromCart,
   changeQuantity
@@ -87,7 +87,7 @@ const CartBar = ({
               onClick={e => {
                 e.preventDefault();
 
-                if (isAuthenticate) {
+                if (isAuthenticated) {
                   handleToggleCartBar();
                   history.push('/checkout');
                 } else {

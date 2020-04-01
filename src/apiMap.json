@@ -107,7 +107,7 @@
       "method": "get"
     },
     "logout": {
-      "url": "/customer/auth/logout",
+      "url": "/customer/api/auth/logout",
       "method": "get"
     }
   }
