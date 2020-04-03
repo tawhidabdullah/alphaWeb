@@ -6,6 +6,7 @@ import * as Yup from 'yup';
 import { RadioGroup, ReversedRadioButton } from 'react-radio-buttons';
 import { Button } from 'react-bootstrap';
 import { cartSelectors } from '../../state/ducks/cart';
+import { sessionOperations } from '../../state/ducks/session';
 import SmallItem from '../../components/SmallItem';
 import { useHandleFetch } from '../../hooks';
 import { Spinner } from '../../components/Loading';
@@ -49,9 +50,16 @@ interface Props {
   cartItems: any;
   totalPrice: number;
   session: any;
+  logout: () => void;
 }
 
-const Checkout = ({ history, cartItems, totalPrice, session }: Props) => {
+const Checkout = ({
+  history,
+  cartItems,
+  totalPrice,
+  session,
+  logout
+}: Props) => {
   const [paymentMethod, setPaymentMethod] = React.useState('cod');
   const [isModalShown, setIsModalShown] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
@@ -68,13 +76,14 @@ const Checkout = ({ history, cartItems, totalPrice, session }: Props) => {
       // @ts-ignore
       if (!customerData) {
         history.push('/signin');
+        logout();
       }
       setIsAuthLoading(false);
     };
     if (!session['isAuthenticated']) {
       getCheckAndSetCustomerData();
     }
-  }, [session['isAuthenticated']]);
+  }, [customerDetailState, session['isAuthenticated']]);
 
   const handleCloseModal = () => {
     setIsModalShown(false);
@@ -286,6 +295,10 @@ const Checkout = ({ history, cartItems, totalPrice, session }: Props) => {
   );
 };
 
+const mapDispatchToProps = {
+  logout: sessionOperations.logout
+};
+
 const mapStateToProps = state => ({
   cartItems: state.cart,
   totalPrice: cartSelectors.getTotalPriceOfCartItems(state.cart),
@@ -295,6 +308,6 @@ const mapStateToProps = state => ({
 // @ts-ignore
 export default connect(
   mapStateToProps,
-  {}
+  mapDispatchToProps
   // @ts-ignore
 )(withRouter(Checkout));

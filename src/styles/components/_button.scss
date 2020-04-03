@@ -34,9 +34,10 @@
   outline: none;
   border: none;
   cursor: pointer;
-  padding: 12px 20px;
-  border-radius: 5px;
+  border-radius: 3px;
   width: 100%;
+  padding: 0.9em;
+  font-size: 15px;
 }
 
 .authButton:visited,
@@ -48,4 +49,5 @@
 
 .authButton.disabled {
   background-color: rgba(107, 33, 172, 0.5);
+  cursor: not-allowed;
 }

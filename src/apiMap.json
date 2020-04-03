@@ -91,11 +91,11 @@
       "method": "post"
     },
     "getCurrentCustomerData": {
-      "url": "/customer/api/detail",
+      "url": "/customer/api/profile",
       "method": "get"
     },
     "updateCurrentCustomerData": {
-      "url": "/customer/api/update",
+      "url": "/customer/api/profile/update",
       "method": "post"
     },
     "createOrder": {

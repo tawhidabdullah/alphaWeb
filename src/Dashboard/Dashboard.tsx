@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { Spinner } from '../../components/Loading';
-import { useHandleFetch } from '../../hooks';
+import { Spinner } from '../components/Loading';
+import { useHandleFetch } from '../hooks';
+import { sessionOperations } from '../state/ducks/session';
 
-import Order from '../components/Order';
+import Order from './components/Order';
+import MyAccount from './components/MyAccount';
 
 const Dashboard = props => {
   const [isLoading, setIsLoading] = useState(false);
@@ -18,21 +20,21 @@ const Dashboard = props => {
     const getCheckAndSetCustomerData = async () => {
       setIsLoading(true);
       const customerData = await handleCustomerDetailFetch({});
+      // @ts-ignore
       if (!customerData) {
         props.history.push('/signin');
+        props.logout();
       }
       setIsLoading(false);
     };
     if (!props.session['isAuthenticated']) {
       getCheckAndSetCustomerData();
     }
-  }, [props.session['isAuthenticated']]);
+  }, [customerDetailState, props.session['isAuthenticated']]);
 
   const [tabs, settabs] = React.useState({
-    isOrders: true,
-    isCart: false,
-    isWishList: false,
-    Settings: false
+    isMyAccount: true,
+    isOrders: false
   });
 
   const toggleTabs = tabName => {
@@ -55,6 +57,20 @@ const Dashboard = props => {
               <ul className='side-nav'>
                 <li
                   className={
+                    tabs.isMyAccount
+                      ? 'side-nav__item side-nav__item--active'
+                      : ' side-nav__item'
+                  }
+                  onClick={() => toggleTabs('isMyAccount')}
+                >
+                  <a href='##' className='side-nav__link'>
+                    <i className='fa fa-user'></i>
+                    <span className='side-nav__text'>My Accounts</span>
+                  </a>
+                </li>
+
+                <li
+                  className={
                     tabs.isOrders
                       ? 'side-nav__item side-nav__item--active'
                       : ' side-nav__item'
@@ -70,6 +86,11 @@ const Dashboard = props => {
             </nav>
             <main className='dashboard__main-content'>
               {tabs.isOrders ? <Order /> : ''}
+              {tabs.isMyAccount ? (
+                <MyAccount customerDetail={customerDetailState.data} />
+              ) : (
+                ''
+              )}
             </main>
           </div>
         </div>
@@ -83,9 +104,13 @@ const mapStateToProps = state => ({
   session: state.session
 });
 
+const mapDispatchToProps = {
+  logout: sessionOperations.logout
+};
+
 // @ts-ignore
 export default connect(
   mapStateToProps,
-  {}
+  mapDispatchToProps
   // @ts-ignore
 )(withRouter(Dashboard));

@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
-import { Formik } from 'formik';
 import { AuthButton } from '../../../components/Button';
 import * as Yup from 'yup';
+import { Formik } from 'formik';
 import { useHandleFetch } from '../../../hooks';
 
 // import input fields
@@ -255,7 +255,7 @@ const Signup = (props: Props) => {
                 onclick={handleSubmit}
                 disabled={
                   !isValid ||
-                  !values.lastName ||
+                  !values.firstName ||
                   !values.lastName ||
                   !values.password ||
                   !values.phone ||

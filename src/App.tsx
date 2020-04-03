@@ -13,7 +13,7 @@ import ShoppingCart from './pages/ShoppingCart';
 import Signin from './pages/Auth/Signin';
 import Signup from './pages/Auth/Signup';
 import Checkout from './pages/Checkout';
-import Dashboard from './Dashboard/container/Dashboard';
+import Dashboard from './Dashboard';
 import { NotFoundPage } from './pages/NotFound';
 
 const App = () => {

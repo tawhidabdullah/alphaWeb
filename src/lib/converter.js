@@ -364,12 +364,7 @@ class Converter {
     // let generalFormat = dataMap[config['server']]['getCurrentUserData']; //get genereal format from dataMap
 
     const formatedData = {
-      id: data._id || data.id,
-      name: data.name,
-      phone: data.phone,
-      email: data.email,
-      address: data.address,
-      created: data.created
+      ...data
     };
 
     return formatedData;
@@ -403,12 +398,7 @@ class Converter {
     // let generalFormat = dataMap[config['server']]['updateCurrentCustomerData']; //get genereal format from dataMap
 
     const convertedData = {
-      id: data.user._id || data.user.id,
-      name: data.user.name,
-      phone: data.user.phone,
-      email: data.user.email,
-      address: data.user.address,
-      created: data.user.created
+      status: 'ok'
     };
 
     return convertedData;

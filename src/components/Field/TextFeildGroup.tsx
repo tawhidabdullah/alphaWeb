@@ -3,14 +3,14 @@ import classnames from 'classnames';
 
 interface Props {
   name: string;
-  placeholder: string;
+  placeholder?: string;
   info?: string;
-  type: string;
-  onChange: (e: any) => void;
+  type?: string;
+  onChange?: (e: any) => void;
   value: string;
   disabled?: boolean;
-  errors: any;
-  label: string;
+  errors?: any;
+  label?: string;
 }
 
 const TextFeildGroup = ({
@@ -30,7 +30,7 @@ const TextFeildGroup = ({
       {label ? <label className='label'>{label}</label> : ''}
 
       <input
-        type={type}
+        type={type ? type : 'text'}
         className={classnames('form-control form-control-lg', {
           'is-invalid': errors
         })}
