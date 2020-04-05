@@ -59,7 +59,7 @@ const CartBar = ({
       }
     };
     getAndSetToCart();
-  }, []);
+  }, [isAuthenticated]);
   return (
     <div className={isShowCartBar ? 'show-cart-bar' : ''}>
       <div

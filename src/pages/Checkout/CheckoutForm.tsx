@@ -10,6 +10,7 @@ interface Props {
   paymentMethod: string;
   serverErrors: any;
   isSubmitting: boolean;
+  isAuthenticated: boolean;
 }
 
 const CheckoutForm = ({
@@ -18,18 +19,105 @@ const CheckoutForm = ({
   errors,
   isSubmitting,
   serverErrors,
-  paymentMethod
+  paymentMethod,
+  isAuthenticated,
 }: Props) => {
   return (
     <>
       <TextFeildGroup
-        name='address'
-        placeholder='Enter shipping address...'
+        label='FirstName'
+        name='firstName'
+        placeholder='Enter your firstName'
         type='text'
-        value={values.address}
-        onChange={handleChange('address')}
-        label='Shipping Address (Only if different from profile)'
-        errors={errors.address || (!isSubmitting && serverErrors.address)}
+        value={values.firstName}
+        onChange={handleChange('firstName')}
+        errors={errors.firstName || (!isSubmitting && serverErrors.firstName)}
+      />
+
+      <TextFeildGroup
+        label='Lastname'
+        name='lastName'
+        placeholder='Enter your lastName'
+        type='text'
+        value={values.lastName}
+        onChange={handleChange('lastName')}
+        errors={errors.lastName || (!isSubmitting && serverErrors.lastName)}
+      />
+
+      <TextFeildGroup
+        label='Phone'
+        name='phone'
+        placeholder='Enter your phone'
+        type='number'
+        value={values.phone}
+        onChange={handleChange('phone')}
+        errors={errors.phone || (!isSubmitting && serverErrors.phone)}
+      />
+
+      <TextFeildGroup
+        label='Email'
+        name='email'
+        placeholder='Enter your email'
+        type='text'
+        value={values.email}
+        onChange={handleChange('email')}
+        errors={errors.email || (!isSubmitting && serverErrors.email)}
+      />
+
+      {!isAuthenticated && (
+        <>
+          <TextFeildGroup
+            label='Password'
+            name='password'
+            placeholder='Enter your password'
+            type='password'
+            value={values.password}
+            onChange={handleChange('password')}
+            errors={errors.password || (!isSubmitting && serverErrors.password)}
+          />
+
+          <TextFeildGroup
+            label='Confirm Password'
+            name='passwordConfirmation'
+            placeholder='Enter your confirm password'
+            type='password'
+            value={values.passwordConfirmation}
+            onChange={handleChange('passwordConfirmation')}
+            errors={
+              errors.password2 || (!isSubmitting && serverErrors.password2)
+            }
+          />
+        </>
+      )}
+
+      <TextFeildGroup
+        label='Address'
+        name='address1'
+        placeholder='Enter your address'
+        type='text'
+        value={values.address1}
+        onChange={handleChange('address1')}
+        errors={errors.address1 || (!isSubmitting && serverErrors.address1)}
+      />
+
+      <TextFeildGroup
+        label='City'
+        name='city'
+        placeholder='Enter your city'
+        type='text'
+        value={values.city}
+        onChange={handleChange('city')}
+        errors={errors.city || (!isSubmitting && serverErrors.city)}
+      />
+
+      <TextFeildGroup
+        label='Country'
+        name='country'
+        placeholder='Enter your country'
+        type='text'
+        value={values.country}
+        onChange={handleChange('country')}
+        errors={errors.country || (!isSubmitting && serverErrors.country)}
       />
 
       {paymentMethod !== 'cod' && (

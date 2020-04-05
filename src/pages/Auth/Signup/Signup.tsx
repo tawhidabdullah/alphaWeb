@@ -17,7 +17,7 @@ const initialValues = {
   lastName: '',
   country: '',
   city: '',
-  address1: ''
+  address1: '',
 };
 
 const validationSchema = Yup.object().shape({
@@ -28,13 +28,11 @@ const validationSchema = Yup.object().shape({
   lastName: Yup.string()
     .label('Name')
     .required()
-    .min(2, 'First name must have at least 2 characters '),
+    .min(2, 'Last name must have at least 2 characters '),
   phone: Yup.string()
     .required('Please tell us your mobile number.')
     .max(13, 'Please enter a valid mobile number.'),
-  email: Yup.string()
-    .label('Email')
-    .email('Enter a valid email'),
+  email: Yup.string().label('Email').email('Enter a valid email'),
   password: Yup.string()
     .label('Password')
     .required()
@@ -54,7 +52,7 @@ const validationSchema = Yup.object().shape({
   country: Yup.string()
     .label('Country')
     .required()
-    .min(3, 'Country must have at least 3 characters ')
+    .min(3, 'Country must have at least 3 characters '),
 });
 
 interface Props {
@@ -75,8 +73,8 @@ const Signup = (props: Props) => {
         firstName: values.firstName,
         lastName: values.lastName,
         country: values.country,
-        city: values.city
-      }
+        city: values.city,
+      },
     });
 
     // @ts-ignore
@@ -100,7 +98,7 @@ const Signup = (props: Props) => {
         style={{
           fontSize: '30px',
           color: '#17252a',
-          fontWeight: 400
+          fontWeight: 400,
         }}
       >
         Register
@@ -111,7 +109,7 @@ const Signup = (props: Props) => {
           marginTop: '10px',
           fontSize: '17px',
           color: '#17252a',
-          fontWeight: 400
+          fontWeight: 400,
         }}
       >
         Register to MyStyle
@@ -131,7 +129,7 @@ const Signup = (props: Props) => {
             isValid,
             isSubmitting,
             touched,
-            handleBlur
+            handleBlur,
           }) => (
             <>
               <TextFeildGroup
@@ -278,7 +276,7 @@ const Signup = (props: Props) => {
           marginTop: '20px',
           fontSize: '15px',
           color: '#17252a',
-          fontWeight: 400
+          fontWeight: 400,
         }}
       >
         Have an account?{' '}
@@ -286,7 +284,7 @@ const Signup = (props: Props) => {
           onClick={() => props.history.push('/signin')}
           style={{
             color: '#6b21ac',
-            cursor: 'pointer'
+            cursor: 'pointer',
           }}
         >
           Signin{' '}

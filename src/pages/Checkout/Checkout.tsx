@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import ShippingCheckout from './ShippingCheckout';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { RadioGroup, ReversedRadioButton } from 'react-radio-buttons';
@@ -10,6 +11,8 @@ import { sessionOperations } from '../../state/ducks/session';
 import SmallItem from '../../components/SmallItem';
 import { useHandleFetch } from '../../hooks';
 import { Spinner } from '../../components/Loading';
+import { AuthButton } from '../../components/Button';
+import Checkbox from '../../components/Checkbox';
 
 // import checkout component
 import CheckoutSuccessModal from './CheckoutSuccessModal';
@@ -19,29 +22,237 @@ import CheckoutForm from './CheckoutForm';
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
-const validationSchemaForCod = Yup.object().shape({
-  address: Yup.string()
+const validationSchemaForNotSigninCod = Yup.object().shape({
+  firstName: Yup.string()
+    .label('Name')
+    .required()
+    .min(2, 'First name must have at least 2 characters '),
+  lastName: Yup.string()
+    .label('Name')
+    .required()
+    .min(2, 'Last name must have at least 2 characters '),
+  phone: Yup.string()
+    .required('Please tell us your mobile number.')
+    .max(13, 'Please enter a valid mobile number.'),
+  email: Yup.string()
+    .label('Email')
+    .required('Email is required')
+    .email('Enter a valid email'),
+  password: Yup.string()
+    .label('Password')
+    .required()
+    .min(6, 'Password must have at least 6 characters'),
+  passwordConfirmation: Yup.string().oneOf(
+    [Yup.ref('password'), null],
+    'Passwords must match'
+  ),
+  address1: Yup.string()
     .label('Address')
-    .min(10, 'Address must have at least 10 characters '),
+    .required()
+    .min(3, 'Address must have at least 3 characters '),
+  city: Yup.string()
+    .label('City')
+    .required()
+    .min(3, 'City must have at least 3 characters '),
+  country: Yup.string()
+    .label('Country')
+    .required()
+    .min(3, 'Country must have at least 3 characters '),
+});
+
+const validationSchemaForCod = Yup.object().shape({
+  firstName: Yup.string()
+    .label('Name')
+    .required()
+    .min(2, 'First name must have at least 2 characters '),
+  lastName: Yup.string()
+    .label('Name')
+    .required()
+    .min(2, 'Last name must have at least 2 characters '),
+  phone: Yup.string()
+    .required('Please tell us your mobile number.')
+    .max(13, 'Please enter a valid mobile number.'),
+  email: Yup.string()
+    .label('Email')
+    .required('Email is required')
+    .email('Enter a valid email'),
+  address1: Yup.string()
+    .label('Address')
+    .required()
+    .min(3, 'Address must have at least 3 characters '),
+  city: Yup.string()
+    .label('City')
+    .required()
+    .min(3, 'City must have at least 3 characters '),
+  country: Yup.string()
+    .label('Country')
+    .required()
+    .min(3, 'Country must have at least 3 characters '),
+});
+
+const validationSchemaForNotSigninOtherPaymentMethods = Yup.object().shape({
+  firstName: Yup.string()
+    .label('Name')
+    .required()
+    .min(2, 'First name must have at least 2 characters '),
+  lastName: Yup.string()
+    .label('Name')
+    .required()
+    .min(2, 'Last name must have at least 2 characters '),
+  phone: Yup.string()
+    .required('Please tell us your mobile number.')
+    .max(13, 'Please enter a valid mobile number.'),
+  email: Yup.string()
+    .label('Email')
+    .required('Email is required')
+    .email('Enter a valid email'),
+  address1: Yup.string()
+    .label('Address')
+    .required()
+    .min(3, 'Address must have at least 3 characters '),
+  city: Yup.string()
+    .label('City')
+    .required()
+    .min(3, 'City must have at least 3 characters '),
+  country: Yup.string()
+    .label('Country')
+    .required()
+    .min(3, 'Country must have at least 3 characters '),
+  paymentNumber: Yup.string()
+    .required('Please tell us your mobile number.')
+    .matches(phoneRegExp, 'Please enter a valid mobile number.'),
+  paymentId: Yup.string().label('Payment Id').required('Payment is Required'),
+  password: Yup.string()
+    .label('Password')
+    .required()
+    .min(6, 'Password must have at least 6 characters'),
+  passwordConfirmation: Yup.string().oneOf(
+    [Yup.ref('password'), null],
+    'Passwords must match'
+  ),
 });
 
 const validationSchemaForOtherPaymentMethods = Yup.object().shape({
-  address: Yup.string()
+  firstName: Yup.string()
+    .label('Name')
+    .required()
+    .min(2, 'First name must have at least 2 characters '),
+  lastName: Yup.string()
+    .label('Name')
+    .required()
+    .min(2, 'Last name must have at least 2 characters '),
+  phone: Yup.string()
+    .required('Please tell us your mobile number.')
+    .max(13, 'Please enter a valid mobile number.'),
+  email: Yup.string()
+    .label('Email')
+    .required('Email is required')
+    .email('Enter a valid email'),
+  address1: Yup.string()
     .label('Address')
-    .min(10, 'Address must have at least 10 characters '),
+    .required()
+    .min(3, 'Address must have at least 3 characters '),
+  city: Yup.string()
+    .label('City')
+    .required()
+    .min(3, 'City must have at least 3 characters '),
+  country: Yup.string()
+    .label('Country')
+    .required()
+    .min(3, 'Country must have at least 3 characters '),
   paymentNumber: Yup.string()
     .required('Please tell us your mobile number.')
     .matches(phoneRegExp, 'Please enter a valid mobile number.'),
   paymentId: Yup.string().label('Payment Id').required('Payment is Required'),
 });
 
-// initial values
+const shippingAddressValidationSchema = Yup.object().shape({
+  shippingFirstName: Yup.string()
+    .label('Shipping FirstName')
+    .required()
+    .min(2, 'Shipping FirstName name must have at least 2 characters '),
+  shippingLastName: Yup.string()
+    .label('Shipping LastName')
+    .required()
+    .min(2, 'Shipping LastName must have at least 2 characters '),
+  shippingPhone: Yup.string()
+    .required('Please tell us your mobile number.')
+    .max(13, 'Please enter a valid mobile number.'),
+  shippingEmail: Yup.string()
+    .label('Email')
+    .required('Email is required')
+    .email('Enter a valid email'),
+  shippingAddress1: Yup.string()
+    .label('shipping Address')
+    .required()
+    .min(3, 'Shipping Address must have at least 3 characters '),
+  shippingCity: Yup.string()
+    .label('Shipping City')
+    .required()
+    .min(3, 'Shipping City must have at least 3 characters '),
+  shippingCountry: Yup.string()
+    .label('Shipping Country')
+    .required()
+    .min(3, 'Shipping Country must have at least 3 characters '),
+});
+
+const shippingAddressInitialValues = {
+  shippingFirstName: '',
+  shippingLastName: '',
+  shippingCountry: '',
+  shippingCity: '',
+  shippingAddress1: '',
+  shippingPhone: '',
+  shippingEmail: '',
+};
+
 const otherPaymentMethodIntialValues = {
-  address: '',
+  phone: '',
+  email: '',
+  password: '',
+  passwordConfirmation: '',
+  firstName: '',
+  lastName: '',
+  country: '',
+  city: '',
+  address1: '',
   paymentNumber: '',
   paymentId: '',
 };
-const codInitialValues = { address: '' };
+
+const otherPaymentMethodNotSigninIntialValues = {
+  phone: '',
+  email: '',
+  firstName: '',
+  lastName: '',
+  country: '',
+  city: '',
+  address1: '',
+  paymentNumber: '',
+  paymentId: '',
+};
+
+const codInitialValues = {
+  phone: '',
+  email: '',
+  password: '',
+  passwordConfirmation: '',
+  firstName: '',
+  lastName: '',
+  country: '',
+  city: '',
+  address1: '',
+};
+
+const codInitialNotSigninValues = {
+  phone: '',
+  email: '',
+  firstName: '',
+  lastName: '',
+  country: '',
+  city: '',
+  address1: '',
+};
 
 interface Props {
   history: any;
@@ -61,6 +272,15 @@ const Checkout = ({
   const [paymentMethod, setPaymentMethod] = React.useState('cod');
   const [isModalShown, setIsModalShown] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
+  const [
+    isUseAccountBillingAddresss,
+    setIsUseAccountBillingAddresss,
+  ] = useState(false);
+
+  const [isShipToDifferentAddress, setIsShipToDifferentAddress] = useState(
+    false
+  );
+  const [fruits, setFruits] = useState<string[]>(['apple', 'watermelon']);
 
   const [customerDetailState, handleCustomerDetailFetch] = useHandleFetch(
     {},
@@ -78,7 +298,7 @@ const Checkout = ({
       const customerData = await handleCustomerDetailFetch({});
       // @ts-ignore
       if (!customerData) {
-        history.push('/signin');
+        // history.push('/signin');
         logout();
       }
       setIsAuthLoading(false);
@@ -101,11 +321,32 @@ const Checkout = ({
     if (values) {
       if (paymentMethod !== 'cod') {
         const createOrderData = {
-          address: values.address,
+          phone: values.phone,
+          email: values.email,
+          ...(session['isAuthenticated'] && {
+            password: values.password,
+            password2: values.passwordConfirmation,
+          }),
+          address1: values.address1,
+          firstName: values.firstName,
+          lastName: values.lastName,
+          country: values.country,
+          city: values.city,
           paymentMethod: paymentMethod,
           paymentAccountNumber: values.paymentNumber,
           transactionId: values.paymentId,
-          useAccountBillingAddress: true,
+          useAccountBillingAddress: isUseAccountBillingAddresss,
+          shipToDifferentAddress: isShipToDifferentAddress,
+
+          ...(isShipToDifferentAddress && {
+            shippingFirstName: values.shippingFirstName,
+            shippingLastName: values.shippingLastName,
+            shippingCountry: values.shippingCountry,
+            shippingCity: values.shippingCity,
+            shippingAddress1: values.shippingAddress1,
+            shippingPhone: values.shippingPhone,
+            shippingEmail: values.shippingEmail,
+          }),
         };
 
         handleCreateOrderFetch({
@@ -113,11 +354,32 @@ const Checkout = ({
         });
       } else {
         const createOrderData = {
+          phone: values.phone,
+          email: values.email,
+          ...(session['isAuthenticated'] && {
+            password: values.password,
+            password2: values.passwordConfirmation,
+          }),
+          address1: values.address1,
+          firstName: values.firstName,
+          lastName: values.lastName,
+          country: values.country,
+          city: values.city,
           paymentMethod: 'cod',
-          address: values.address,
-          useAccountBillingAddress: true,
+          useAccountBillingAddress: isUseAccountBillingAddresss,
+          shipToDifferentAddress: isShipToDifferentAddress,
+
+          ...(isShipToDifferentAddress && {
+            shippingFirstName: values.shippingFirstName,
+            shippingLastName: values.shippingLastName,
+            shippingCountry: values.shippingCountry,
+            shippingCity: values.shippingCity,
+            shippingAddress1: values.shippingAddress1,
+            shippingPhone: values.shippingPhone,
+            shippingEmail: values.shippingEmail,
+          }),
         };
-        console.log('createOrderData', createOrderData);
+
         handleCreateOrderFetch({
           body: createOrderData,
         });
@@ -126,23 +388,67 @@ const Checkout = ({
     actions.setSubmitting(false);
   };
 
+  const getInitialValues = () => {
+    if (session.isAuthenticated) {
+      if (paymentMethod === 'cod') {
+        return codInitialValues;
+      } else {
+        return otherPaymentMethodIntialValues;
+      }
+    } else {
+      if (paymentMethod === 'cod') {
+        return codInitialNotSigninValues;
+      } else {
+        return otherPaymentMethodNotSigninIntialValues;
+      }
+    }
+  };
+
+  const getUltimateInitialValue = () => {
+    let initialValue = getInitialValues();
+    if (isShipToDifferentAddress) {
+      initialValue = { ...initialValue, ...shippingAddressInitialValues };
+    }
+
+    return initialValue;
+  };
+
+  const getValidationSchema = () => {
+    if (session.isAuthenticated) {
+      if (paymentMethod === 'cod') {
+        return validationSchemaForCod;
+      } else {
+        return validationSchemaForOtherPaymentMethods;
+      }
+    } else {
+      if (paymentMethod === 'cod') {
+        return validationSchemaForNotSigninCod;
+      } else {
+        return validationSchemaForNotSigninOtherPaymentMethods;
+      }
+    }
+  };
+
+  const getUltimateValidationSchema = () => {
+    let validationSchema = getValidationSchema();
+    if (isShipToDifferentAddress) {
+      validationSchema = validationSchema.concat(
+        shippingAddressValidationSchema
+      );
+    }
+
+    return validationSchema;
+  };
+
   return (
     <>
       {!isAuthLoading && (
         <Formik
-          enableReinitialize={true}
-          initialValues={
-            paymentMethod === 'cod'
-              ? codInitialValues
-              : otherPaymentMethodIntialValues
-          }
+          enableReinitialize={isShipToDifferentAddress ? false : true}
+          initialValues={getUltimateInitialValue()}
           // @ts-ignore
           onSubmit={(values, actions) => handleOrder(values, actions)}
-          validationSchema={
-            paymentMethod === 'cod'
-              ? validationSchemaForCod
-              : validationSchemaForOtherPaymentMethods
-          }
+          validationSchema={getUltimateValidationSchema()}
         >
           {({
             handleChange,
@@ -227,29 +533,98 @@ const Checkout = ({
                             marginTop: '30px',
                           }}
                         >
-                          <CheckoutForm
-                            isSubmitting={isSubmitting}
-                            paymentMethod={paymentMethod}
-                            values={values}
-                            handleChange={handleChange}
-                            handleBlur={handleBlur}
-                            touched={touched}
-                            errors={errors}
-                            serverErrors={{}}
+                          {session.isAuthenticated ? (
+                            <Checkbox
+                              name={'useAccountBillingAddresss'}
+                              label={'Use Account Billing Addresss'}
+                              inputType={'checkbox'}
+                              value={'useAccountBillingAddresss'}
+                              onChange={(e) =>
+                                setIsUseAccountBillingAddresss(e.target.checked)
+                              }
+                            />
+                          ) : (
+                            ''
+                          )}
+
+                          {!isUseAccountBillingAddresss ? (
+                            <>
+                              <h2
+                                style={{
+                                  fontSize: '20px',
+                                  color: '#444',
+                                  marginTop: '20px',
+                                  fontWeight: 400,
+                                }}
+                              >
+                                Billing Address
+                              </h2>
+                              <CheckoutForm
+                                isSubmitting={isSubmitting}
+                                paymentMethod={paymentMethod}
+                                values={values}
+                                handleChange={handleChange}
+                                handleBlur={handleBlur}
+                                touched={touched}
+                                errors={errors}
+                                serverErrors={{}}
+                                isAuthenticated={session.isAuthenticated}
+                              />
+                            </>
+                          ) : (
+                            ''
+                          )}
+
+                          <Checkbox
+                            name={'shipToDifferentAddress'}
+                            label={'Ship To Different Address'}
+                            inputType={'checkbox'}
+                            value={'shipToDifferentAddress'}
+                            onChange={(e) =>
+                              setIsShipToDifferentAddress(e.target.checked)
+                            }
                           />
 
-                          <Button
+                          {isShipToDifferentAddress ? (
+                            <>
+                              <h2
+                                style={{
+                                  fontSize: '20px',
+                                  color: '#444',
+                                  fontWeight: 400,
+                                  margin: '30px 0',
+                                }}
+                              >
+                                Shipping Address
+                              </h2>
+                              <ShippingCheckout
+                                isSubmitting={isSubmitting}
+                                paymentMethod={paymentMethod}
+                                values={values}
+                                handleChange={handleChange}
+                                handleBlur={handleBlur}
+                                touched={touched}
+                                errors={errors}
+                                serverErrors={{}}
+                                isAuthenticated={session.isAuthenticated}
+                              />
+                            </>
+                          ) : (
+                            ''
+                          )}
+
+                          <div
                             style={{
-                              margin: 0,
+                              width: '100px',
                             }}
-                            variant='primary'
-                            type='submit'
-                            className='fixedBoostrapButtonTobePrimaryColor'
-                            // @ts-ignore
-                            onClick={handleSubmit}
                           >
-                            {isSubmitting ? 'Order...' : 'Order'}
-                          </Button>
+                            <AuthButton
+                              onclick={handleSubmit}
+                              disabled={!isValid}
+                            >
+                              {isSubmitting ? 'Ordering...' : 'Order'}
+                            </AuthButton>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -341,3 +716,31 @@ export default connect(
   mapDispatchToProps
   // @ts-ignore
 )(withRouter(Checkout));
+
+/* 
+Form kinds: 
+
+1. if useAccountBillingAddresss,true,then from frontend following fields will be sent => 
+ paymentMethod, transactionId, paymentAccountNumber
+	// note about use billing address:
+		useAccountBillingAddresss checkboxbox, will not be shown, if user is not signin. 
+		if useAccountBillingAddresss checkbox is true, then billing billing address related/fields
+		will be hidden. 
+		
+
+2. if shipToDifferentAddress,true,then from frontend following fields will be sent => 
+shippingFirstName, shippingLastName, shippingCountry, shippingCity,  shippingAddress1,shippingAddress2, 
+shippingZipCode, shippingPhone, shippingEmail, shippingAdditionalInfo
+	// note about use shipToDifferentAddress:
+	if shipToDifferentAddress is true, then fields related to shipToDifferentAddress will be shown 
+	otherwise they will be hidden. 
+
+
+3. if the user is not signed in then, fields related to billing address will be shown,with 2 additional fields: 
+password, password2	
+
+
+// shipToDifferentAddress and useAccountBillingAddresss they both can be true together. 
+
+
+*/

@@ -27,10 +27,8 @@ const Dashboard = (props) => {
       }
       setIsLoading(false);
     };
-    if (!(Object.keys(customerDetailState.data).length > 0)) {
-      getCheckAndSetCustomerData();
-    }
-  }, [props.session['isAuthenticated']]);
+    getCheckAndSetCustomerData();
+  }, [props.session]);
 
   const [tabs, settabs] = React.useState({
     isMyAccount: true,
