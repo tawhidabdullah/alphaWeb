@@ -13,7 +13,7 @@ class Converter {
 
     const formatedData =
       data.length > 0 &&
-      data.map(category => {
+      data.map((category) => {
         return {
           id: category._id || '',
           name: category.name && category.name,
@@ -21,17 +21,17 @@ class Converter {
           cover: `${config['baseURL']}${category.cover.medium}`,
           ...(category.subCategory &&
             category.subCategory.length > 0 && {
-              subCategory: category.subCategory.map(subCat => {
+              subCategory: category.subCategory.map((subCat) => {
                 return {
                   id: subCat._id || '',
                   name: subCat.name && subCat.name,
                   description: subCat.description && subCat.description,
                   cover: subCat.cover
                     ? `${config['baseURL']}${subCat.cover.medium}`
-                    : ''
+                    : '',
                 };
-              })
-            })
+              }),
+            }),
         };
       });
 
@@ -49,7 +49,7 @@ class Converter {
 
     const convertedData =
       data.length > 0 &&
-      data.map(product => {
+      data.map((product) => {
         return {
           id: product._id || '',
           name: product.name && product.name,
@@ -57,10 +57,96 @@ class Converter {
           cover: `${config['baseURL']}${product.cover.medium}`,
           regularPrice: product.price && product.price['regular'],
           offerPrice: product.price && product.price['offer'],
-          url: product.url
+          url: product.url,
         };
       });
 
+    return convertedData;
+  }
+
+  /**
+   * @public
+   * @method getCart convert api data from API to general format based on config server
+   * @param {Object} data response objectc from alpha
+   * @returns {Object}  converted data
+   */
+  async getCart(resData) {
+    console.log('resDataCart', resData);
+    const cartItems = resData.items || [];
+    const convertedData =
+      cartItems.length > 0 &&
+      cartItems.map((cartItem) => {
+        return {
+          id: cartItem._id || '',
+          name: cartItem.name && cartItem.name,
+          cover: `${config['baseURL']}${cartItem.cover.medium}`,
+          regularPrice: cartItem.price && cartItem.price['regular'],
+          offerPrice: cartItem.price && cartItem.price['offer'],
+          quantity: cartItem.quantity,
+          url: cartItem.url,
+          cartKey: cartItem.cartKey,
+        };
+      });
+
+    return convertedData;
+  }
+
+  /**
+   * @public
+   * @method addtoCart convert api data from API to general format based on config server
+   * @param {Object} data response objectc from alpha
+   * @returns {Object}  converted data
+   */
+  async addtoCart(resData) {
+    let data = false;
+
+    if (resData['inserted']) {
+      data = {
+        id: resData['inserted']._id || '',
+        name: resData['inserted'].name && resData['inserted'].name,
+        cover: `${config['baseURL']}${resData['inserted'].cover.medium}`,
+        regularPrice:
+          resData['inserted'].price && resData['inserted'].price['regular'],
+        offerPrice:
+          resData['inserted'].price && resData['inserted'].price['offer'],
+        quantity: resData['inserted'].quantity,
+        url: resData['inserted'].url,
+        cartKey: resData['inserted'].cartKey,
+      };
+    }
+
+    const convertedData = data;
+
+    return convertedData;
+  }
+
+  /**
+   * @public
+   * @method removeFromCart convert api data from API to general format based on config server
+   * @param {Object} resData response objectc from alpha
+   * @returns {Object}  converted data
+   */
+  async removeFromCart(resData) {
+    let convertedData = false;
+    if (resData) {
+      convertedData = true;
+    }
+    return convertedData;
+  }
+
+  /**
+   * @public
+   * @method updateCartItem convert api data from API to general format based on config server
+   * @param {Object} resData response objectc from alpha
+   * @returns {Object}  converted data
+   */
+  async updateCartItem(resData) {
+    let convertedData = false;
+    if (resData['updated']) {
+      convertedData = {
+        quantity: resData.updated['quantity'],
+      };
+    }
     return convertedData;
   }
 
@@ -74,18 +160,19 @@ class Converter {
     const data = resData.data || [];
 
     const convertedData =
-      data.length > 0 &&
-      data.map(product => {
-        return {
-          id: product._id || '',
-          name: product.name && product.name,
-          description: product.description && product.description,
-          cover: `${config['baseURL']}${product.cover.medium}`,
-          regularPrice: product.price && product.price['regular'],
-          offerPrice: product.price && product.price['offer'],
-          url: product.url
-        };
-      });
+      (data.length > 0 &&
+        data.map((product) => {
+          return {
+            id: product._id || '',
+            name: product.name && product.name,
+            description: product.description && product.description,
+            cover: `${config['baseURL']}${product.cover.medium}`,
+            regularPrice: product.price && product.price['regular'],
+            offerPrice: product.price && product.price['offer'],
+            url: product.url,
+          };
+        })) ||
+      [];
 
     return convertedData;
   }
@@ -101,7 +188,7 @@ class Converter {
 
     const convertedData =
       data.length > 0 &&
-      data.map(product => {
+      data.map((product) => {
         return {
           id: product._id || '',
           name: product.name && product.name,
@@ -109,7 +196,7 @@ class Converter {
           cover: `${config['baseURL']}${product.cover.medium}`,
           regularPrice: product.price && product.price['regular'],
           offerPrice: product.price && product.price['offer'],
-          url: product.url
+          url: product.url,
         };
       });
 
@@ -127,7 +214,7 @@ class Converter {
 
     const convertedData =
       (data.length > 0 &&
-        data.map(product => {
+        data.map((product) => {
           return {
             id: product._id || '',
             name: product.name && product.name,
@@ -135,7 +222,7 @@ class Converter {
             cover: `${config['baseURL']}${product.cover.medium}`,
             regularPrice: product.price && product.price['regular'],
             offerPrice: product.price && product.price['offer'],
-            url: product.url
+            url: product.url,
           };
         })) ||
       [];
@@ -154,7 +241,7 @@ class Converter {
 
     const convertedData =
       data.length > 0 &&
-      data.map(product => {
+      data.map((product) => {
         return {
           id: product._id || '',
           name: product.name && product.name,
@@ -162,7 +249,7 @@ class Converter {
           cover: `${config['baseURL']}${product.cover.medium}`,
           regularPrice: product.price && product.price['regular'],
           offerPrice: product.price && product.price['offer'],
-          url: product.url
+          url: product.url,
         };
       });
 
@@ -180,11 +267,11 @@ class Converter {
 
     const convertedData =
       data.length > 0 &&
-      data.map(tag => {
+      data.map((tag) => {
         return {
           id: tag._id || '',
           name: tag.name && tag.name,
-          description: tag.description && tag.description
+          description: tag.description && tag.description,
         };
       });
 
@@ -202,11 +289,11 @@ class Converter {
 
     const convertedData =
       data.length > 0 &&
-      data.map(brand => {
+      data.map((brand) => {
         return {
           id: brand._id || '',
           name: brand.name && brand.name,
-          description: brand.description && brand.description
+          description: brand.description && brand.description,
         };
       });
 
@@ -232,30 +319,30 @@ class Converter {
         category:
           (data.category &&
             data.category.length > 0 &&
-            data.category.map(cat => {
+            data.category.map((cat) => {
               return {
                 id: cat._id,
-                name: cat.name
+                name: cat.name,
               };
             })) ||
           data.category,
         brand:
           (data.brand &&
             data.brand.length > 0 &&
-            data.brand.map(b => {
+            data.brand.map((b) => {
               return {
                 id: b._id,
-                name: b.name
+                name: b.name,
               };
             })) ||
           data.brand,
         tags:
           (data.tags &&
             data.tags.length > 0 &&
-            data.tags.map(tag => {
+            data.tags.map((tag) => {
               return {
                 id: tag._id,
-                name: tag.name
+                name: tag.name,
               };
             })) ||
           data.tags,
@@ -263,8 +350,8 @@ class Converter {
         image:
           (data.image &&
             data.image.length > 0 &&
-            data.image.map(img => `${config.baseURL}${img.medium}`)) ||
-          []
+            data.image.map((img) => `${config.baseURL}${img.medium}`)) ||
+          [],
       }) ||
       {};
 
@@ -291,9 +378,9 @@ class Converter {
         config['server'] !== 'wooCommerce'
           ? (data.image &&
               data.image.length > 0 &&
-              data.image.map(img => `${config.baseURL}${img.medium}`)) ||
+              data.image.map((img) => `${config.baseURL}${img.medium}`)) ||
             []
-          : (data.image && [data.image.src]) || []
+          : (data.image && [data.image.src]) || [],
     };
 
     return formatedData;
@@ -312,7 +399,7 @@ class Converter {
     const formatedData = {
       ...generalFormat,
       id: data.id || data._id || '',
-      total: data.total || 0
+      total: data.total || 0,
     };
 
     return formatedData;
@@ -329,7 +416,7 @@ class Converter {
     let generalFormat = dataMap[config['server']]['signup']; //get genereal format from dataMap
 
     return {
-      status: 'ok'
+      status: 'ok',
     };
   }
 
@@ -347,7 +434,7 @@ class Converter {
       ...generalFormat,
       status: data.status || 'ok',
       cookie: data.cookie,
-      user: data.user
+      user: data.user,
     };
 
     return formatedData;
@@ -364,7 +451,7 @@ class Converter {
     // let generalFormat = dataMap[config['server']]['getCurrentUserData']; //get genereal format from dataMap
 
     const formatedData = {
-      ...data
+      ...data,
     };
 
     return formatedData;
@@ -381,7 +468,7 @@ class Converter {
     // let generalFormat = dataMap[config['server']]['currentCustomerData']; //get genereal format from dataMap
 
     const convertedData = {
-      ...data
+      ...data,
     };
 
     return convertedData;
@@ -398,7 +485,7 @@ class Converter {
     // let generalFormat = dataMap[config['server']]['updateCurrentCustomerData']; //get genereal format from dataMap
 
     const convertedData = {
-      status: 'ok'
+      status: 'ok',
     };
 
     return convertedData;
@@ -416,14 +503,14 @@ class Converter {
 
     const convertedData =
       (data.length > 0 &&
-        data.map(item => {
+        data.map((item) => {
           return {
             id: item.id || item._id,
             billingAddress: item.billingAddress,
             status: item.status,
             total: item.total,
             products: item.products,
-            date_created: item.date
+            date_created: item.date,
           };
         })) ||
       [];
@@ -443,14 +530,14 @@ class Converter {
 
     const convertedData =
       (data.length > 0 &&
-        data.map(item => {
+        data.map((item) => {
           return {
             ...generalFormat,
             id: item.id,
             status: item.status,
             total: item.total,
             line_items: item.line_items,
-            date_created: item.date_created
+            date_created: item.date_created,
           };
         })) ||
       [];
@@ -466,7 +553,7 @@ class Converter {
    */
   async welcome(data) {
     return {
-      text: data.text
+      text: data.text,
     };
   }
 
@@ -483,7 +570,7 @@ class Converter {
         : '';
     return {
       src,
-      target: data.target
+      target: data.target,
     };
   }
 
@@ -495,7 +582,7 @@ class Converter {
    */
   async hotline(data) {
     return {
-      text: data.text
+      text: data.text,
     };
   }
 
@@ -511,10 +598,10 @@ class Converter {
       return [];
     }
 
-    const items = navLinkItems.map(item => {
+    const items = navLinkItems.map((item) => {
       return {
         text: item.name || item.text,
-        target: item.target
+        target: item.target,
       };
     });
 
@@ -533,10 +620,10 @@ class Converter {
       return sliderItems;
     }
 
-    const images = sliderItems.map(item => {
+    const images = sliderItems.map((item) => {
       return {
         target: item.target,
-        src: `${config['baseURL']}${item.image[0]['medium']}`
+        src: `${config['baseURL']}${item.image[0]['medium']}`,
       };
     });
     return images;
@@ -554,10 +641,10 @@ class Converter {
       return sliderRightItems;
     }
 
-    const images = sliderRightItems.map(item => {
+    const images = sliderRightItems.map((item) => {
       return {
         target: item.target,
-        src: `${config['baseURL']}${item.image[0]['medium']}`
+        src: `${config['baseURL']}${item.image[0]['medium']}`,
       };
     });
     return images;
@@ -572,7 +659,7 @@ class Converter {
   async address(data) {
     return {
       name: data.name,
-      text: data.text
+      text: data.text,
     };
   }
 
@@ -588,10 +675,10 @@ class Converter {
       return servicesItems;
     }
 
-    const items = servicesItems.map(item => {
+    const items = servicesItems.map((item) => {
       return {
         target: item.target,
-        name: item.name || item.text
+        name: item.name || item.text,
       };
     });
     return items;
@@ -609,10 +696,10 @@ class Converter {
       return accountItems;
     }
 
-    const items = accountItems.map(item => {
+    const items = accountItems.map((item) => {
       return {
         target: item.target,
-        name: item.name || item.text
+        name: item.name || item.text,
       };
     });
     return items;
@@ -630,10 +717,10 @@ class Converter {
       return aboutUsItems;
     }
 
-    const items = aboutUsItems.map(item => {
+    const items = aboutUsItems.map((item) => {
       return {
         target: item.target,
-        name: item.name || item.text
+        name: item.name || item.text,
       };
     });
     return items;

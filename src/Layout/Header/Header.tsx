@@ -2,6 +2,8 @@ import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { sessionOperations } from '../../state/ducks/session';
+import { categoryOperations } from '../../state/ducks/category';
+import { cacheOperations } from '../../state/ducks/cache';
 
 // import header components
 import TopHead from './TopHead';
@@ -21,20 +23,35 @@ interface Props {
   cartItems: any;
   session: any;
   logout: () => void;
+  addCategory: (any) => void;
+  getCategory: () => any;
+  category: any;
+  addItemToCache: (any) => void;
+  cache: any;
 }
 
-const Header = ({ history, cartItems, session, logout }: Props) => {
+const Header = ({
+  history,
+  cartItems,
+  session,
+  logout,
+  addCategory,
+  getCategory,
+  category,
+  addItemToCache,
+  cache,
+}: Props) => {
   const [windowWidth, setWindowWidth] = useState(0);
   const [isShowCartBar, setIsShowCartBar] = useState(false);
   const [isShowMenuBar, setIsShowMenuBar] = useState(false);
   const [isModalShown, setIsModalShown] = useState(false);
 
   const handleToggleCartBar = () => {
-    setIsShowCartBar(isShowCartBar => !isShowCartBar);
+    setIsShowCartBar((isShowCartBar) => !isShowCartBar);
   };
 
   const handleToggleMenuBar = () => {
-    setIsShowMenuBar(isShowMenuBar => !isShowMenuBar);
+    setIsShowMenuBar((isShowMenuBar) => !isShowMenuBar);
   };
   const handleModalClose = () => {
     setIsModalShown(false);
@@ -78,17 +95,28 @@ const Header = ({ history, cartItems, session, logout }: Props) => {
         history={history}
         isAuthenticated={session['isAuthenticated']}
         logout={logout}
+        cache={cache}
+        addItemToCache={addItemToCache}
       />
 
       <div
         className='navbar'
         style={{
-          position: 'relative'
+          position: 'relative',
         }}
       >
         <div className='navbar-center'>
-          <Logo />
-          {windowWidth < 600 ? '' : <SearchBar history={history} />}
+          <Logo cache={cache} addItemToCache={addItemToCache} />
+          {windowWidth < 600 ? (
+            ''
+          ) : (
+            <SearchBar
+              history={history}
+              addCategory={addCategory}
+              getCategory={getCategory}
+              category={category}
+            />
+          )}
 
           {windowWidth < 600 ? (
             ''
@@ -114,7 +142,7 @@ const Header = ({ history, cartItems, session, logout }: Props) => {
       ) : (
         <div className='navbar'>
           <div className='navbar-center'>
-            <Menu history={history} />
+            <Menu history={history} category={category} />
 
             <div className='navbar-center-navItems'>
               <NavItems />
@@ -148,12 +176,17 @@ const Header = ({ history, cartItems, session, logout }: Props) => {
 };
 
 const mapDispatchToProps = {
-  logout: sessionOperations.logout
+  logout: sessionOperations.logout,
+  addCategory: categoryOperations.addCategory,
+  getCategory: categoryOperations.getCategory,
+  addItemToCache: cacheOperations.addItemToCache,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   cartItems: state.cart,
-  session: state.session
+  session: state.session,
+  category: state.category,
+  cache: state.cache,
 });
 
 // @ts-ignore

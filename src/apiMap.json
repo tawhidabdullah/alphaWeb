@@ -99,12 +99,28 @@
       "method": "post"
     },
     "createOrder": {
-      "url": "/customer/api/order/add",
+      "url": "/api/cart/checkout",
       "method": "post"
     },
     "getCurrentUserOrders": {
       "url": "/customer/api/order/list",
       "method": "get"
+    },
+    "getCart": {
+      "url": "/api/cart",
+      "method": "get"
+    },
+    "addtoCart": {
+      "url": "/api/cart/add/:id",
+      "method": "post"
+    },
+    "removeFromCart": {
+      "url": "/api/cart/update/remove/:id",
+      "method": "get"
+    },
+    "updateCartItem": {
+      "url": "/api/cart/update/item/:cartKey",
+      "method": "post"
     },
     "logout": {
       "url": "/customer/api/auth/logout",

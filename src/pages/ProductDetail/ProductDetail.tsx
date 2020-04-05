@@ -1,105 +1,187 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import { ProductPlaceholder } from '../../components/Placeholders';
 import { useFetch, useHandleFetch } from '../../hooks';
 import { Spinner } from '../../components/Loading';
 import ProductDetailContent from './ProductDetailContent';
 import SmallItem from '../../components/SmallItem';
+import { cacheOperations } from '../../state/ducks/cache';
+import { checkIfItemExistsInCache } from '../../utils';
 
 interface Props {
   match: any;
+  addItemToCache: (any) => void;
+  cache: any;
 }
 
 const ProductDetail = (props: Props) => {
   const categoryName = props.match.params && props.match.params['categoryName'];
   const productName = props.match.params && props.match.params['productName'];
-  const productState = useFetch(
-    [categoryName, productName],
-    {},
-    'productDetail',
-    {
-      urlOptions: {
-        placeHolders: {
-          categoryName,
-          productName
-        }
-      }
-    }
+  const [productDetail, setProductDetail] = useState({});
+  const [relatedProducts, setRelatedProducts] = useState([]);
+
+  const [productDetailState, handleProductDetailFetch] = useHandleFetch(
+    [],
+    'productDetail'
   );
+
   const [relatedProductsState, handleRelatedProductsFetch] = useHandleFetch(
     [],
     'categoryProducts'
   );
 
   useEffect(() => {
-    if (Object.keys(productState.data).length > 0) {
-      const product = productState.data;
-      const categoryId = product.category && product.category[0].id;
-      const setRelatedProducts = async () => {
-        await handleRelatedProductsFetch({
+    const getSetProductDetailAndRelatedProducts = async () => {
+      if (
+        checkIfItemExistsInCache(
+          `productDetail/${categoryName}/${productName}`,
+          props['cache']
+        )
+      ) {
+        const productDetail =
+          props['cache'][`productDetail/${categoryName}/${productName}`];
+        setProductDetail(productDetail);
+        console.log('cacheproductDetail', productDetail);
+
+        // @ts-ignore
+        const product = productDetail;
+        // @ts-ignore
+        const categoryId = product.category && product.category[0].id;
+
+        if (
+          categoryId &&
+          checkIfItemExistsInCache(
+            `categoryProducts/${categoryId}`,
+            props.cache
+          )
+        ) {
+          const relatedProducts =
+            props['cache'][`categoryProducts/${categoryId}`];
+
+          if (relatedProducts && relatedProducts.length) {
+            // @ts-ignore
+            setRelatedProducts(relatedProducts);
+          }
+        } else {
+          const setTheRelatedProducts = async () => {
+            await handleRelatedProductsFetch({
+              urlOptions: {
+                placeHolders: {
+                  id: categoryId,
+                },
+              },
+            });
+          };
+          if (categoryId) {
+            setTheRelatedProducts();
+          }
+        }
+      } else {
+        // @ts-ignore
+        const productDetail = await handleProductDetailFetch({
           urlOptions: {
             placeHolders: {
-              id: categoryId
-            }
-          }
+              categoryName,
+              productName,
+            },
+          },
         });
-      };
-      if (categoryId) {
-        setRelatedProducts();
-      }
-    }
-  }, [productState.data]);
 
-  console.log('productState', productState);
+        // @ts-ignore
+        if (productDetail && Object.keys(productDetail).length > 0) {
+          props.addItemToCache({
+            [`productDetail/${categoryName}/${productName}`]: productDetail,
+          });
+          // @ts-ignore
+          setProductDetail(productDetail);
+          // @ts-ignore
+          const product = productDetail;
+          // @ts-ignore
+          const categoryId = product.category && product.category[0].id;
+          const setTheRelatedProducts = async () => {
+            const relatedProducts = await handleRelatedProductsFetch({
+              urlOptions: {
+                placeHolders: {
+                  id: categoryId,
+                },
+              },
+            });
+
+            // @ts-ignore
+            if (relatedProducts && relatedProducts.length > 0) {
+              // @ts-ignore
+              setRelatedProducts(relatedProducts);
+              if (
+                !checkIfItemExistsInCache(
+                  `categoryProducts/${categoryId}`,
+                  props.cache
+                )
+              ) {
+                props.addItemToCache({
+                  [`categoryProducts/${categoryId}`]: relatedProducts,
+                });
+              }
+            }
+          };
+          if (categoryId) {
+            setTheRelatedProducts();
+          }
+        }
+      }
+    };
+    if (categoryName && productName) {
+      getSetProductDetailAndRelatedProducts();
+    }
+  }, [categoryName, productName]);
+
   return (
     <>
-      {!productState.isLoading && Object.keys(productState.data).length > 0 ? (
+      {!productDetailState.isLoading &&
+      Object.keys(productDetail).length > 0 ? (
         <div className='singleProduct'>
           <div className='container-fluid singleProduct__container'>
             <div className='row'>
               <div className='col-md-9'>
-                {
+                <ProductDetailContent
                   // @ts-ignore
-                  <>{<ProductDetailContent product={productState.data} />}</>
-                }
+                  product={productDetail}
+                />
               </div>
               <div className='col-md-3 '>
-                {(!relatedProductsState.isLoading &&
-                  relatedProductsState.data && (
-                    <div className='relativeProductsContainer'>
-                      <div className='small__filterProducts'>
-                        <div className='small-products-items'>
-                          {(!relatedProductsState.isLoading &&
-                            relatedProductsState.data.length > 0 &&
-                            relatedProductsState.data
-                              .slice(0, 6)
-                              .map(productItem => {
-                                return <SmallItem productItem={productItem} />;
-                              })) ||
-                            (relatedProductsState.isLoading && <Spinner />)}
+                {(!relatedProductsState.isLoading && relatedProducts && (
+                  <div className='relativeProductsContainer'>
+                    <div className='small__filterProducts'>
+                      <div className='small-products-items'>
+                        {(!relatedProductsState.isLoading &&
+                          relatedProducts.length > 0 &&
+                          relatedProducts.slice(0, 6).map((productItem) => {
+                            return <SmallItem productItem={productItem} />;
+                          })) ||
+                          (relatedProductsState.isLoading && <Spinner />)}
 
-                          {!relatedProductsState.isLoading &&
-                            relatedProductsState.data &&
-                            !(relatedProductsState.data.length > 0) && (
-                              <div
+                        {!relatedProductsState.isLoading &&
+                          relatedProducts &&
+                          !(relatedProducts.length > 0) && (
+                            <div
+                              style={{
+                                // marginTop: '200px'
+                                padding: '50px 0 60px 0',
+                                textAlign: 'center',
+                              }}
+                            >
+                              <h2
                                 style={{
-                                  // marginTop: '200px'
-                                  padding: '50px 0 60px 0',
-                                  textAlign: 'center'
+                                  lineHeight: 1.6,
                                 }}
                               >
-                                <h2
-                                  style={{
-                                    lineHeight: 1.6
-                                  }}
-                                >
-                                  No Related Product Found
-                                </h2>
-                              </div>
-                            )}
-                        </div>
+                                No Related Product Found
+                              </h2>
+                            </div>
+                          )}
                       </div>
                     </div>
-                  )) ||
+                  </div>
+                )) ||
                   ''}
               </div>
             </div>
@@ -108,9 +190,22 @@ const ProductDetail = (props: Props) => {
       ) : (
         <h1>Product Not Found</h1>
       )}
-      {productState.isLoading && <ProductPlaceholder />}
+      {productDetailState.isLoading && <ProductPlaceholder />}
     </>
   );
 };
 
-export default ProductDetail;
+const mapDispatchToProps = {
+  addItemToCache: cacheOperations.addItemToCache,
+};
+
+const mapStateToProps = (state) => ({
+  cache: state.cache,
+});
+
+// @ts-ignore
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+  // @ts-ignore
+)(ProductDetail);

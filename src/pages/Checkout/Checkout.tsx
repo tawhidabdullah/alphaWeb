@@ -22,7 +22,7 @@ const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2
 const validationSchemaForCod = Yup.object().shape({
   address: Yup.string()
     .label('Address')
-    .min(10, 'Address must have at least 10 characters ')
+    .min(10, 'Address must have at least 10 characters '),
 });
 
 const validationSchemaForOtherPaymentMethods = Yup.object().shape({
@@ -32,16 +32,14 @@ const validationSchemaForOtherPaymentMethods = Yup.object().shape({
   paymentNumber: Yup.string()
     .required('Please tell us your mobile number.')
     .matches(phoneRegExp, 'Please enter a valid mobile number.'),
-  paymentId: Yup.string()
-    .label('Payment Id')
-    .required('Payment is Required')
+  paymentId: Yup.string().label('Payment Id').required('Payment is Required'),
 });
 
 // initial values
 const otherPaymentMethodIntialValues = {
   address: '',
   paymentNumber: '',
-  paymentId: ''
+  paymentId: '',
 };
 const codInitialValues = { address: '' };
 
@@ -58,7 +56,7 @@ const Checkout = ({
   cartItems,
   totalPrice,
   session,
-  logout
+  logout,
 }: Props) => {
   const [paymentMethod, setPaymentMethod] = React.useState('cod');
   const [isModalShown, setIsModalShown] = useState(false);
@@ -67,6 +65,11 @@ const Checkout = ({
   const [customerDetailState, handleCustomerDetailFetch] = useHandleFetch(
     {},
     'getCurrentCustomerData'
+  );
+
+  const [createStateState, handleCreateOrderFetch] = useHandleFetch(
+    {},
+    'createOrder'
   );
 
   useEffect(() => {
@@ -83,18 +86,45 @@ const Checkout = ({
     if (!session['isAuthenticated']) {
       getCheckAndSetCustomerData();
     }
-  }, [customerDetailState, session['isAuthenticated']]);
+  }, [session['isAuthenticated']]);
 
   const handleCloseModal = () => {
     setIsModalShown(false);
     history.push('/');
   };
 
-  const onRadioGroupChange = value => {
+  const onRadioGroupChange = (value) => {
     setPaymentMethod(value);
   };
 
-  const handleOrder = (values, actions) => {};
+  const handleOrder = (values, actions) => {
+    if (values) {
+      if (paymentMethod !== 'cod') {
+        const createOrderData = {
+          address: values.address,
+          paymentMethod: paymentMethod,
+          paymentAccountNumber: values.paymentNumber,
+          transactionId: values.paymentId,
+          useAccountBillingAddress: true,
+        };
+
+        handleCreateOrderFetch({
+          body: createOrderData,
+        });
+      } else {
+        const createOrderData = {
+          paymentMethod: 'cod',
+          address: values.address,
+          useAccountBillingAddress: true,
+        };
+        console.log('createOrderData', createOrderData);
+        handleCreateOrderFetch({
+          body: createOrderData,
+        });
+      }
+    }
+    actions.setSubmitting(false);
+  };
 
   return (
     <>
@@ -122,7 +152,7 @@ const Checkout = ({
             isSubmitting,
             handleSubmit,
             touched,
-            handleBlur
+            handleBlur,
           }) => (
             <>
               <div className='checkout'>
@@ -143,14 +173,14 @@ const Checkout = ({
                               <div
                                 style={{
                                   width: '100px',
-                                  height: '20px'
+                                  height: '20px',
                                 }}
                               >
                                 <img
                                   style={{
                                     width: '100%',
                                     height: '100%',
-                                    objectFit: 'contain'
+                                    objectFit: 'contain',
                                   }}
                                   src={require('../../assets/paymentMethodImages/nagadIcon.png')}
                                 />
@@ -160,14 +190,14 @@ const Checkout = ({
                               <div
                                 style={{
                                   width: '100px',
-                                  height: '20px'
+                                  height: '20px',
                                 }}
                               >
                                 <img
                                   style={{
                                     width: '100%',
                                     height: '100%',
-                                    objectFit: 'contain'
+                                    objectFit: 'contain',
                                   }}
                                   src={require('../../assets/paymentMethodImages/rocketIcon.jpg')}
                                 />
@@ -177,14 +207,14 @@ const Checkout = ({
                               <div
                                 style={{
                                   width: '100px',
-                                  height: '20px'
+                                  height: '20px',
                                 }}
                               >
                                 <img
                                   style={{
                                     width: '100%',
                                     height: '100%',
-                                    objectFit: 'contain'
+                                    objectFit: 'contain',
                                   }}
                                   src={require('../../assets/paymentMethodImages/bkashIcon.png')}
                                 />
@@ -194,7 +224,7 @@ const Checkout = ({
                         </div>
                         <div
                           style={{
-                            marginTop: '30px'
+                            marginTop: '30px',
                           }}
                         >
                           <CheckoutForm
@@ -210,7 +240,7 @@ const Checkout = ({
 
                           <Button
                             style={{
-                              margin: 0
+                              margin: 0,
                             }}
                             variant='primary'
                             type='submit'
@@ -231,7 +261,7 @@ const Checkout = ({
                               style={{
                                 marginBottom: '20px',
                                 padding: '15px 10px',
-                                borderBottom: '2px solid #ccc'
+                                borderBottom: '2px solid #ccc',
                               }}
                             >
                               Order Summary
@@ -255,7 +285,7 @@ const Checkout = ({
                                   <h3>{cartItems.length} items in Cart</h3>
                                   <span
                                     style={{
-                                      fontWeight: 700
+                                      fontWeight: 700,
                                     }}
                                   >
                                     ৳{totalPrice}
@@ -265,7 +295,7 @@ const Checkout = ({
                             ) : (
                               <button
                                 className='clear-cart banner-btn'
-                                onClick={e => {
+                                onClick={(e) => {
                                   e.preventDefault();
                                   history.push('/');
                                 }}
@@ -296,13 +326,13 @@ const Checkout = ({
 };
 
 const mapDispatchToProps = {
-  logout: sessionOperations.logout
+  logout: sessionOperations.logout,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   cartItems: state.cart,
   totalPrice: cartSelectors.getTotalPriceOfCartItems(state.cart),
-  session: state.session
+  session: state.session,
 });
 
 // @ts-ignore

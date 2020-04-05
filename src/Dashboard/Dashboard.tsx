@@ -8,7 +8,7 @@ import { sessionOperations } from '../state/ducks/session';
 import Order from './components/Order';
 import MyAccount from './components/MyAccount';
 
-const Dashboard = props => {
+const Dashboard = (props) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [customerDetailState, handleCustomerDetailFetch] = useHandleFetch(
@@ -27,20 +27,20 @@ const Dashboard = props => {
       }
       setIsLoading(false);
     };
-    if (!props.session['isAuthenticated']) {
+    if (!(Object.keys(customerDetailState.data).length > 0)) {
       getCheckAndSetCustomerData();
     }
-  }, [customerDetailState, props.session['isAuthenticated']]);
+  }, [props.session['isAuthenticated']]);
 
   const [tabs, settabs] = React.useState({
     isMyAccount: true,
-    isOrders: false
+    isOrders: false,
   });
 
-  const toggleTabs = tabName => {
+  const toggleTabs = (tabName) => {
     const tempTabs = { ...tabs };
     const tbsMap = Object.keys(tempTabs);
-    tbsMap.forEach(tb => {
+    tbsMap.forEach((tb) => {
       if (tb === tabName) {
         tempTabs[tb] = true;
       } else tempTabs[tb] = false;
@@ -100,12 +100,12 @@ const Dashboard = props => {
   );
 };
 
-const mapStateToProps = state => ({
-  session: state.session
+const mapStateToProps = (state) => ({
+  session: state.session,
 });
 
 const mapDispatchToProps = {
-  logout: sessionOperations.logout
+  logout: sessionOperations.logout,
 };
 
 // @ts-ignore

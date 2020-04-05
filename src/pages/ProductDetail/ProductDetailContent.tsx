@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { withAlert } from 'react-alert';
 import { cartOperations } from '../../state/ducks/cart';
 import { checkIfItemExistsInCartItemById } from '../../utils';
+import { useHandleFetch } from '../../hooks';
 
 // import responsive carousel
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
@@ -17,6 +18,7 @@ interface Props {
   addToCart?: (object, number) => void;
   cartItems: any;
   alert: any;
+  removeFromCart: (object) => void;
 }
 
 const ProductDetailContent = ({
@@ -24,7 +26,8 @@ const ProductDetailContent = ({
   history,
   addToCart,
   cartItems,
-  alert
+  alert,
+  removeFromCart,
 }: Props) => {
   const {
     name,
@@ -37,38 +40,72 @@ const ProductDetailContent = ({
     tags,
     id,
     cover,
-    url
+    url,
   } = product;
 
-  const handleOnClickAddToCart = () => {
-    const product = {
-      name,
-      description,
-      cover,
-      price: offerPrice && parseInt(offerPrice) ? offerPrice : regularPrice,
-      id,
-      url
-    };
+  const [addToCartState, handleAddtoCartFetch] = useHandleFetch(
+    [],
+    'addtoCart'
+  );
 
-    addToCart && addToCart(product, 1);
+  const [removeFromCartState, handleRemoveFromCartFetch] = useHandleFetch(
+    [],
+    'removeFromCart'
+  );
 
-    if (addToCart && checkIfItemExistsInCartItemById(cartItems, id)) {
-      alert.success('Product Has Been Removed From the Cart');
+  const handleOnClickAddToCart = async () => {
+    if (checkIfItemExistsInCartItemById(cartItems, id)) {
+      const removeFromCartRes = await handleRemoveFromCartFetch({
+        urlOptions: {
+          placeHolders: {
+            id,
+          },
+        },
+      });
+
+      // @ts-ignore
+      if (removeFromCartRes) {
+        removeFromCart && removeFromCart(product);
+        alert.success('Product Has Been Removed From the Cart');
+      }
     } else {
-      alert.success('Product Added To The Cart');
+      const addToCartRes = await handleAddtoCartFetch({
+        urlOptions: {
+          placeHolders: {
+            id,
+          },
+        },
+      });
+
+      // @ts-ignore
+      if (addToCartRes) {
+        const product = {
+          name: addToCartRes['name'],
+          cover: addToCartRes['cover'],
+          price:
+            addToCartRes['offerPrice'] && parseInt(addToCartRes['offerPrice'])
+              ? parseInt(addToCartRes['offerPrice'])
+              : parseInt(addToCartRes['regularPrice']),
+          id: addToCartRes['id'],
+          url: addToCartRes['url'],
+        };
+        addToCart && addToCart(product, addToCartRes['quantity']);
+        alert.success('Product Added To The Cart');
+      }
     }
   };
+
   return (
     <div className='row productDetailInfo'>
       <div className='col-md-6'>
         <Carousel>
           {image &&
             image.length > 0 &&
-            image.map(src => {
+            image.map((src) => {
               return (
                 <div
                   style={{
-                    maxHeight: '500px'
+                    maxHeight: '500px',
                   }}
                   key={src}
                 >
@@ -76,7 +113,7 @@ const ProductDetailContent = ({
                     style={{
                       width: '100%',
                       height: '100%',
-                      objectFit: 'contain'
+                      objectFit: 'contain',
                     }}
                     src={src}
                     alt='Product Img'
@@ -115,7 +152,7 @@ const ProductDetailContent = ({
             {brand && brand.length > 0 && (
               <div className='attibutes'>
                 {brand && brand.length > 0 && 'Brand :'}
-                {brand.map(item => (
+                {brand.map((item) => (
                   <span key={item.name} className='attibute'>
                     {item.name},
                   </span>
@@ -126,14 +163,14 @@ const ProductDetailContent = ({
             {category && category.length > 0 && (
               <div className='attibutes'>
                 {category && category.length > 0 && 'Category :'}
-                {category.map(item => (
+                {category.map((item) => (
                   <span
                     key={item.name}
                     className='attibute'
                     onClick={() => {
                       history.push({
                         pathname: `/productList/${item.id}`,
-                        state: { isCategory: true }
+                        state: { isCategory: true },
                       });
                     }}
                   >
@@ -146,14 +183,14 @@ const ProductDetailContent = ({
             {tags && tags.length > 0 && (
               <div className='attibutes'>
                 {tags && tags.length > 0 && 'Tags :'}
-                {tags.map(item => (
+                {tags.map((item) => (
                   <span
                     key={item.name}
                     className='attibute'
                     onClick={() => {
                       history.push({
                         pathname: `/productList/${item.id}`,
-                        state: { isTag: true }
+                        state: { isTag: true },
                       });
                     }}
                   >
@@ -187,12 +224,13 @@ const ProductDetailContent = ({
   );
 };
 
-const mapStateToProps = state => ({
-  cartItems: state.cart
+const mapStateToProps = (state) => ({
+  cartItems: state.cart,
 });
 
 const mapDispatchToProps = {
-  addToCart: cartOperations.addToCart
+  addToCart: cartOperations.addToCart,
+  removeFromCart: cartOperations.removeFromCart,
 };
 
 // @ts-ignore

@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { cartOperations, cartSelectors } from '../../state/ducks/cart';
 import { numberWithCommas } from '../../utils';
 import CartOverLayCartItem from './CartOverLayCartItem';
+import { useHandleFetch } from '../../hooks';
 
 interface Props {
   handleToggleCartBar: () => void;
@@ -15,6 +16,7 @@ interface Props {
   removeFromCart?: (object) => void;
   totalPrice?: number;
   changeQuantity?: (object, number) => void;
+  addProductsToCart?: (any) => void;
 }
 
 const CartBar = ({
@@ -26,8 +28,38 @@ const CartBar = ({
   isAuthenticated,
   handleModalShow,
   removeFromCart,
-  changeQuantity
+  changeQuantity,
+  addProductsToCart,
 }: Props) => {
+  const [getCart, handlegetCartFetch] = useHandleFetch([], 'getCart');
+
+  useEffect(() => {
+    const getAndSetToCart = async () => {
+      const getCartRes = await handlegetCartFetch({});
+      // @ts-ignore
+      if (getCartRes && getCartRes.length > 0) {
+        // @ts-ignore
+        const cartItems = getCartRes.map((cartItem) => {
+          return {
+            product: {
+              name: cartItem['name'],
+              cover: cartItem['cover'],
+              price:
+                cartItem['offerPrice'] && parseInt(cartItem['offerPrice'])
+                  ? parseInt(cartItem['offerPrice'])
+                  : parseInt(cartItem['regularPrice']),
+              id: cartItem['id'],
+              url: cartItem['url'],
+            },
+            quantity: cartItem.quantity,
+          };
+        });
+
+        addProductsToCart && addProductsToCart(cartItems);
+      }
+    };
+    getAndSetToCart();
+  }, []);
   return (
     <div className={isShowCartBar ? 'show-cart-bar' : ''}>
       <div
@@ -42,7 +74,7 @@ const CartBar = ({
         <div className='cart-content'>
           {(cartItems &&
             cartItems.length &&
-            cartItems.map(cartItem => {
+            cartItems.map((cartItem) => {
               return (
                 <React.Fragment key={cartItem._id}>
                   <CartOverLayCartItem
@@ -84,7 +116,7 @@ const CartBar = ({
             </button>
             <button
               className='clear-cart banner-btn'
-              onClick={e => {
+              onClick={(e) => {
                 e.preventDefault();
 
                 if (isAuthenticated) {
@@ -105,14 +137,15 @@ const CartBar = ({
   );
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   cartItems: state.cart,
-  totalPrice: cartSelectors.getTotalPriceOfCartItems(state.cart)
+  totalPrice: cartSelectors.getTotalPriceOfCartItems(state.cart),
 });
 
 const mapDispatchToProps = {
   removeFromCart: cartOperations.removeFromCart,
-  changeQuantity: cartOperations.changeQuantity
+  changeQuantity: cartOperations.changeQuantity,
+  addProductsToCart: cartOperations.addProductsToCart,
 };
 
 // @ts-ignore

@@ -2,17 +2,18 @@ import React from 'react';
 import { useFetch } from '../../hooks';
 import { CategoryCard } from '../../components/Category';
 
-interface Props {}
+interface Props {
+  category: any;
+}
 
-const Categories = (props: Props) => {
-  const categoryState = useFetch([], [], 'categoryList');
+const Categories = ({ category }: Props) => {
   return (
     <div className='categoryContainer'>
-      {categoryState.data.length > 0 &&
-        categoryState.data.map(category => {
+      {category.length > 0 &&
+        category.map((categoryItem) => {
           return (
-            <React.Fragment key={category.id}>
-              <CategoryCard category={category} />
+            <React.Fragment key={categoryItem.id}>
+              <CategoryCard category={categoryItem} />
             </React.Fragment>
           );
         })}

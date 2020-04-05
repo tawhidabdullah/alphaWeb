@@ -32,6 +32,10 @@
   cursor: not-allowed;
 }
 
+.form .invalid-feedback {
+  text-align: left;
+}
+
 @media (max-width: 480px) {
   .half {
     width: 100%;

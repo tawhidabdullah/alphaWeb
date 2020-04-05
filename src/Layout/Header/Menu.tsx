@@ -1,14 +1,11 @@
 import React from 'react';
-import { Spinner } from '../../components/Loading';
-import { useFetch } from '../../hooks';
 
 interface Props {
   history: any;
+  category: any;
 }
 
-const Menu = ({ history }: Props) => {
-  const categoryState = useFetch([], [], 'categoryList');
-
+const Menu = ({ history, category }: Props) => {
   return (
     <div className='all-department'>
       <span className='nav-menu'>
@@ -17,16 +14,16 @@ const Menu = ({ history }: Props) => {
       </span>
       <div className='all-department-sideMenu'>
         <ul>
-          {(categoryState.data &&
-            categoryState.data.length > 0 &&
-            categoryState.data.map(item => {
+          {(category &&
+            category.length > 0 &&
+            category.map((item) => {
               return (
                 <li
                   key={item._id}
                   onClick={() => {
                     history.push({
                       pathname: `/productList/${item.id}`,
-                      state: { isCategory: true }
+                      state: { isCategory: true },
                     });
                   }}
                 >
@@ -35,7 +32,7 @@ const Menu = ({ history }: Props) => {
                 </li>
               );
             })) ||
-            (categoryState.isLoading && <Spinner />)}
+            ''}
         </ul>
       </div>
     </div>

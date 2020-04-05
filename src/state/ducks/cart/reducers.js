@@ -18,22 +18,24 @@ const cartReducer = createReducer(initialState)({
     const { product, quantity, isSelectedForCheckout } = action.payload;
     const index = utils.productPositionInCart(state, product);
     if (index === -1) {
-      return [utils.newCartItem(product, quantity, isSelectedForCheckout), ...state];
+      return [
+        utils.newCartItem(product, quantity, isSelectedForCheckout),
+        ...state,
+      ];
     }
 
-    const tempArrayWithOutOldProduct = state.filter(item => item.product.id !== product.id);
+    const tempArrayWithOutOldProduct = state.filter(
+      (item) => item.product.id !== product.id
+    );
 
     return tempArrayWithOutOldProduct;
   },
 
   [types.ADD_PRODUCTS_TO_CART]: (state, action) => {
-    const { products } = action.payload;
+    const { cartItems } = action.payload;
 
-    if (products.length > 0) {
-      const uniqueProductsOfCart = products.filter(function(product) {
-        return state.indexOf(product) == -1;
-      });
-      return uniqueProductsOfCart;
+    if (cartItems.length > 0) {
+      return cartItems;
     } else {
       return [...state];
     }
@@ -47,15 +49,23 @@ const cartReducer = createReducer(initialState)({
       return [...state, { ...product, isSelectedForCheckout: true }];
     } else if (index !== -1 && !product.isSelectedForCheckout) {
       const tempArrayWithOutOldProduct = state.filter(
-        item => item.product.id !== product.product.id
+        (item) => item.product.id !== product.product.id
       );
 
-      return [...tempArrayWithOutOldProduct, { ...product, isSelectedForCheckout: true }];
+      return [
+        ...tempArrayWithOutOldProduct,
+        { ...product, isSelectedForCheckout: true },
+      ];
     }
 
-    const tempArrayWithOutOldProduct = state.filter(item => item.product.id !== product.product.id);
+    const tempArrayWithOutOldProduct = state.filter(
+      (item) => item.product.id !== product.product.id
+    );
 
-    return [...tempArrayWithOutOldProduct, { ...product, isSelectedForCheckout: false }];
+    return [
+      ...tempArrayWithOutOldProduct,
+      { ...product, isSelectedForCheckout: false },
+    ];
   },
 
   [types.CHANGE_QUANTITY]: (state, action) => {

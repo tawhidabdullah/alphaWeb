@@ -1,7 +1,11 @@
 import React, { useState, useLayoutEffect, useEffect } from 'react';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { useHandleFetch } from '../../hooks';
 import { SubCategoryCard } from '../../components/Category';
+import { cacheOperations } from '../../state/ducks/cache';
+import { brandOperations } from '../../state/ducks/brand';
+import { checkIfItemExistsInCache } from '../../utils';
 
 // import productlisting components
 import SideFilterBar from './SideFilterBar';
@@ -11,9 +15,25 @@ interface Props {
   match: any;
   location: any;
   history: any;
+  category: any;
+  cache: any;
+  addItemToCache: (any) => void;
+  tag: any;
+  addBrand: (any) => void;
+  brand: any;
 }
 
-const ProductList = ({ match, location, history }: Props) => {
+const ProductList = ({
+  match,
+  location,
+  history,
+  category,
+  cache,
+  addItemToCache,
+  tag,
+  addBrand,
+  brand,
+}: Props) => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
@@ -81,68 +101,122 @@ const ProductList = ({ match, location, history }: Props) => {
 
   const getProducts = async () => {
     setIsLoading(true);
-    const products = await handleProductListFetch({});
-    // @ts-ignore
-    setProducts(products);
-    setIsLoading(false);
+
+    if (checkIfItemExistsInCache(`product`, cache)) {
+      const products = cache[`product`];
+      // @ts-ignore
+      setProducts(products);
+      setIsLoading(false);
+    } else {
+      const products = await handleProductListFetch({});
+
+      addItemToCache({
+        [`product`]: products,
+      });
+      // @ts-ignore
+      setProducts(products);
+      setIsLoading(false);
+    }
   };
 
-  const setCategoryProducts = async categoryId => {
+  const setCategoryProducts = async (categoryId) => {
     setIsLoading(true);
-    const products = await handleCategoryProductsFetch({
-      urlOptions: {
-        placeHolders: {
-          id: categoryId
-        }
-      }
-    });
-    // @ts-ignore
-    setProducts(products);
-    setIsLoading(false);
+
+    if (checkIfItemExistsInCache(`categoryProducts/${categoryId}`, cache)) {
+      const products = cache[`categoryProducts/${categoryId}`];
+      // @ts-ignore
+      setProducts(products);
+      setIsLoading(false);
+    } else {
+      const products = await handleCategoryProductsFetch({
+        urlOptions: {
+          placeHolders: {
+            id: categoryId,
+          },
+        },
+      });
+
+      addItemToCache({
+        [`categoryProducts/${categoryId}`]: products,
+      });
+      // @ts-ignore
+      setProducts(products);
+      setIsLoading(false);
+    }
   };
 
-  const setTagProducts = async tagId => {
+  const setTagProducts = async (tagId) => {
     setIsLoading(true);
-    const products = await handleTagProductsFetch({
-      urlOptions: {
-        placeHolders: {
-          id: tagId
-        }
-      }
-    });
-    // @ts-ignore
-    setProducts(products);
-    setIsLoading(false);
+
+    if (checkIfItemExistsInCache(`tagProducts/${tagId}`, cache)) {
+      const products = cache[`tagProducts/${tagId}`];
+      // @ts-ignore
+      setProducts(products);
+      setIsLoading(false);
+    } else {
+      const products = await handleTagProductsFetch({
+        urlOptions: {
+          placeHolders: {
+            id: tagId,
+          },
+        },
+      });
+
+      addItemToCache({
+        [`tagProducts/${tagId}`]: products,
+      });
+      // @ts-ignore
+      setProducts(products);
+      setIsLoading(false);
+    }
   };
 
-  const setBrandProducts = async brandId => {
+  const setBrandProducts = async (brandId) => {
     setIsLoading(true);
-    const products = await handleBrandProductsFetch({
-      urlOptions: {
-        placeHolders: {
-          id: brandId
-        }
-      }
-    });
-    // @ts-ignore
-    setProducts(products);
-    setIsLoading(false);
+
+    if (checkIfItemExistsInCache(`brandProducts/${brandId}`, cache)) {
+      const products = cache[`brandProducts/${brandId}`];
+      // @ts-ignore
+      setProducts(products);
+      setIsLoading(false);
+    } else {
+      const products = await handleTagProductsFetch({
+        urlOptions: {
+          placeHolders: {
+            id: brandId,
+          },
+        },
+      });
+
+      addItemToCache({
+        [`brandProducts/${brandId}`]: products,
+      });
+      // @ts-ignore
+      setProducts(products);
+      setIsLoading(false);
+    }
   };
 
   const getCategories = async () => {
-    // @ts-ignore
-    const categories: any[] = await handleCategoryListFetch({
-      urlOptions: {
-        params: {
-          isSubCategory: true
-        }
-      }
-    });
+    let categories = [];
 
-    const category = {
+    if (category.length > 0) {
+      categories = category;
+    } else {
+      // @ts-ignore
+      categories = await handleCategoryListFetch({
+        urlOptions: {
+          params: {
+            isSubCategory: true,
+          },
+        },
+      });
+    }
+
+    const categoryItem = {
       name: 'All Categories',
       id: 'all',
-      [`isall`]: id ? false : true
+      [`isall`]: id ? false : true,
     };
 
     const tempCategories =
@@ -150,22 +224,27 @@ const ProductList = ({ match, location, history }: Props) => {
         categories.map((cat: object) => {
           return {
             ...cat,
-            [`is${cat['id']}`]: false
+            [`is${cat['id']}`]: false,
           };
         })) ||
       [];
 
-    return [category, ...tempCategories];
+    return [categoryItem, ...tempCategories];
   };
 
   const getTags = async () => {
-    // @ts-ignore
-    const tags: any[] = await handleTagListFetch({});
+    let tags = [];
+    if (tag.length > 0) {
+      tags = tag;
+    } else {
+      // @ts-ignore
+      tags = await handleTagListFetch({});
+    }
 
-    const tag = {
+    const tagItem = {
       name: 'All Tags',
       id: 'all',
-      [`isall`]: id ? false : true
+      [`isall`]: id ? false : true,
     };
 
     const tempTags =
@@ -173,22 +252,31 @@ const ProductList = ({ match, location, history }: Props) => {
         tags.map((tagItem: object) => {
           return {
             ...tagItem,
-            [`is${tagItem['id']}`]: false
+            [`is${tagItem['id']}`]: false,
           };
         })) ||
       [];
 
-    return [tag, ...tempTags];
+    return [tagItem, ...tempTags];
   };
 
   const getBrands = async () => {
-    // @ts-ignore
-    const brands: any[] = await handleBrandListFetch({});
+    let brands = [];
 
-    const brand = {
+    if (brand.length > 0) {
+      brands = brand;
+    } else {
+      // @ts-ignore
+      brands = await handleBrandListFetch({});
+      if (brands) {
+        addBrand(brands);
+      }
+    }
+
+    const brandItem = {
       name: 'All Brands',
       id: 'all',
-      [`isall`]: id ? false : true
+      [`isall`]: id ? false : true,
     };
 
     const tempBrands =
@@ -196,12 +284,12 @@ const ProductList = ({ match, location, history }: Props) => {
         brands.map((brandItem: object) => {
           return {
             ...brandItem,
-            [`is${brandItem['id']}`]: false
+            [`is${brandItem['id']}`]: false,
           };
         })) ||
       [];
 
-    return [brand, ...tempBrands];
+    return [brandItem, ...tempBrands];
   };
 
   React.useEffect(() => {
@@ -246,7 +334,7 @@ const ProductList = ({ match, location, history }: Props) => {
           if (cat && cat.length > 0) {
             const newCategories = [...cat];
             let subCategories = [];
-            newCategories.forEach(cat => {
+            newCategories.forEach((cat) => {
               if (cat['id'] === categoryId) {
                 // @ts-ignore
                 cat[`is${cat['id']}`] = true;
@@ -275,7 +363,7 @@ const ProductList = ({ match, location, history }: Props) => {
           if (t && t.length > 0) {
             const newTags = [...t];
 
-            newTags.forEach(tag => {
+            newTags.forEach((tag) => {
               if (tag['id'] === tagId) {
                 // @ts-ignore
                 tag[`is${tag['id']}`] = true;
@@ -298,7 +386,7 @@ const ProductList = ({ match, location, history }: Props) => {
           if (b && b.length > 0) {
             const newBrands = [...b];
 
-            newBrands.forEach(brand => {
+            newBrands.forEach((brand) => {
               if (brand['id'] === brandId) {
                 // @ts-ignore
                 brand[`is${brand['id']}`] = true;
@@ -327,7 +415,7 @@ const ProductList = ({ match, location, history }: Props) => {
         const newCategories = categories.map((cat: object) => {
           return {
             ...cat,
-            [`is${cat['id']}`]: false
+            [`is${cat['id']}`]: false,
           };
         });
 
@@ -339,7 +427,7 @@ const ProductList = ({ match, location, history }: Props) => {
         const newTags = tags.map((tag: object) => {
           return {
             ...tag,
-            [`is${tag['id']}`]: false
+            [`is${tag['id']}`]: false,
           };
         });
 
@@ -351,7 +439,7 @@ const ProductList = ({ match, location, history }: Props) => {
         const newBrands = brands.map((brand: object) => {
           return {
             ...brand,
-            [`is${brand['id']}`]: false
+            [`is${brand['id']}`]: false,
           };
         });
 
@@ -364,7 +452,7 @@ const ProductList = ({ match, location, history }: Props) => {
   const handleUiSelectSubCategory = (subCatId: string) => {
     const newSubCategories = [...subcategories];
     newSubCategories &&
-      newSubCategories.forEach(subCat => {
+      newSubCategories.forEach((subCat) => {
         if (subCat['id'] === subCatId) {
           // @ts-ignore
           subCat[`is${subCat['id']}`] = true;
@@ -384,7 +472,7 @@ const ProductList = ({ match, location, history }: Props) => {
         const newCategories = [...categories];
         let subCategories = [];
 
-        newCategories.forEach(cat => {
+        newCategories.forEach((cat) => {
           if (cat['id'] === categoryId) {
             // @ts-ignore
             cat[`is${cat['id']}`] = true;
@@ -405,7 +493,7 @@ const ProductList = ({ match, location, history }: Props) => {
         const tagId = id;
         const tempTags = [...tags];
         tempTags &&
-          tempTags.forEach(tag => {
+          tempTags.forEach((tag) => {
             if (tag['id'] === tagId) {
               // @ts-ignore
               tag[`is${tag['id']}`] = true;
@@ -422,7 +510,7 @@ const ProductList = ({ match, location, history }: Props) => {
         const brandId = id;
         const tempBrands = [...brands];
         tempBrands &&
-          tempBrands.forEach(brand => {
+          tempBrands.forEach((brand) => {
             if (brand['id'] === brandId) {
               // @ts-ignore
               brand[`is${brand['id']}`] = true;
@@ -438,26 +526,26 @@ const ProductList = ({ match, location, history }: Props) => {
     }
   };
 
-  const handleSelectCategory = categoryId => {
+  const handleSelectCategory = (categoryId) => {
     history.push({
       pathname: `/productList/${categoryId}`,
-      state: { isCategory: true }
+      state: { isCategory: true },
     });
     setUiSelectItemActive('category', categoryId);
   };
 
-  const handleSelectTag = tagId => {
+  const handleSelectTag = (tagId) => {
     history.push({
       pathname: `/productList/${tagId}`,
-      state: { isTag: true }
+      state: { isTag: true },
     });
     setUiSelectItemActive('tag', tagId);
   };
 
-  const handleSelectBrand = brandId => {
+  const handleSelectBrand = (brandId) => {
     history.push({
       pathname: `/productList/${brandId}`,
-      state: { isBrand: true }
+      state: { isBrand: true },
     });
 
     setUiSelectItemActive('brand', brandId);
@@ -469,7 +557,7 @@ const ProductList = ({ match, location, history }: Props) => {
         <div
           className={`${windowWidth < 1000 ? 'container-fluid' : 'container'}`}
           style={{
-            paddingTop: `${windowWidth < 1000 ? '15px' : '0'}`
+            paddingTop: `${windowWidth < 1000 ? '15px' : '0'}`,
           }}
         >
           <div className='row'>
@@ -487,7 +575,7 @@ const ProductList = ({ match, location, history }: Props) => {
               <div className='row productListingSubCategooryContainer'>
                 {!isLoading &&
                   subcategories.length > 0 &&
-                  subcategories.map(subCat => {
+                  subcategories.map((subCat) => {
                     return (
                       <SubCategoryCard
                         subCat={subCat}
@@ -506,4 +594,21 @@ const ProductList = ({ match, location, history }: Props) => {
   );
 };
 
-export default withRouter(ProductList);
+const mapDispatchToProps = {
+  addItemToCache: cacheOperations.addItemToCache,
+  addBrand: brandOperations.addBrand,
+};
+
+const mapStateToProps = (state) => ({
+  category: state.category,
+  cache: state.cache,
+  tag: state.tag,
+  brand: state.brand,
+});
+
+// @ts-ignore
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+  // @ts-ignore
+)(withRouter(ProductList));

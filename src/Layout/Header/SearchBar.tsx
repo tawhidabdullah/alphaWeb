@@ -1,31 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFetch } from '../../hooks';
 interface Props {
   history: any;
+  getCategory: () => void;
+  addCategory: (any) => void;
+  category: any;
 }
 
-const SearchBar = ({ history }: Props) => {
-  const categoryState = useFetch([], [], 'categoryList');
+const SearchBar = ({ history, getCategory, addCategory, category }: Props) => {
+  const categoryState = useFetch([], [], 'categoryList', {
+    urlOptions: {
+      params: {
+        isSubCategory: true,
+      },
+    },
+  });
+
   const [searchBarValue, setSearchBarValue] = useState('');
   const [categorySelectValue, setCategorySelectValue] = useState('');
 
-  const handleSearch = e => {
+  const handleSearch = (e) => {
     e.preventDefault();
     history.push({
       pathname: '/productSearch',
-      search: `?searchCategory=${categorySelectValue}&query=${searchBarValue}`
+      search: `?searchCategory=${categorySelectValue}&query=${searchBarValue}`,
     });
   };
 
-  const handleCategorySelectChange = event => {
+  const handleCategorySelectChange = (event) => {
     setCategorySelectValue(event.target.value);
   };
 
-  const handleSearchBar = e => {
+  const handleSearchBar = (e) => {
     e.preventDefault();
 
     setSearchBarValue(e.target.value);
   };
+
+  useEffect(() => {
+    if (categoryState.data.length > 0) {
+      addCategory(categoryState.data);
+    }
+  }, [categoryState]);
 
   return (
     <div className='navbar-center-categoryAndSearch'>
@@ -39,16 +55,16 @@ const SearchBar = ({ history }: Props) => {
                     data-trigger='choices'
                     name='choices-single-default'
                     value={categorySelectValue}
-                    onChange={e => handleCategorySelectChange(e)}
+                    onChange={(e) => handleCategorySelectChange(e)}
                   >
-                    {categoryState.data.length > 0 && (
+                    {category.length > 0 && (
                       <option value={'all'} key={'all'}>
                         All Categories
                       </option>
                     )}
 
-                    {categoryState.data.length > 0 &&
-                      categoryState.data.map((item, index) => {
+                    {category.length > 0 &&
+                      category.map((item, index) => {
                         return (
                           <option value={item.id} key={item._id}>
                             {item.name.charAt(0).toUpperCase() +

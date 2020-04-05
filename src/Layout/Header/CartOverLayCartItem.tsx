@@ -1,5 +1,6 @@
 import React from 'react';
 import { numberWithCommas } from '../../utils';
+import { useHandleFetch } from '../../hooks';
 
 interface Props {
   cartItem: any;
@@ -14,18 +15,75 @@ const CartOverLayCartItem = ({
   handleToggleCartBar,
   history,
   removeFromCart,
-  changeQuantity
+  changeQuantity,
 }: Props) => {
+  const [removeFromCartState, handleRemoveFromCartFetch] = useHandleFetch(
+    [],
+    'removeFromCart'
+  );
+
+  const [updateCartItemState, handleUpdateCartItemFetch] = useHandleFetch(
+    [],
+    'updateCartItem'
+  );
+
   let { product, quantity } = cartItem;
-  const { url, cover, name, price, id } = product;
-  const handleChangeQuantity = value => {
+  const { url, cover, name, price, id, cartKey } = product;
+  const handleChangeQuantity = async (value) => {
     if (value === 'minus') {
       if (quantity === 1) {
         return;
       }
-      return changeQuantity(product, --quantity);
+
+      const updateCartItemRes = await handleUpdateCartItemFetch({
+        urlOptions: {
+          placeHolders: {
+            cartKey,
+          },
+        },
+        body: {
+          quantity: --quantity,
+        },
+      });
+
+      // @ts-ignore
+      if (updateCartItemRes) {
+        return changeQuantity(product, --updateCartItemRes['quantity']);
+      }
     } else {
-      return changeQuantity(product, ++quantity);
+      const updateCartItemRes = await handleUpdateCartItemFetch({
+        urlOptions: {
+          placeHolders: {
+            cartKey,
+          },
+        },
+        body: {
+          quantity: ++quantity,
+        },
+      });
+
+      // @ts-ignore
+      if (updateCartItemRes) {
+        return changeQuantity(product, ++updateCartItemRes['quantity']);
+      }
+
+      console.log('updateCartItemRes', updateCartItemRes);
+
+      // return changeQuantity(product, ++quantity);
+    }
+  };
+
+  const handleRemoveFromCart = async () => {
+    const removeFromCartRes = await handleRemoveFromCartFetch({
+      urlOptions: {
+        placeHolders: {
+          id,
+        },
+      },
+    });
+    // @ts-ignore
+    if (removeFromCartRes) {
+      removeFromCart && removeFromCart(product);
     }
   };
 
@@ -39,13 +97,13 @@ const CartOverLayCartItem = ({
         src={cover}
         alt='productImg'
         style={{
-          cursor: 'pointer'
+          cursor: 'pointer',
         }}
       />
       <div>
         <h4
           style={{
-            lineHeight: 1.5
+            lineHeight: 1.5,
           }}
           onClick={() => {
             handleToggleCartBar();
@@ -55,12 +113,12 @@ const CartOverLayCartItem = ({
           {name}
         </h4>
         <h5>৳{numberWithCommas(price)}</h5>
-        <span className='remove-item' onClick={() => removeFromCart(product)}>
+        <span className='remove-item' onClick={handleRemoveFromCart}>
           <i
             className='fa fa-trash'
             style={{
               marginRight: '5px',
-              color: '#6b21ac'
+              color: '#6b21ac',
             }}
           ></i>
           remove

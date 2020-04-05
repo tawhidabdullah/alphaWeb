@@ -5,15 +5,22 @@ import Products from './Products';
 interface Props {
   history: any;
   windowWidth: number;
+  category: any;
+  cache: any;
+  addItemToCache: (any) => void;
 }
 
-const CategoryProducts = ({ history, windowWidth }: Props) => {
-  const categoryState = useFetch([], [], 'categoryList');
-
+const CategoryProducts = ({
+  history,
+  windowWidth,
+  category,
+  cache,
+  addItemToCache,
+}: Props) => {
   return (
     <>
-      {categoryState.data.length &&
-        categoryState.data.map(({ name, id }) => {
+      {category.length &&
+        category.map(({ name, id }) => {
           return (
             <section className='product-slider-section' key={id}>
               <div className='row product-slider-section-heading'>
@@ -22,7 +29,12 @@ const CategoryProducts = ({ history, windowWidth }: Props) => {
                     <span>{name}</span>
                     <div
                       className='seeMore-title-box'
-                      onClick={() => history.push(`/productsListing/${id}`)}
+                      onClick={() => {
+                        history.push({
+                          pathname: `/productList/${id}`,
+                          state: { isCategory: true },
+                        });
+                      }}
                     >
                       <h5 className='seeMore-title'>
                         {`See All "${name}" Products`}
@@ -32,7 +44,13 @@ const CategoryProducts = ({ history, windowWidth }: Props) => {
                   </div>
                 </div>
               </div>
-              <Products windowWidth={windowWidth} categoryId={id} />
+              <Products
+                windowWidth={windowWidth}
+                categoryId={id}
+                category={category}
+                cache={cache}
+                addItemToCache={addItemToCache}
+              />
             </section>
           );
         })}

@@ -1,15 +1,47 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFetch, useHandleFetch } from '../../hooks';
+import { checkIfItemExistsInCache } from '../../utils';
 
 interface Props {
   history: any;
   isAuthenticated?: boolean;
   logout: () => void;
+  addItemToCache: (any) => void;
+  cache: any;
 }
 
-const TopHead = ({ isAuthenticated, history, logout }: Props) => {
-  const welcomeState = useFetch([], {}, 'welcome');
+const TopHead = ({
+  isAuthenticated,
+  history,
+  logout,
+  addItemToCache,
+  cache,
+}: Props) => {
+  const [welcomeState, handleWelcomeFetch] = useHandleFetch([], 'welcome');
+  const [welcome, setWelcome] = useState([]);
+
   const [logoutState, handleLogoutFetch] = useHandleFetch({}, 'logout');
+
+  useEffect(() => {
+    if (checkIfItemExistsInCache(`welcome`, cache)) {
+      const welcome = cache['welcome'];
+      setWelcome(welcome);
+    } else {
+      const getAndSetWelcome = async () => {
+        const welcome = await handleWelcomeFetch({});
+        // @ts-ignore
+        if (welcome) {
+          // @ts-ignore
+          setWelcome(welcome);
+          addItemToCache({
+            welcome: welcome,
+          });
+        }
+      };
+
+      getAndSetWelcome();
+    }
+  }, []);
 
   const handleLogout = async () => {
     await handleLogoutFetch({});
@@ -20,12 +52,9 @@ const TopHead = ({ isAuthenticated, history, logout }: Props) => {
     <div className='top-head-1'>
       <div className='top-left-content'>
         <span>
-          {Object.keys(welcomeState.data).length > 0
-            ? welcomeState.data['text']
-            : ''}
-          {!(Object.keys(welcomeState.data).length > 0) &&
-          !welcomeState.isLoading
-            ? welcomeState.data['text']
+          {Object.keys(welcome).length > 0 ? welcome['text'] : ''}
+          {!(Object.keys(welcome).length > 0) && !welcomeState.isLoading
+            ? welcome['text']
             : ''}
         </span>
       </div>

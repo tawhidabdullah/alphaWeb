@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { withAlert } from 'react-alert';
 import { cartOperations } from '../../state/ducks/cart';
 import { numberWithCommas, checkIfItemExistsInCartItemById } from '../../utils';
+import { useHandleFetch } from '../../hooks';
 
 interface Props {
   product: any;
@@ -12,6 +13,7 @@ interface Props {
   addToCart?: (object, number) => void;
   cartItems?: any;
   alert?: any;
+  removeFromCart?: (object) => void;
 }
 
 const ProductCard = ({
@@ -19,34 +21,61 @@ const ProductCard = ({
   history,
   alert,
   cartItems,
-  addToCart
+  addToCart,
+  removeFromCart,
 }: Props) => {
-  const {
-    name,
-    regularPrice,
-    cover,
-    url,
-    id,
-    offerPrice,
-    description
-  } = product;
+  const { name, regularPrice, cover, url, id, offerPrice } = product;
 
-  const handleOnClickAddToCart = () => {
-    const product = {
-      name,
-      description,
-      cover,
-      price: offerPrice && parseInt(offerPrice) ? offerPrice : regularPrice,
-      id,
-      url
-    };
+  const [addToCartState, handleAddtoCartFetch] = useHandleFetch(
+    [],
+    'addtoCart'
+  );
 
-    addToCart && addToCart(product, 1);
+  const [removeFromCartState, handleRemoveFromCartFetch] = useHandleFetch(
+    [],
+    'removeFromCart'
+  );
 
-    if (addToCart && checkIfItemExistsInCartItemById(cartItems, id)) {
-      alert.success('Product Has Been Removed From the Cart');
+  const handleOnClickAddToCart = async () => {
+    if (checkIfItemExistsInCartItemById(cartItems, id)) {
+      const removeFromCartRes = await handleRemoveFromCartFetch({
+        urlOptions: {
+          placeHolders: {
+            id,
+          },
+        },
+      });
+
+      // @ts-ignore
+      if (removeFromCartRes) {
+        removeFromCart && removeFromCart(product);
+        alert.success('Product Has Been Removed From the Cart');
+      }
     } else {
-      alert.success('Product Added To The Cart');
+      const addToCartRes = await handleAddtoCartFetch({
+        urlOptions: {
+          placeHolders: {
+            id,
+          },
+        },
+      });
+
+      // @ts-ignore
+      if (addToCartRes) {
+        const product = {
+          name: addToCartRes['name'],
+          cover: addToCartRes['cover'],
+          price:
+            addToCartRes['offerPrice'] && parseInt(addToCartRes['offerPrice'])
+              ? addToCartRes['offerPrice']
+              : addToCartRes['regularPrice'],
+          id: addToCartRes['id'],
+          url: addToCartRes['url'],
+          cartKey: addToCartRes['cartKey'],
+        };
+        addToCart && addToCart(product, addToCartRes['quantity']);
+        alert.success('Product Added To The Cart');
+      }
     }
   };
 
@@ -99,12 +128,13 @@ const ProductCard = ({
   );
 };
 
-const mapStateToProps = state => ({
-  cartItems: state.cart
+const mapStateToProps = (state) => ({
+  cartItems: state.cart,
 });
 
 const mapDispatchToProps = {
-  addToCart: cartOperations.addToCart
+  removeFromCart: cartOperations.removeFromCart,
+  addToCart: cartOperations.addToCart,
 };
 
 // @ts-ignore

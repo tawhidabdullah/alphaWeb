@@ -1,20 +1,31 @@
 // @ts-nocheck
-
 import React from 'react';
 import queryString from 'query-string';
 import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 import { useHandleFetch } from '../../hooks';
 import Footer from '../../layout/Footer';
 import { Spinner } from '../../components/Loading';
 import Select from 'react-select';
 import { ProductCard } from '../../components/Product';
+import { checkIfItemExistsInCache } from '../../utils';
+import { cacheOperations } from '../../state/ducks/cache';
 
 interface Props {
   location: any;
   history: any;
+  addItemToCache: (any) => void;
+  cache: any;
+  category: any;
 }
 
-const ProductSearch = ({ location, history }: Props) => {
+const ProductSearch = ({
+  location,
+  history,
+  addItemToCache,
+  cache,
+  category,
+}: Props) => {
   let searchCategoryValue = queryString.parse(location.search).searchCategory;
   let queryValue = queryString.parse(location.search).query;
 
@@ -29,34 +40,34 @@ const ProductSearch = ({ location, history }: Props) => {
   const [activeCategoryName, setActiveCategoryName] = React.useState('');
   const [selectedValueForSort, setSelectedValueForSort] = React.useState({
     value: 'Relevance',
-    label: 'Relevance'
+    label: 'Relevance',
   });
 
   const [
     selectedCategoryValueForSort,
-    setSelectedCategoryValueForSort
+    setSelectedCategoryValueForSort,
   ] = React.useState({
     value: 'all',
-    label: 'All Categories'
+    label: 'All Categories',
   });
 
-  const handleSelectCategoryChange = value => {
+  const handleSelectCategoryChange = (value) => {
     setSelectedCategoryValueForSort(value);
 
     history.push({
       pathname: '/productSearch',
-      search: `?searchCategory=${value.value}&query=${queryValue}`
+      search: `?searchCategory=${value.value}&query=${queryValue}`,
     });
   };
 
-  const handleSelectCategory = id => {
+  const handleSelectCategory = (id) => {
     history.push({
       pathname: '/productSearch',
-      search: `?searchCategory=${id}&query=${queryValue}`
+      search: `?searchCategory=${id}&query=${queryValue}`,
     });
   };
 
-  const setSortBySelect = value => {
+  const setSortBySelect = (value) => {
     setSelectedValueForSort(value);
   };
 
@@ -64,7 +75,7 @@ const ProductSearch = ({ location, history }: Props) => {
     { value: 'Relevance', label: 'Relevance' },
     { value: 'priceLowToHigh', label: 'Price -- Low to High' },
     { value: 'priceHighToLow', label: 'Price -- High to Low' },
-    { value: 'newestFirst', label: 'Newest First' }
+    { value: 'newestFirst', label: 'Newest First' },
   ];
 
   const [windowWidth, setWindowWidth] = React.useState(0);
@@ -100,19 +111,25 @@ const ProductSearch = ({ location, history }: Props) => {
   console.log('productSearchState', productSearchState);
 
   const getCategories = async () => {
-    // @ts-ignore
-    const categories: any[] = await handleCategoryListFetch({
-      urlOptions: {
-        params: {
-          isSubCategory: true
-        }
-      }
-    });
+    let categories = [];
 
-    const category = {
+    if (category.length > 0) {
+      categories = category;
+    } else {
+      // @ts-ignore
+      categories = await handleCategoryListFetch({
+        urlOptions: {
+          params: {
+            isSubCategory: true,
+          },
+        },
+      });
+    }
+
+    const categoryItem = {
       name: 'All Categories',
       id: 'all',
-      [`isall`]: searchCategoryValue ? false : true
+      [`isall`]: searchCategoryValue ? false : true,
     };
 
     const tempCategories =
@@ -120,12 +137,12 @@ const ProductSearch = ({ location, history }: Props) => {
         categories.map((cat: object) => {
           return {
             ...cat,
-            [`is${cat['id']}`]: false
+            [`is${cat['id']}`]: false,
           };
         })) ||
       [];
 
-    return [category, ...tempCategories];
+    return [categoryItem, ...tempCategories];
   };
 
   React.useEffect(() => {
@@ -143,7 +160,7 @@ const ProductSearch = ({ location, history }: Props) => {
         if (cat && cat.length > 0) {
           const categoryId = searchCategoryValue;
           const newCategories = [...cat];
-          newCategories.forEach(cat => {
+          newCategories.forEach((cat) => {
             if (cat['id'] === categoryId) {
               console.log('fuckyou');
 
@@ -152,7 +169,7 @@ const ProductSearch = ({ location, history }: Props) => {
               // @ts-ignore
               setSelectedCategoryValueForSort({
                 value: cat['id'],
-                label: cat['name']
+                label: cat['name'],
               });
               setActiveCategoryName(cat['name']);
               // @ts-ignore
@@ -163,14 +180,14 @@ const ProductSearch = ({ location, history }: Props) => {
         } else {
           const categoryId = searchCategoryValue;
           const newCategories = [...categories];
-          newCategories.forEach(cat => {
+          newCategories.forEach((cat) => {
             if (cat['id'] === categoryId) {
               // @ts-ignore
               cat[`is${cat['id']}`] = true;
               // @ts-ignore
               setSelectedCategoryValueForSort({
                 value: cat['id'],
-                label: cat['name']
+                label: cat['name'],
               });
               setActiveCategoryName(cat['name']);
               // @ts-ignore
@@ -181,53 +198,132 @@ const ProductSearch = ({ location, history }: Props) => {
         }
 
         if (selectedValueForSort.value === 'Relevance') {
-          const products = await handleProductSearchFetch({
-            urlOptions: {
-              params: {
-                searchCategoryValue,
-                queryValue
-              }
+          if (
+            checkIfItemExistsInCache(
+              `productSearch/${searchCategoryValue}/${queryValue}`,
+              cache
+            )
+          ) {
+            const products =
+              cache[`productSearch/${searchCategoryValue}/${queryValue}`];
+            // @ts-ignore
+            setProducts(products);
+            setIsLoading(false);
+          } else {
+            const products = await handleProductSearchFetch({
+              urlOptions: {
+                params: {
+                  searchCategoryValue,
+                  queryValue,
+                },
+              },
+            });
+
+            if (products) {
+              addItemToCache({
+                [`productSearch/${searchCategoryValue}/${queryValue}`]: products,
+              });
             }
-          });
-          // @ts-ignore
-          setProducts(products);
-          setIsLoading(false);
+
+            // @ts-ignore
+            setProducts(products);
+            setIsLoading(false);
+          }
         } else if (selectedValueForSort.value === 'priceHighToLow') {
-          const products = await handleProductSearchFetch({
-            urlOptions: {
-              params: {
-                searchCategoryValue,
-                queryValue
-              }
+          if (
+            checkIfItemExistsInCache(
+              `productSearch/${searchCategoryValue}/${queryValue}`,
+              cache
+            )
+          ) {
+            const products =
+              cache[`productSearch/${searchCategoryValue}/${queryValue}`];
+            // @ts-ignore
+            setProducts(products);
+            setIsLoading(false);
+          } else {
+            const products = await handleProductSearchFetch({
+              urlOptions: {
+                params: {
+                  searchCategoryValue,
+                  queryValue,
+                },
+              },
+            });
+            if (products) {
+              addItemToCache({
+                [`productSearch/${searchCategoryValue}/${queryValue}`]: products,
+              });
             }
-          });
-          // @ts-ignore
-          setProducts(products);
-          setIsLoading(false);
+
+            // @ts-ignore
+            setProducts(products);
+            setIsLoading(false);
+          }
         } else if (selectedValueForSort.value === 'priceLowToHigh') {
-          const products = await handleProductSearchFetch({
-            urlOptions: {
-              params: {
-                searchCategoryValue,
-                queryValue
-              }
+          if (
+            checkIfItemExistsInCache(
+              `productSearch/${searchCategoryValue}/${queryValue}`,
+              cache
+            )
+          ) {
+            const products =
+              cache[`productSearch/${searchCategoryValue}/${queryValue}`];
+            // @ts-ignore
+            setProducts(products);
+            setIsLoading(false);
+          } else {
+            const products = await handleProductSearchFetch({
+              urlOptions: {
+                params: {
+                  searchCategoryValue,
+                  queryValue,
+                },
+              },
+            });
+
+            if (products) {
+              addItemToCache({
+                [`productSearch/${searchCategoryValue}/${queryValue}`]: products,
+              });
             }
-          });
-          // @ts-ignore
-          setProducts(products);
-          setIsLoading(false);
+
+            // @ts-ignore
+            setProducts(products);
+            setIsLoading(false);
+          }
         } else if (selectedValueForSort.value === 'newestFirst') {
-          const products = await handleProductSearchFetch({
-            urlOptions: {
-              params: {
-                searchCategoryValue,
-                queryValue
-              }
+          if (
+            checkIfItemExistsInCache(
+              `productSearch/${searchCategoryValue}/${queryValue}`,
+              cache
+            )
+          ) {
+            const products =
+              cache[`productSearch/${searchCategoryValue}/${queryValue}`];
+            // @ts-ignore
+            setProducts(products);
+            setIsLoading(false);
+          } else {
+            const products = await handleProductSearchFetch({
+              urlOptions: {
+                params: {
+                  searchCategoryValue,
+                  queryValue,
+                },
+              },
+            });
+
+            if (products) {
+              addItemToCache({
+                [`productSearch/${searchCategoryValue}/${queryValue}`]: products,
+              });
             }
-          });
-          // @ts-ignore
-          setProducts(products);
-          setIsLoading(false);
+
+            // @ts-ignore
+            setProducts(products);
+            setIsLoading(false);
+          }
         }
       } catch (err) {
         console.log(err);
@@ -242,7 +338,7 @@ const ProductSearch = ({ location, history }: Props) => {
       <div
         className={windowWidth < 770 ? 'container-fluid' : 'container'}
         style={{
-          padding: windowWidth < 770 ? '15px' : '0 0 20px 0'
+          padding: windowWidth < 770 ? '15px' : '0 0 20px 0',
         }}
       >
         <div className='row'>
@@ -251,21 +347,21 @@ const ProductSearch = ({ location, history }: Props) => {
               className='col-sm-4 col-md-3 productSearchFilterSideBar'
               style={{
                 background: '#fff',
-                borderRight: '1px solid #eee'
+                borderRight: '1px solid #eee',
               }}
             >
               <div
                 style={{
                   lineHeight: 2.5,
                   paddingLeft: '20px',
-                  borderBottom: '1px solid #eee'
+                  borderBottom: '1px solid #eee',
                 }}
               >
                 <h3
                   style={{
                     fontSize: '19px',
                     fontWeight: 500,
-                    color: '#17252a'
+                    color: '#17252a',
                   }}
                 >
                   Filters
@@ -277,7 +373,7 @@ const ProductSearch = ({ location, history }: Props) => {
                 <ul>
                   {categories &&
                     categories.length > 0 &&
-                    categories.map(cat => {
+                    categories.map((cat) => {
                       return (
                         <li onClick={() => handleSelectCategory(cat['id'])}>
                           <span
@@ -319,12 +415,12 @@ const ProductSearch = ({ location, history }: Props) => {
                             <div className='sortBySelectorsSelects'>
                               <Select
                                 value={selectedCategoryValueForSort}
-                                onChange={value =>
+                                onChange={(value) =>
                                   handleSelectCategoryChange(value)
                                 }
-                                options={categories.map(cat => ({
+                                options={categories.map((cat) => ({
                                   value: cat['id'],
-                                  label: cat['name']
+                                  label: cat['name'],
                                 }))}
                               />
                             </div>
@@ -341,10 +437,10 @@ const ProductSearch = ({ location, history }: Props) => {
                     <div className='sortBySelectorsSelects'>
                       <Select
                         value={selectedValueForSort}
-                        onChange={value => setSortBySelect(value)}
+                        onChange={(value) => setSortBySelect(value)}
                         defaultValue={{
                           label: 'Relevance',
-                          value: 'Relevance'
+                          value: 'Relevance',
                         }}
                         options={options}
                       />
@@ -362,13 +458,13 @@ const ProductSearch = ({ location, history }: Props) => {
                 display: 'flex',
                 flexWrap: 'wrap',
                 justifyContent: 'space-around',
-                alignItems: 'center'
+                alignItems: 'center',
               }}
             >
               {(!isLoading &&
                 products &&
                 products.length > 0 &&
-                products.map(product => {
+                products.map((product) => {
                   return (
                     <ProductCard product={product} productListing={true} />
                   );
@@ -383,19 +479,19 @@ const ProductSearch = ({ location, history }: Props) => {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    flexDirection: 'column'
+                    flexDirection: 'column',
                   }}
                 >
                   <h2
                     style={{
-                      marginBottom: '15px'
+                      marginBottom: '15px',
                     }}
                   >
                     No Product Has Been Found
                   </h2>
                   <a
                     className='btn btn-outline-secondary'
-                    onClick={e => {
+                    onClick={(e) => {
                       e.preventDefault();
                       history.push('/');
                     }}
@@ -416,4 +512,18 @@ const ProductSearch = ({ location, history }: Props) => {
   );
 };
 
-export default withRouter(ProductSearch);
+const mapDispatchToProps = {
+  addItemToCache: cacheOperations.addItemToCache,
+};
+
+const mapStateToProps = (state) => ({
+  cache: state.cache,
+  category: state.category,
+});
+
+// @ts-ignore
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+  // @ts-ignore
+)(withRouter(ProductSearch));

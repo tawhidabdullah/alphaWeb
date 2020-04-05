@@ -22,7 +22,7 @@ const TextFeildGroup = ({
   value,
   disabled,
   errors,
-  label
+  label,
 }: Props) => {
   console.log('eror', errors);
   return (
@@ -32,7 +32,7 @@ const TextFeildGroup = ({
       <input
         type={type ? type : 'text'}
         className={classnames('form-control form-control-lg', {
-          'is-invalid': errors
+          'is-invalid': errors,
         })}
         placeholder={placeholder}
         name={name}
@@ -45,7 +45,7 @@ const TextFeildGroup = ({
         <small
           className='form-text text-muted'
           style={{
-            marginTop: '10px'
+            marginTop: '10px',
           }}
         >
           {' '}

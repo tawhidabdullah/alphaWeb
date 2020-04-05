@@ -9,14 +9,14 @@ export const addToCart = (product, quantity) => ({
   },
 });
 
-export const addProductsToCart = products => ({
+export const addProductsToCart = (cartItems) => ({
   type: types.ADD_PRODUCTS_TO_CART,
   payload: {
-    products,
+    cartItems,
   },
 });
 
-export const selectProductForCheckout = product => ({
+export const selectProductForCheckout = (product) => ({
   type: types.SELECT_PRODUCT_FOR_CHECKOUT,
   payload: {
     product,
@@ -31,7 +31,7 @@ export const changeQuantity = (product, quantity) => ({
   },
 });
 
-export const removeFromCart = product => ({
+export const removeFromCart = (product) => ({
   type: types.REMOVE,
   payload: {
     product,
@@ -42,7 +42,7 @@ export const clearCart = () => ({
   type: types.CLEAR,
 });
 
-export const setCart = cart => ({
+export const setCart = (cart) => ({
   type: types.SET_CART,
   payload: {
     cart,
