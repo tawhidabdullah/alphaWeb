@@ -88,6 +88,8 @@ class Converter {
         };
       });
 
+    console.log('cartkeys', convertedData);
+
     return convertedData;
   }
 

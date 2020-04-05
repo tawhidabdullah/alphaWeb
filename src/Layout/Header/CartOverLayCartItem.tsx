@@ -77,7 +77,7 @@ const CartOverLayCartItem = ({
     const removeFromCartRes = await handleRemoveFromCartFetch({
       urlOptions: {
         placeHolders: {
-          id,
+          cartKey,
         },
       },
     });

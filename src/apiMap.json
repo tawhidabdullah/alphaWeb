@@ -127,7 +127,7 @@
       "method": "post"
     },
     "removeFromCart": {
-      "url": "/api/cart/update/remove/:id",
+      "url": "/api/cart/update/remove/:cartKey",
       "method": "get"
     },
     "updateCartItem": {

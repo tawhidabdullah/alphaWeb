@@ -133,6 +133,7 @@ const Header = ({
           handleToggleCartBar={handleToggleCartBar}
           handleToggleMenuBar={handleToggleMenuBar}
           history={history}
+          cartLength={cartItems.length}
         />
       ) : (
         ''

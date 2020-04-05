@@ -50,6 +50,7 @@ const CartBar = ({
                   : parseInt(cartItem['regularPrice']),
               id: cartItem['id'],
               url: cartItem['url'],
+              cartKey: cartItem.cartKey,
             },
             quantity: cartItem.quantity,
           };

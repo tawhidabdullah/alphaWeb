@@ -4,29 +4,31 @@ interface Props {
   handleToggleCartBar: () => void;
   handleToggleMenuBar: () => void;
   history: any;
+  cartLength: number;
 }
 
 const MobileNav = ({
   handleToggleCartBar,
   handleToggleMenuBar,
-  history
+  history,
+  cartLength,
 }: Props) => {
   const [searchBarValue, setSearchBarValue] = useState('');
 
   const handleSearch = () => {
     history.push({
       pathname: '/productSearch',
-      search: `?key=${searchBarValue}`
+      search: `?key=${searchBarValue}`,
     });
   };
 
-  const handleSearchBar = e => {
+  const handleSearchBar = (e) => {
     e.preventDefault();
 
     setSearchBarValue(e.target.value);
   };
 
-  const handleKeyPress = e => {
+  const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
@@ -62,7 +64,7 @@ const MobileNav = ({
         <div
           className='navbar-center-cartBox'
           style={{
-            marginRight: '10px'
+            marginRight: '10px',
           }}
         >
           <div className='cartt-btn' onClick={handleToggleCartBar}>
@@ -70,7 +72,7 @@ const MobileNav = ({
               <i className='fa fa-shopping-cart'></i>
             </span>
             <div className='cartt-items'>
-              {/* {this.props.cartLength ? ` ${this.props.cartLength}` : 0} */}0
+              {cartLength ? ` ${cartLength}` : 0}
             </div>
           </div>
         </div>
