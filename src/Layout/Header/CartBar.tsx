@@ -92,7 +92,10 @@ const CartBar = ({
             <div className='cart-footer'>
               <button
                 className='clear-cart banner-btn'
-                onClick={handleToggleCartBar}
+                onClick={() => {
+                  handleToggleCartBar();
+                  history.push('/');
+                }}
               >
                 Add Products
               </button>
@@ -119,13 +122,8 @@ const CartBar = ({
               onClick={(e) => {
                 e.preventDefault();
 
-                if (isAuthenticated) {
-                  handleToggleCartBar();
-                  history.push('/checkout');
-                } else {
-                  handleToggleCartBar();
-                  handleModalShow && handleModalShow();
-                }
+                handleToggleCartBar();
+                history.push('/checkout');
               }}
             >
               Checkout

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { withAlert } from 'react-alert';
+
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import ShippingCheckout from './ShippingCheckout';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { RadioGroup, ReversedRadioButton } from 'react-radio-buttons';
-import { Button } from 'react-bootstrap';
 import { cartSelectors } from '../../state/ducks/cart';
 import { sessionOperations } from '../../state/ducks/session';
 import SmallItem from '../../components/SmallItem';
@@ -13,6 +14,10 @@ import { useHandleFetch } from '../../hooks';
 import { Spinner } from '../../components/Loading';
 import { AuthButton } from '../../components/Button';
 import Checkbox from '../../components/Checkbox';
+import Select from 'react-select';
+import { cacheOperations } from '../../state/ducks/cache';
+import { checkIfItemExistsInCache } from '../../utils';
+import { cartOperations } from '../../state/ducks/cart';
 
 // import checkout component
 import CheckoutSuccessModal from './CheckoutSuccessModal';
@@ -50,14 +55,6 @@ const validationSchemaForNotSigninCod = Yup.object().shape({
     .label('Address')
     .required()
     .min(3, 'Address must have at least 3 characters '),
-  city: Yup.string()
-    .label('City')
-    .required()
-    .min(3, 'City must have at least 3 characters '),
-  country: Yup.string()
-    .label('Country')
-    .required()
-    .min(3, 'Country must have at least 3 characters '),
 });
 
 const validationSchemaForCod = Yup.object().shape({
@@ -80,14 +77,6 @@ const validationSchemaForCod = Yup.object().shape({
     .label('Address')
     .required()
     .min(3, 'Address must have at least 3 characters '),
-  city: Yup.string()
-    .label('City')
-    .required()
-    .min(3, 'City must have at least 3 characters '),
-  country: Yup.string()
-    .label('Country')
-    .required()
-    .min(3, 'Country must have at least 3 characters '),
 });
 
 const validationSchemaForNotSigninOtherPaymentMethods = Yup.object().shape({
@@ -110,14 +99,7 @@ const validationSchemaForNotSigninOtherPaymentMethods = Yup.object().shape({
     .label('Address')
     .required()
     .min(3, 'Address must have at least 3 characters '),
-  city: Yup.string()
-    .label('City')
-    .required()
-    .min(3, 'City must have at least 3 characters '),
-  country: Yup.string()
-    .label('Country')
-    .required()
-    .min(3, 'Country must have at least 3 characters '),
+
   paymentNumber: Yup.string()
     .required('Please tell us your mobile number.')
     .matches(phoneRegExp, 'Please enter a valid mobile number.'),
@@ -152,14 +134,7 @@ const validationSchemaForOtherPaymentMethods = Yup.object().shape({
     .label('Address')
     .required()
     .min(3, 'Address must have at least 3 characters '),
-  city: Yup.string()
-    .label('City')
-    .required()
-    .min(3, 'City must have at least 3 characters '),
-  country: Yup.string()
-    .label('Country')
-    .required()
-    .min(3, 'Country must have at least 3 characters '),
+
   paymentNumber: Yup.string()
     .required('Please tell us your mobile number.')
     .matches(phoneRegExp, 'Please enter a valid mobile number.'),
@@ -186,14 +161,6 @@ const shippingAddressValidationSchema = Yup.object().shape({
     .label('shipping Address')
     .required()
     .min(3, 'Shipping Address must have at least 3 characters '),
-  shippingCity: Yup.string()
-    .label('Shipping City')
-    .required()
-    .min(3, 'Shipping City must have at least 3 characters '),
-  shippingCountry: Yup.string()
-    .label('Shipping Country')
-    .required()
-    .min(3, 'Shipping Country must have at least 3 characters '),
 });
 
 const shippingAddressInitialValues = {
@@ -207,14 +174,12 @@ const shippingAddressInitialValues = {
 };
 
 const otherPaymentMethodIntialValues = {
-  phone: '',
+  phone: null,
   email: '',
   password: '',
   passwordConfirmation: '',
   firstName: '',
   lastName: '',
-  country: '',
-  city: '',
   address1: '',
   paymentNumber: '',
   paymentId: '',
@@ -225,22 +190,18 @@ const otherPaymentMethodNotSigninIntialValues = {
   email: '',
   firstName: '',
   lastName: '',
-  country: '',
-  city: '',
   address1: '',
   paymentNumber: '',
   paymentId: '',
 };
 
 const codInitialValues = {
-  phone: '',
+  phone: null,
   email: '',
   password: '',
   passwordConfirmation: '',
   firstName: '',
   lastName: '',
-  country: '',
-  city: '',
   address1: '',
 };
 
@@ -249,8 +210,6 @@ const codInitialNotSigninValues = {
   email: '',
   firstName: '',
   lastName: '',
-  country: '',
-  city: '',
   address1: '',
 };
 
@@ -260,6 +219,10 @@ interface Props {
   totalPrice: number;
   session: any;
   logout: () => void;
+  addItemToCache: (any) => void;
+  cache: any;
+  clearCart: () => void;
+  alert?: any;
 }
 
 const Checkout = ({
@@ -268,29 +231,153 @@ const Checkout = ({
   totalPrice,
   session,
   logout,
+  addItemToCache,
+  cache,
+  clearCart,
+  alert,
 }: Props) => {
   const [paymentMethod, setPaymentMethod] = React.useState('cod');
   const [isModalShown, setIsModalShown] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
+  const [serverErrors, setServerErrors] = useState({});
+  const [selectedCountryValue, setSelectedCountryValue] = React.useState({
+    value: 'country',
+    label: 'Country',
+  });
+
+  const [selectedCityValue, setSelectedCityValue] = React.useState({
+    value: 'city',
+    label: 'City',
+  });
+
+  const [
+    selectedShippingCityValue,
+    setSelectedShippingCityValue,
+  ] = React.useState({
+    value: 'city',
+    label: 'Shipping City',
+  });
+
+  const [
+    selectedShippingCountryValue,
+    setSelectedShippingCountryValue,
+  ] = React.useState({
+    value: 'Shipping Country',
+    label: 'Shipping Country',
+  });
+
   const [
     isUseAccountBillingAddresss,
     setIsUseAccountBillingAddresss,
   ] = useState(false);
 
+  const [countryListState, handleCountryListFetch] = useHandleFetch(
+    [],
+    'countryList'
+  );
+
+  const [cityListState, handleCityListFetch] = useHandleFetch([], 'cityList');
+
+  const [countryList, setCountryList] = useState([]);
+  const [cityList, setCityList] = useState([]);
+  const [shippingCityList, setShippingCityList] = useState([]);
+
   const [isShipToDifferentAddress, setIsShipToDifferentAddress] = useState(
     false
   );
-  const [fruits, setFruits] = useState<string[]>(['apple', 'watermelon']);
 
   const [customerDetailState, handleCustomerDetailFetch] = useHandleFetch(
     {},
     'getCurrentCustomerData'
   );
 
-  const [createStateState, handleCreateOrderFetch] = useHandleFetch(
+  const [createOrderState, handleCreateOrderFetch] = useHandleFetch(
     {},
     'createOrder'
   );
+
+  useEffect(() => {
+    if (
+      checkIfItemExistsInCache(`cityList/${selectedCountryValue.value}`, cache)
+    ) {
+      const cityList = cache[`cityList/${selectedCountryValue.value}`];
+      setCityList(cityList);
+    } else {
+      const getAndSetCityList = async () => {
+        const cityList = await handleCityListFetch({
+          urlOptions: {
+            placeHolders: {
+              country: selectedCountryValue.value,
+            },
+          },
+        });
+        // @ts-ignore
+        if (cityList) {
+          // @ts-ignore
+          setCityList(cityList);
+          addItemToCache({
+            [`cityList/${selectedCountryValue.value}`]: cityList,
+          });
+        }
+      };
+
+      getAndSetCityList();
+    }
+  }, [selectedCountryValue]);
+
+  useEffect(() => {
+    if (
+      checkIfItemExistsInCache(
+        `cityList/${selectedShippingCountryValue.value}`,
+        cache
+      )
+    ) {
+      const shippingCityList =
+        cache[`cityList/${selectedShippingCountryValue.value}`];
+      setShippingCityList(shippingCityList);
+    } else {
+      const getAndSetShippingCityList = async () => {
+        const shippingCityList = await handleCityListFetch({
+          urlOptions: {
+            placeHolders: {
+              country: selectedShippingCountryValue.value,
+            },
+          },
+        });
+        // @ts-ignore
+        if (shippingCityList) {
+          // @ts-ignore
+          setShippingCityList(shippingCityList);
+          addItemToCache({
+            [`cityList/${selectedShippingCountryValue.value}`]: shippingCityList,
+          });
+        }
+      };
+
+      getAndSetShippingCityList();
+    }
+  }, [selectedShippingCountryValue]);
+
+  useEffect(() => {
+    if (checkIfItemExistsInCache(`countryList`, cache)) {
+      const countryList = cache['countryList'];
+      setCountryList(countryList);
+    } else {
+      const getAndSetCountryList = async () => {
+        const countryList = await handleCountryListFetch({});
+        // @ts-ignore
+        if (countryList) {
+          // @ts-ignore
+          setCountryList(countryList);
+          addItemToCache({
+            countryList: countryList,
+          });
+        }
+      };
+
+      getAndSetCountryList();
+    }
+  }, []);
 
   useEffect(() => {
     const getCheckAndSetCustomerData = async () => {
@@ -310,28 +397,33 @@ const Checkout = ({
 
   const handleCloseModal = () => {
     setIsModalShown(false);
-    history.push('/');
+
+    if (!session.isAuthenticated) {
+      history.push('/dashboard');
+    } else {
+      history.push('/');
+    }
   };
 
   const onRadioGroupChange = (value) => {
     setPaymentMethod(value);
   };
 
-  const handleOrder = (values, actions) => {
+  const handleOrder = async (values, actions) => {
     if (values) {
       if (paymentMethod !== 'cod') {
         const createOrderData = {
           phone: values.phone,
           email: values.email,
-          ...(session['isAuthenticated'] && {
+          ...(!session['isAuthenticated'] && {
             password: values.password,
             password2: values.passwordConfirmation,
           }),
           address1: values.address1,
           firstName: values.firstName,
           lastName: values.lastName,
-          country: values.country,
-          city: values.city,
+          country: selectedCountryValue.value,
+          city: selectedCityValue.value,
           paymentMethod: paymentMethod,
           paymentAccountNumber: values.paymentNumber,
           transactionId: values.paymentId,
@@ -341,30 +433,33 @@ const Checkout = ({
           ...(isShipToDifferentAddress && {
             shippingFirstName: values.shippingFirstName,
             shippingLastName: values.shippingLastName,
-            shippingCountry: values.shippingCountry,
-            shippingCity: values.shippingCity,
+            shippingCountry: selectedShippingCountryValue.value,
+            shippingCity: selectedShippingCityValue.value,
             shippingAddress1: values.shippingAddress1,
             shippingPhone: values.shippingPhone,
             shippingEmail: values.shippingEmail,
           }),
         };
 
-        handleCreateOrderFetch({
+        await handleCreateOrderFetch({
           body: createOrderData,
         });
+
+        actions.setSubmitting(false);
+        clearCart();
       } else {
         const createOrderData = {
           phone: values.phone,
           email: values.email,
-          ...(session['isAuthenticated'] && {
+          ...(!session['isAuthenticated'] && {
             password: values.password,
             password2: values.passwordConfirmation,
           }),
           address1: values.address1,
           firstName: values.firstName,
           lastName: values.lastName,
-          country: values.country,
-          city: values.city,
+          country: selectedCountryValue.value,
+          city: selectedCityValue.value,
           paymentMethod: 'cod',
           useAccountBillingAddress: isUseAccountBillingAddresss,
           shipToDifferentAddress: isShipToDifferentAddress,
@@ -372,20 +467,22 @@ const Checkout = ({
           ...(isShipToDifferentAddress && {
             shippingFirstName: values.shippingFirstName,
             shippingLastName: values.shippingLastName,
-            shippingCountry: values.shippingCountry,
-            shippingCity: values.shippingCity,
+            shippingCountry: selectedShippingCountryValue.value,
+            shippingCity: selectedShippingCityValue.value,
             shippingAddress1: values.shippingAddress1,
             shippingPhone: values.shippingPhone,
             shippingEmail: values.shippingEmail,
           }),
         };
 
-        handleCreateOrderFetch({
+        await handleCreateOrderFetch({
           body: createOrderData,
         });
+        console.log('createOrderData', createOrderData);
+        actions.setSubmitting(false);
+        clearCart();
       }
     }
-    actions.setSubmitting(false);
   };
 
   const getInitialValues = () => {
@@ -431,14 +528,68 @@ const Checkout = ({
 
   const getUltimateValidationSchema = () => {
     let validationSchema = getValidationSchema();
-    if (isShipToDifferentAddress) {
+    if (isShipToDifferentAddress && !isUseAccountBillingAddresss) {
       validationSchema = validationSchema.concat(
         shippingAddressValidationSchema
       );
+    } else if (isUseAccountBillingAddresss && !isShipToDifferentAddress) {
+      validationSchema = Yup.object();
+    } else if (isUseAccountBillingAddresss && isShipToDifferentAddress) {
+      return shippingAddressValidationSchema;
     }
 
     return validationSchema;
   };
+
+  const handleSelectCountryChange = (value) => {
+    setSelectedCountryValue(value);
+  };
+
+  const handleSelectCityChange = (value) => {
+    setSelectedCityValue(value);
+  };
+
+  const handleSelectShippingCountryChange = (value) => {
+    setSelectedShippingCountryValue(value);
+  };
+
+  const handleSelectShippingCityChange = (value) => {
+    setSelectedShippingCityValue(value);
+  };
+
+  useEffect(() => {
+    if (!createOrderState['isLoading']) {
+      const error = createOrderState['error'];
+      if (error['isError'] && Object.keys(error['error']).length > 0) {
+        if (error['error']['registerError']) {
+          setServerErrors(error['error']['registerError']);
+        } else if (error['error']['checkoutError']) {
+          setServerErrors(error['error']['checkoutError']);
+        }
+
+        const errors =
+          Object.values(error['error']).length > 0
+            ? Object.values(error['error'])
+            : [];
+        errors.forEach((err, i) => {
+          if (i === 0) {
+            alert.error(err);
+          }
+        });
+      }
+    }
+
+    if (
+      !createOrderState['isLoading'] &&
+      Object.keys(createOrderState.data).length > 0
+    ) {
+      if (createOrderState['data']['success']) {
+        setIsModalShown(true);
+      }
+
+      console.log('createOrderState', createOrderState);
+    }
+  }, [createOrderState]);
 
   return (
     <>
@@ -567,8 +718,16 @@ const Checkout = ({
                                 handleBlur={handleBlur}
                                 touched={touched}
                                 errors={errors}
-                                serverErrors={{}}
+                                serverErrors={serverErrors}
                                 isAuthenticated={session.isAuthenticated}
+                                handleSelectCountryChange={
+                                  handleSelectCountryChange
+                                }
+                                selectedCountryValue={selectedCountryValue}
+                                countryList={countryList}
+                                cityList={cityList}
+                                handleSelectCityChange={handleSelectCityChange}
+                                selectedCityValue={selectedCityValue}
                               />
                             </>
                           ) : (
@@ -605,8 +764,22 @@ const Checkout = ({
                                 handleBlur={handleBlur}
                                 touched={touched}
                                 errors={errors}
-                                serverErrors={{}}
+                                serverErrors={serverErrors}
                                 isAuthenticated={session.isAuthenticated}
+                                handleSelectShippingCityChange={
+                                  handleSelectShippingCityChange
+                                }
+                                handleSelectShippingCountryChange={
+                                  handleSelectShippingCountryChange
+                                }
+                                selectedShippingCityValue={
+                                  selectedShippingCityValue
+                                }
+                                selectedShippingCountryValue={
+                                  selectedShippingCountryValue
+                                }
+                                shippingCityList={shippingCityList}
+                                countryList={countryList}
                               />
                             </>
                           ) : (
@@ -702,12 +875,15 @@ const Checkout = ({
 
 const mapDispatchToProps = {
   logout: sessionOperations.logout,
+  addItemToCache: cacheOperations.addItemToCache,
+  clearCart: cartOperations.clearCart,
 };
 
 const mapStateToProps = (state) => ({
   cartItems: state.cart,
   totalPrice: cartSelectors.getTotalPriceOfCartItems(state.cart),
   session: state.session,
+  cache: state.cache,
 });
 
 // @ts-ignore
@@ -715,7 +891,7 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
   // @ts-ignore
-)(withRouter(Checkout));
+)(withRouter(withAlert()(Checkout)));
 
 /* 
 Form kinds: 
@@ -742,5 +918,5 @@ password, password2
 
 // shipToDifferentAddress and useAccountBillingAddresss they both can be true together. 
 
-
+// ccart/update/remove/:cartkey
 */

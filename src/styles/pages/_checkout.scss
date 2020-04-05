@@ -55,3 +55,21 @@
   color: #6b21ac;
   text-align: left;
 }
+
+// select container style
+.css-yk16xz-control {
+  min-height: 50px !important;
+}
+
+.css-g1d714-ValueContainer {
+  min-height: 50px !important;
+}
+
+// select-invalid-feedback
+
+.select-invalid-feedback {
+  color: #dc3545;
+  margin: 2px 0;
+  font-size: 15px;
+  font-weight: 500;
+}

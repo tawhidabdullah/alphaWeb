@@ -24,6 +24,10 @@ const Dashboard = (props) => {
       if (!customerData) {
         props.history.push('/signin');
         props.logout();
+      } else {
+        if (!props.session.isAuthenticated) {
+          props.login();
+        }
       }
       setIsLoading(false);
     };
@@ -104,6 +108,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = {
   logout: sessionOperations.logout,
+  login: sessionOperations.login,
 };
 
 // @ts-ignore

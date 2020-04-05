@@ -7,22 +7,23 @@ import Moment from 'react-moment';
 import { Table } from 'react-bootstrap';
 import { useFetch } from '../../../hooks';
 
-const Order = props => {
+const Order = (props) => {
   const orderListState = useFetch([], [], 'getCurrentUserOrders');
 
+  console.log('orderListState', orderListState);
   return (
     <div className='order'>
       <div
         className='block-title ordertitle'
         style={{
-          marginBottom: '20px'
+          marginBottom: '20px',
         }}
       >
         <span>Orders</span>
       </div>
 
       {!orderListState.isLoading && orderListState.data.length > 0
-        ? orderListState.data.map(order => {
+        ? orderListState.data.map((order) => {
             return (
               <div className='orderDetailsContainer'>
                 <div className='orderDetailItem'>
@@ -47,18 +48,20 @@ const Order = props => {
                       <h3>{order.status}</h3>
                     </div>
 
-                    <div className='orderDetailHeader_Item'>
-                      <h2>Total</h2>
-                      <h3>৳{numberWithCommas(order.total)}</h3>
-                    </div>
+                    {order.total && (
+                      <div className='orderDetailHeader_Item'>
+                        <h2>Total</h2>
+                        <h3>৳{numberWithCommas(order.total)}</h3>
+                      </div>
+                    )}
                   </div>
                   <div className='orderDetailProducts'>
                     {order.products.length > 0 &&
-                      order.products.map(product => {
+                      order.products.map((product) => {
                         return (
                           <div className='orderDetailProduct'>
                             <SmallItem
-                              id={product.id}
+                              productId={product._id}
                               quantity={product.quantity}
                               isOrderDetails={true}
                             />
@@ -76,7 +79,7 @@ const Order = props => {
           style={{
             display: 'flex',
             justifyContent: 'center',
-            alignItems: 'center'
+            alignItems: 'center',
           }}
         >
           <h2>Loading...</h2>

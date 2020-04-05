@@ -16,13 +16,13 @@ const CheckoutSuccessModal = ({ isModalShown, handleCloseModal }: Props) => {
             justifyContent: 'center',
             alignItems: 'center',
             flexDirection: 'column',
-            padding: '10px'
+            padding: '10px',
           }}
         >
           <span
             style={{
               color: '#00A663',
-              fontSize: '75px'
+              fontSize: '75px',
             }}
           >
             <i className='fa fa-check-circle' />
@@ -32,7 +32,7 @@ const CheckoutSuccessModal = ({ isModalShown, handleCloseModal }: Props) => {
               color: '#00A663',
               fontSize: '20px',
               fontWeight: 700,
-              marginTop: '10px'
+              marginTop: '10px',
             }}
           >
             Success!, Order has been created.

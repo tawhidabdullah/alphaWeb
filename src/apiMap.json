@@ -70,6 +70,10 @@
       "url": "/api/product/:categoryName/:productName",
       "method": "get"
     },
+    "productDetailById": {
+      "url": "/api/product/:id",
+      "method": "get"
+    },
     "productList": {
       "url": "/api/product",
       "mehod": "get"
@@ -80,6 +84,14 @@
     },
     "brandList": {
       "url": "/api/brand",
+      "method": "get"
+    },
+    "countryList": {
+      "url": "/api/geo/country",
+      "method": "get"
+    },
+    "cityList": {
+      "url": "/api/geo/:country/city",
       "method": "get"
     },
     "signup": {
@@ -103,7 +115,7 @@
       "method": "post"
     },
     "getCurrentUserOrders": {
-      "url": "/customer/api/order/list",
+      "url": "/customer/api/order",
       "method": "get"
     },
     "getCart": {

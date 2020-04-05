@@ -1,28 +1,26 @@
 import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
+import Select from 'react-select';
 import { TextFeildGroup } from '../../../components/Field';
 import { useHandleFetch } from '../../../hooks';
 import { AuthButton } from '../../../components/Button';
-
-interface Props {
-  customerDetail: any;
-}
+import { checkIfItemExistsInCache } from '../../../utils';
+import { cacheOperations } from '../../../state/ducks/cache';
 
 const personalInfoInitialValues = {
   firstName: '',
   lastName: '',
-  country: '',
-  city: '',
-  address1: ''
+  address1: '',
 };
 
 const mobilePhoneInitialValues = {
-  phone: ''
+  phone: '',
 };
 
 const emailAddressInitialValues = {
-  email: ''
+  email: '',
 };
 
 const personalInfoValidationSchema = Yup.object().shape({
@@ -38,46 +36,68 @@ const personalInfoValidationSchema = Yup.object().shape({
     .label('Address')
     .required()
     .min(3, 'Address must have at least 3 characters '),
-  city: Yup.string()
-    .label('City')
-    .required()
-    .min(3, 'City must have at least 3 characters '),
-  country: Yup.string()
-    .label('Country')
-    .required()
-    .min(3, 'Country must have at least 3 characters ')
 });
 
 const mobilePhoneValidationSchema = Yup.object().shape({
-  phone: Yup.string().required()
+  phone: Yup.string().required(),
 });
 
 const emailAddressValidationSchema = Yup.object().shape({
-  email: Yup.string()
-    .label('Email')
-    .email('Enter a valid email')
+  email: Yup.string().label('Email').email('Enter a valid email'),
 });
 
-const MyAccount = ({ customerDetail }: Props) => {
+interface Props {
+  customerDetail: any;
+  cache: any;
+  addItemToCache: (any) => void;
+}
+
+const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
   const [isPersonalInfoEdit, setIsPersonalInfoEdit] = useState(false);
   const [isMobilePhoneEdit, setIsMobilePhoneEdit] = useState(false);
   const [isEmailAddressEdit, setIsEmailAddressEdit] = useState(false);
   const [customerData, setCustomerData] = useState(customerDetail);
   const [
     updateCurrentCustomerData,
-    handleUpdateCurrentUserData
+    handleUpdateCurrentUserData,
   ] = useHandleFetch({}, 'updateCurrentCustomerData');
+
+  const [selectedCountryValue, setSelectedCountryValue] = React.useState({
+    value: 'country',
+    label: 'Country',
+  });
+
+  const [selectedCityValue, setSelectedCityValue] = React.useState({
+    value: 'city',
+    label: 'City',
+  });
+
+  const [countryListState, handleCountryListFetch] = useHandleFetch(
+    [],
+    'countryList'
+  );
+
+  const [cityListState, handleCityListFetch] = useHandleFetch([], 'cityList');
+
+  const [countryList, setCountryList] = useState([]);
+  const [cityList, setCityList] = useState([]);
 
   const handleUpdateProfileData = async (updatedValues, actions, type) => {
     const updatedCustomerRes = await handleUpdateCurrentUserData({
       body: {
-        ...updatedValues
-      }
+        ...updatedValues,
+        country: selectedCountryValue.value,
+        city: selectedCityValue.value,
+      },
     });
 
     if (updatedCustomerRes['status'] === 'ok') {
       actions.setSubmitting(false);
-      setCustomerData(updatedValues);
+      setCustomerData({
+        ...updatedValues,
+        country: selectedCountryValue.value,
+        city: selectedCityValue.value,
+      });
       if (type === 'personalinfo') {
         setIsPersonalInfoEdit(false);
       } else if (type === 'mobile') {
@@ -88,13 +108,71 @@ const MyAccount = ({ customerDetail }: Props) => {
     }
   };
 
+  useEffect(() => {
+    if (checkIfItemExistsInCache(`countryList`, cache)) {
+      const countryList = cache['countryList'];
+      setCountryList(countryList);
+    } else {
+      const getAndSetCountryList = async () => {
+        const countryList = await handleCountryListFetch({});
+        // @ts-ignore
+        if (countryList) {
+          // @ts-ignore
+          setCountryList(countryList);
+          addItemToCache({
+            countryList: countryList,
+          });
+        }
+      };
+
+      getAndSetCountryList();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (
+      checkIfItemExistsInCache(`cityList/${selectedCountryValue.value}`, cache)
+    ) {
+      const cityList = cache[`cityList/${selectedCountryValue.value}`];
+      setCityList(cityList);
+    } else {
+      const getAndSetCityList = async () => {
+        const cityList = await handleCityListFetch({
+          urlOptions: {
+            placeHolders: {
+              country: selectedCountryValue.value,
+            },
+          },
+        });
+        // @ts-ignore
+        if (cityList) {
+          // @ts-ignore
+          setCityList(cityList);
+          addItemToCache({
+            [`cityList/${selectedCountryValue.value}`]: cityList,
+          });
+        }
+      };
+
+      getAndSetCityList();
+    }
+  }, [selectedCountryValue]);
+
+  const handleSelectCountryChange = (value) => {
+    setSelectedCountryValue(value);
+  };
+
+  const handleSelectCityChange = (value) => {
+    setSelectedCityValue(value);
+  };
+
   return (
     <div className='myAccount'>
       <div className='myAccountSectionHeader'>
         <h2 className='myAccountSectionHeader-main'>Personal Information</h2>
         <h2
           className='myAccountSectionHeader-button'
-          onClick={() => setIsPersonalInfoEdit(value => !value)}
+          onClick={() => setIsPersonalInfoEdit((value) => !value)}
         >
           {isPersonalInfoEdit ? 'Remove Edit' : 'Change Information'}
         </h2>
@@ -122,7 +200,7 @@ const MyAccount = ({ customerDetail }: Props) => {
               isValid,
               isSubmitting,
               touched,
-              handleBlur
+              handleBlur,
             }) => (
               <>
                 <TextFeildGroup
@@ -167,21 +245,48 @@ const MyAccount = ({ customerDetail }: Props) => {
                   }
                 />
 
-                <TextFeildGroup
-                  label='City'
-                  name='city'
-                  placeholder='Enter your city'
-                  type='text'
-                  value={values.city}
-                  onChange={handleChange('city')}
-                  errors={
-                    errors.city ||
-                    (!isSubmitting &&
-                      updateCurrentCustomerData.error['error']['city'])
-                  }
-                />
+                {countryList.length > 0 && (
+                  <div>
+                    <Select
+                      value={selectedCountryValue}
+                      onChange={(value) => handleSelectCountryChange(value)}
+                      options={countryList.map((country) => ({
+                        value: country['name'],
+                        label: country['name'],
+                      }))}
+                    />
 
-                <TextFeildGroup
+                    <div className='select-invalid-feedback'>
+                      {errors.country ||
+                        (!isSubmitting &&
+                          updateCurrentCustomerData.error['error']['country'])}
+                    </div>
+                  </div>
+                )}
+
+                {cityList && (
+                  <div
+                    style={{
+                      margin: '20px 0',
+                    }}
+                  >
+                    <Select
+                      value={selectedCityValue}
+                      onChange={(value) => handleSelectCityChange(value)}
+                      options={cityList.map((city) => ({
+                        value: city['name'],
+                        label: city['name'],
+                      }))}
+                    />
+                    <div className='select-invalid-feedback'>
+                      {errors.city ||
+                        (!isSubmitting &&
+                          updateCurrentCustomerData.error['error']['city'])}
+                    </div>
+                  </div>
+                )}
+
+                {/* <TextFeildGroup
                   label='Country'
                   name='country'
                   placeholder='Enter your country'
@@ -195,9 +300,23 @@ const MyAccount = ({ customerDetail }: Props) => {
                   }
                 />
 
+                <TextFeildGroup
+                  label='City'
+                  name='city'
+                  placeholder='Enter your city'
+                  type='text'
+                  value={values.city}
+                  onChange={handleChange('city')}
+                  errors={
+                    errors.city ||
+                    (!isSubmitting &&
+                      updateCurrentCustomerData.error['error']['city'])
+                  }
+                /> */}
+
                 <div
                   style={{
-                    width: '100px'
+                    width: '100px',
                   }}
                 >
                   <AuthButton
@@ -206,9 +325,7 @@ const MyAccount = ({ customerDetail }: Props) => {
                       !isValid ||
                       !values.firstName ||
                       !values.lastName ||
-                      !values.address1 ||
-                      !values.city ||
-                      !values.country
+                      !values.address1
                     }
                   >
                     {isSubmitting ? 'Saving...' : 'Save'}
@@ -272,7 +389,7 @@ const MyAccount = ({ customerDetail }: Props) => {
         <h2 className='myAccountSectionHeader-main'>Mobile number</h2>
         <h2
           className='myAccountSectionHeader-button'
-          onClick={() => setIsMobilePhoneEdit(value => !value)}
+          onClick={() => setIsMobilePhoneEdit((value) => !value)}
         >
           {isMobilePhoneEdit ? 'Remove Edit' : 'Change Mobile Phone'}
         </h2>
@@ -300,7 +417,7 @@ const MyAccount = ({ customerDetail }: Props) => {
               isValid,
               isSubmitting,
               touched,
-              handleBlur
+              handleBlur,
             }) => (
               <>
                 <TextFeildGroup
@@ -319,7 +436,7 @@ const MyAccount = ({ customerDetail }: Props) => {
 
                 <div
                   style={{
-                    width: '100px'
+                    width: '100px',
                   }}
                 >
                   <AuthButton
@@ -351,7 +468,7 @@ const MyAccount = ({ customerDetail }: Props) => {
         <h2 className='myAccountSectionHeader-main'>Email Address</h2>
         <h2
           className='myAccountSectionHeader-button'
-          onClick={() => setIsEmailAddressEdit(value => !value)}
+          onClick={() => setIsEmailAddressEdit((value) => !value)}
         >
           {isEmailAddressEdit ? 'Remove Edit' : 'Change Email Address'}
         </h2>
@@ -379,7 +496,7 @@ const MyAccount = ({ customerDetail }: Props) => {
               isValid,
               isSubmitting,
               touched,
-              handleBlur
+              handleBlur,
             }) => (
               <>
                 <TextFeildGroup
@@ -397,7 +514,7 @@ const MyAccount = ({ customerDetail }: Props) => {
                 />
                 <div
                   style={{
-                    width: '100px'
+                    width: '100px',
                   }}
                 >
                   <AuthButton
@@ -429,4 +546,17 @@ const MyAccount = ({ customerDetail }: Props) => {
   );
 };
 
-export default MyAccount;
+const mapDispatchToProps = {
+  addItemToCache: cacheOperations.addItemToCache,
+};
+
+const mapStateToProps = (state) => ({
+  cache: state.cache,
+});
+
+// @ts-ignore
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+  // @ts-ignore
+)(MyAccount);

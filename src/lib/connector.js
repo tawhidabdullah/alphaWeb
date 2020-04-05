@@ -35,10 +35,10 @@ class Connector {
       headers: new Headers({
         'Content-Type': 'application/json',
         ...(options.headers && {
-          ...options.headers
-        })
+          ...options.headers,
+        }),
       }),
-      body: api.method !== 'get' ? JSON.stringify(options.body) : null
+      body: api.method !== 'get' ? JSON.stringify(options.body) : null,
     };
 
     //*replace variable parts in url with actual data if params exists |or| just return the url

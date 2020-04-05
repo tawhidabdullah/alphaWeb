@@ -48,7 +48,7 @@ const CartOverLayCartItem = ({
 
       // @ts-ignore
       if (updateCartItemRes) {
-        return changeQuantity(product, --updateCartItemRes['quantity']);
+        return changeQuantity(product, updateCartItemRes['quantity']);
       }
     } else {
       const updateCartItemRes = await handleUpdateCartItemFetch({
@@ -64,7 +64,7 @@ const CartOverLayCartItem = ({
 
       // @ts-ignore
       if (updateCartItemRes) {
-        return changeQuantity(product, ++updateCartItemRes['quantity']);
+        return changeQuantity(product, updateCartItemRes['quantity']);
       }
 
       console.log('updateCartItemRes', updateCartItemRes);

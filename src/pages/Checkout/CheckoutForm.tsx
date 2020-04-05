@@ -1,4 +1,5 @@
 import React from 'react';
+import Select from 'react-select';
 import { TextFeildGroup } from '../../components/Field';
 
 interface Props {
@@ -11,6 +12,12 @@ interface Props {
   serverErrors: any;
   isSubmitting: boolean;
   isAuthenticated: boolean;
+  countryList: any;
+  selectedCountryValue: any;
+  handleSelectCountryChange: (any) => void;
+  cityList: any;
+  selectedCityValue: any;
+  handleSelectCityChange: (any) => void;
 }
 
 const CheckoutForm = ({
@@ -21,6 +28,12 @@ const CheckoutForm = ({
   serverErrors,
   paymentMethod,
   isAuthenticated,
+  countryList,
+  selectedCountryValue,
+  handleSelectCountryChange,
+  cityList,
+  selectedCityValue,
+  handleSelectCityChange,
 }: Props) => {
   return (
     <>
@@ -31,7 +44,10 @@ const CheckoutForm = ({
         type='text'
         value={values.firstName}
         onChange={handleChange('firstName')}
-        errors={errors.firstName || (!isSubmitting && serverErrors.firstName)}
+        errors={
+          errors.firstName ||
+          (!isSubmitting && serverErrors.firstName && serverErrors.firstName)
+        }
       />
 
       <TextFeildGroup
@@ -84,7 +100,8 @@ const CheckoutForm = ({
             value={values.passwordConfirmation}
             onChange={handleChange('passwordConfirmation')}
             errors={
-              errors.password2 || (!isSubmitting && serverErrors.password2)
+              errors.passwordConfirmation ||
+              (!isSubmitting && serverErrors.password2)
             }
           />
         </>
@@ -99,26 +116,43 @@ const CheckoutForm = ({
         onChange={handleChange('address1')}
         errors={errors.address1 || (!isSubmitting && serverErrors.address1)}
       />
+      {countryList.length > 0 && (
+        <div>
+          <Select
+            value={selectedCountryValue}
+            onChange={(value) => handleSelectCountryChange(value)}
+            options={countryList.map((country) => ({
+              value: country['name'],
+              label: country['name'],
+            }))}
+          />
 
-      <TextFeildGroup
-        label='City'
-        name='city'
-        placeholder='Enter your city'
-        type='text'
-        value={values.city}
-        onChange={handleChange('city')}
-        errors={errors.city || (!isSubmitting && serverErrors.city)}
-      />
+          <div className='select-invalid-feedback'>
+            {errors.country || (!isSubmitting && serverErrors.country)}
+          </div>
+        </div>
+      )}
 
-      <TextFeildGroup
-        label='Country'
-        name='country'
-        placeholder='Enter your country'
-        type='text'
-        value={values.country}
-        onChange={handleChange('country')}
-        errors={errors.country || (!isSubmitting && serverErrors.country)}
-      />
+      {cityList && (
+        <div
+          style={{
+            marginTop: '20px',
+          }}
+        >
+          <Select
+            value={selectedCityValue}
+            onChange={(value) => handleSelectCityChange(value)}
+            options={cityList.map((city) => ({
+              value: city['name'],
+              label: city['name'],
+            }))}
+          />
+
+          <div className='select-invalid-feedback'>
+            {errors.city || (!isSubmitting && serverErrors.city)}
+          </div>
+        </div>
+      )}
 
       {paymentMethod !== 'cod' && (
         <>

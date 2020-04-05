@@ -19,26 +19,27 @@ const SmallItem = ({
   productId,
   history,
   quantity,
-  isOrder
+  isOrder,
 }: Props) => {
   const [product, setProduct] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [productDetailState, handleProductFetch] = useHandleFetch(
     {},
-    'productDetail'
+    'productDetailById'
   );
 
   useEffect(() => {
-    if (isOrderDetails && isOrderDetails) {
+    if (isOrderDetails) {
       setIsLoading(true);
       const getAndSetProduct = async () => {
         const product = await handleProductFetch({
           urlOptions: {
             placeHolders: {
-              id: productId
-            }
-          }
+              id: productId,
+            },
+          },
         });
+        console.log('fuckit', productId);
 
         // @ts-ignore
         setProduct(product);
@@ -46,12 +47,10 @@ const SmallItem = ({
       };
       getAndSetProduct();
     }
-  }, []);
-
-  console.log('productItem', productItem);
+  }, [isOrderDetails]);
 
   return isOrderDetails ? (
-    (Object.keys(product).length > 0 && (
+    (product && Object.keys(product).length > 0 && (
       <div key={product['id']} className='small-product-item'>
         <div
           className='small-product-item-box-img'
@@ -70,7 +69,7 @@ const SmallItem = ({
             className='small-product-title'
             style={{
               color: '#17252a',
-              fontWeight: 700
+              fontWeight: 700,
             }}
           >
             {product['name']}
@@ -80,7 +79,7 @@ const SmallItem = ({
             <h2
               style={{
                 color: '#17252a',
-                fontWeight: 500
+                fontWeight: 500,
               }}
               className='small-product-offerPrice'
             >
@@ -90,7 +89,7 @@ const SmallItem = ({
             <h2
               style={{
                 color: '#17252a',
-                fontWeight: 500
+                fontWeight: 500,
               }}
               className='small-product-offerPrice'
             >
@@ -101,7 +100,7 @@ const SmallItem = ({
           <h2
             style={{
               fontWeight: 500,
-              color: '#17252a'
+              color: '#17252a',
             }}
             className='small-product-offerPrice'
           >
@@ -138,7 +137,7 @@ const SmallItem = ({
           <h2
             style={{
               color: '#17252a',
-              fontWeight: 500
+              fontWeight: 500,
             }}
             className='small-product-offerPrice'
           >
@@ -148,7 +147,7 @@ const SmallItem = ({
           <h2
             style={{
               color: '#17252a',
-              fontWeight: 500
+              fontWeight: 500,
             }}
             className='small-product-offerPrice'
           >

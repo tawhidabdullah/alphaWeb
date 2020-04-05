@@ -302,11 +302,111 @@ class Converter {
 
   /**
    * @public
-   * @method productSearch convert api data from API to general format based on config server
+   * @method countryList convert api data from API to general format based on config server
+   * @param {Object} data response objectc from alpha
+   * @returns {Object}  converted data
+   */
+  async countryList(resData) {
+    const data = resData || [];
+
+    const convertedData =
+      data.length > 0 &&
+      data.map((country) => {
+        return {
+          id: country._id || '',
+          name: country.name && country.name,
+        };
+      });
+
+    return convertedData;
+  }
+
+  /**
+   * @public
+   * @method cityList convert api data from API to general format based on config server
+   * @param {Object} data response objectc from alpha
+   * @returns {Object}  converted data
+   */
+  async cityList(resData) {
+    const data = resData || [];
+
+    const convertedData =
+      data.length > 0 &&
+      data.map((city) => {
+        return {
+          id: city._id || '',
+          name: city.name && city.name,
+        };
+      });
+
+    return convertedData;
+  }
+
+  /**
+   * @public
+   * @method productDetail convert api data from API to general format based on config server
    * @param {Object} data response objectc from alpha
    * @returns {Object}  converted data
    */
   async productDetail(data) {
+    const convertedData =
+      (Object.keys(data).length > 0 && {
+        id: data._id || data.id || '',
+        name: data.name || '',
+        description: data.description.replace(/<[^>]+>/g, '') || '',
+        regularPrice: data.price && data.price['regular'],
+        offerPrice: data.price && data.price['offer'],
+        url: data.url,
+        cover: `${config['baseURL']}${data.cover.medium}`,
+        category:
+          (data.category &&
+            data.category.length > 0 &&
+            data.category.map((cat) => {
+              return {
+                id: cat._id,
+                name: cat.name,
+              };
+            })) ||
+          data.category,
+        brand:
+          (data.brand &&
+            data.brand.length > 0 &&
+            data.brand.map((b) => {
+              return {
+                id: b._id,
+                name: b.name,
+              };
+            })) ||
+          data.brand,
+        tags:
+          (data.tags &&
+            data.tags.length > 0 &&
+            data.tags.map((tag) => {
+              return {
+                id: tag._id,
+                name: tag.name,
+              };
+            })) ||
+          data.tags,
+        availableStock: data.availableStock,
+        image:
+          (data.image &&
+            data.image.length > 0 &&
+            data.image.map((img) => `${config.baseURL}${img.medium}`)) ||
+          [],
+      }) ||
+      {};
+
+    return convertedData;
+  }
+
+  /**
+   * @public
+   * @method productDetailById convert api data from API to general format based on config server
+   * @param {Object} data response objectc from alpha
+   * @returns {Object}  converted data
+   */
+  async productDetailById(data) {
     const convertedData =
       (Object.keys(data).length > 0 && {
         id: data._id || data.id || '',
@@ -394,12 +494,9 @@ class Converter {
    */
   async createOrder(data) {
     //map props
-    let generalFormat = dataMap[config['server']]['createOrder']; //get genereal format from dataMap
 
     const formatedData = {
-      ...generalFormat,
-      id: data.id || data._id || '',
-      total: data.total || 0,
+      ...data,
     };
 
     return formatedData;
@@ -497,10 +594,71 @@ class Converter {
    * @param {Object} data response objectc from wc
    * @returns {Object}  converted data
    */
-  async getCurrentUserOrders(data) {
+  async getCurrentUserOrders(resData) {
     //map props
     // let generalFormat = dataMap[config['server']]['currentUserOrders']; //get genereal format from dataMap
 
+    // const x = {
+    //   page: {
+    //     totalIndex: 1,
+    //     startingIndex: 1,
+    //     endingIndex: 1,
+    //     total: 1,
+    //     current: 1,
+    //     next: null,
+    //     previous: null,
+    //     limit: 50,
+    //     items: 1,
+    //   },
+    //   data: [
+    //     {
+    //       _id: '5e8a1d90943b41413c7a415a',
+    //       date: '2020-04-05T18:04:00.066Z',
+    //       products: [
+    //         {
+    //           _id: '5e50db8580e719cc127bdbd0',
+    //           quantity: 1,
+    //           unitPrice: '550',
+    //           price: 550,
+    //         },
+    //       ],
+    //       billingAddress: {
+    //         firstName: 'Tawhid',
+    //         lastName: 'Abdullah',
+    //         country: 'Albania',
+    //         city: 'Arrën',
+    //         address1: 'useruser',
+    //         address2: null,
+    //         zipCode: null,
+    //         phone: 179534506417,
+    //         email: '333@gmail.com',
+    //         additionalInfo: null,
+    //       },
+    //       shippingAddress: {
+    //         firstName: 'Tawhid',
+    //         lastName: 'Abdullah',
+    //         country: 'Albania',
+    //         city: 'Arrën',
+    //         address1: 'useruser',
+    //         address2: null,
+    //         zipCode: null,
+    //         phone: 179534506417,
+    //         email: '333@gmail.com',
+    //         additionalInfo: null,
+    //       },
+    //       payment: {
+    //         paymentMethod: 'cod',
+    //         paymentAccountNumber: null,
+    //         transactionId: null,
+    //       },
+    //       status: 'pending',
+    //       totalPrice: 550,
+    //       customer: '5e8a1d90943b41413c7a4159',
+    //     },
+    //   ],
+    // };
+
+    const data = resData.data || [];
     const convertedData =
       (data.length > 0 &&
         data.map((item) => {
@@ -508,12 +666,15 @@ class Converter {
             id: item.id || item._id,
             billingAddress: item.billingAddress,
             status: item.status,
-            total: item.total,
+            total: item.totalPrice,
             products: item.products,
             date_created: item.date,
+            paymentMethod: item['payment']['paymentMethod'],
           };
         })) ||
       [];
+
+    console.log('convertedData', convertedData);
 
     return convertedData;
   }

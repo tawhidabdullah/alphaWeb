@@ -23,7 +23,7 @@ const ShoppingCart = ({
   changeQuantity,
   cartItems,
   clearCart,
-  session
+  session,
 }: Props) => {
   const [show, setShow] = useState(false);
 
@@ -67,7 +67,7 @@ const ShoppingCart = ({
           </div>
           <div className='card-body'>
             {cartItems.length > 0 ? (
-              cartItems.map(cartItem => (
+              cartItems.map((cartItem) => (
                 <React.Fragment key={cartItem._id}>
                   <CartItem
                     cartItem={cartItem}
@@ -89,7 +89,7 @@ const ShoppingCart = ({
               <>
                 <a
                   href='##'
-                  onClick={e => {
+                  onClick={(e) => {
                     e.preventDefault();
                     history.push('/');
                   }}
@@ -107,12 +107,10 @@ const ShoppingCart = ({
 
                 <a
                   href='##'
-                  onClick={e => {
+                  onClick={(e) => {
                     e.preventDefault();
 
-                    if (session['isAuthenticated']) {
-                      history.push('/checkout');
-                    } else handleShow();
+                    history.push('/checkout');
                   }}
                   className='btn btn-primary fixedBoostrapButtonTobePrimaryColor'
                 >
@@ -122,7 +120,7 @@ const ShoppingCart = ({
             ) : (
               <a
                 href='##'
-                onClick={e => {
+                onClick={(e) => {
                   e.preventDefault();
                   history.push('/');
                 }}
@@ -144,16 +142,16 @@ const ShoppingCart = ({
   );
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   cartItems: state.cart,
   totalPrice: cartSelectors.getTotalPriceOfCartItems(state.cart),
-  session: state.session
+  session: state.session,
 });
 
 const mapDispatchToProps = {
   removeFromCart: cartOperations.removeFromCart,
   changeQuantity: cartOperations.changeQuantity,
-  clearCart: cartOperations.clearCart
+  clearCart: cartOperations.clearCart,
 };
 
 // @ts-ignore

@@ -1,4 +1,6 @@
 import React from 'react';
+import Select from 'react-select';
+
 import { TextFeildGroup } from '../../components/Field';
 
 interface Props {
@@ -11,6 +13,12 @@ interface Props {
   serverErrors: any;
   isSubmitting: boolean;
   isAuthenticated: boolean;
+  countryList: any;
+  selectedShippingCountryValue: any;
+  handleSelectShippingCountryChange: (any) => void;
+  shippingCityList: any;
+  selectedShippingCityValue: any;
+  handleSelectShippingCityChange: (any) => void;
 }
 
 const CheckoutForm = ({
@@ -19,8 +27,12 @@ const CheckoutForm = ({
   errors,
   isSubmitting,
   serverErrors,
-  paymentMethod,
-  isAuthenticated,
+  countryList,
+  shippingCityList,
+  handleSelectShippingCityChange,
+  handleSelectShippingCountryChange,
+  selectedShippingCityValue,
+  selectedShippingCountryValue,
 }: Props) => {
   return (
     <>
@@ -82,29 +94,45 @@ const CheckoutForm = ({
           (!isSubmitting && serverErrors.shippingAddress1)
         }
       />
-      <TextFeildGroup
-        label='Shipping City'
-        name='shippingCity'
-        placeholder='Enter your Shipping City'
-        type='text'
-        value={values.shippingCity}
-        onChange={handleChange('shippingCity')}
-        errors={
-          errors.shippingCity || (!isSubmitting && serverErrors.shippingCity)
-        }
-      />
-      <TextFeildGroup
-        label='Shipping Country'
-        name='shippingCountry'
-        placeholder='Enter your Shipping Country'
-        type='text'
-        value={values.shippingCountry}
-        onChange={handleChange('shippingCountry')}
-        errors={
-          errors.shippingCountry ||
-          (!isSubmitting && serverErrors.shippingCountry)
-        }
-      />
+
+      {countryList.length > 0 && (
+        <div>
+          <Select
+            value={selectedShippingCountryValue}
+            onChange={(value) => handleSelectShippingCountryChange(value)}
+            options={countryList.map((country) => ({
+              value: country['name'],
+              label: country['name'],
+            }))}
+          />
+          <div className='select-invalid-feedback'>
+            {errors.shippingCountry ||
+              (!isSubmitting && serverErrors.shippingCountry)}
+          </div>
+        </div>
+      )}
+
+      {shippingCityList && (
+        <div
+          style={{
+            margin: '20px 0',
+          }}
+        >
+          <Select
+            value={selectedShippingCityValue}
+            onChange={(value) => handleSelectShippingCityChange(value)}
+            options={shippingCityList.map((city) => ({
+              value: city['name'],
+              label: city['name'],
+            }))}
+          />
+
+          <div className='select-invalid-feedback'>
+            {errors.shippingCity ||
+              (!isSubmitting && serverErrors.shippingCity)}
+          </div>
+        </div>
+      )}
     </>
   );
 };
