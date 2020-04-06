@@ -73,6 +73,15 @@ const ProductList = ({
     [],
     'brandProducts'
   );
+  const [productOf, setProductOf] = useState('');
+
+  const [pageNumberOfProduct, setPageNumberOfProduct] = useState(1);
+  const [
+    pageNumberOfCategoryProduct,
+    setPageNumberOfCategoryProduct,
+  ] = useState(1);
+  const [pageNumberOfTagProduct, setPageNumberOfTagProduct] = useState(1);
+  const [pageNumberOfBrandProduct, setPageNumberOfBrandProduct] = useState(1);
 
   const id = match.params.id;
 
@@ -99,100 +108,212 @@ const ProductList = ({
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  const getProducts = async () => {
-    setIsLoading(true);
+  const getProducts = async (pageNumber?: number) => {
+    if (!pageNumber || !(pageNumber > 1)) {
+      setIsLoading(true);
+    }
 
-    if (checkIfItemExistsInCache(`product`, cache)) {
+    if (checkIfItemExistsInCache(`product`, cache) && !pageNumber) {
+      console.log('cache11');
       const products = cache[`product`];
       // @ts-ignore
       setProducts(products);
+      setProductOf('product');
       setIsLoading(false);
     } else {
-      const products = await handleProductListFetch({});
+      const newProducts = await handleProductListFetch({
+        urlOptions: {
+          params: {
+            limitNumber: 10,
+            pageNumber: pageNumber ? pageNumber : pageNumberOfProduct,
+          },
+        },
+      });
 
       addItemToCache({
-        [`product`]: products,
+        [`product`]: newProducts,
       });
       // @ts-ignore
-      setProducts(products);
+
+      if (products.length > 0) {
+        // @ts-ignore
+        if (newProducts.length > 0) {
+          // @ts-ignore
+          const myProducts = [...products, ...newProducts];
+          // @ts-ignore
+          setProducts(myProducts);
+        } else {
+          // @ts-ignore
+          setProducts(products);
+        }
+      } else {
+        // @ts-ignore
+        setProducts(newProducts);
+      }
+
+      setProductOf('product');
       setIsLoading(false);
     }
   };
 
-  const setCategoryProducts = async (categoryId) => {
-    setIsLoading(true);
+  const setCategoryProducts = async (categoryId, pageNumber?: number) => {
+    if (!pageNumber || !(pageNumber > 1)) {
+      setIsLoading(true);
+    }
 
-    if (checkIfItemExistsInCache(`categoryProducts/${categoryId}`, cache)) {
+    if (
+      checkIfItemExistsInCache(`categoryProducts/${categoryId}`, cache) &&
+      !pageNumber
+    ) {
       const products = cache[`categoryProducts/${categoryId}`];
       // @ts-ignore
       setProducts(products);
       setIsLoading(false);
     } else {
-      const products = await handleCategoryProductsFetch({
+      const newProducts = await handleCategoryProductsFetch({
         urlOptions: {
           placeHolders: {
             id: categoryId,
           },
+          params: {
+            limitNumber: 15,
+            pageNumber: pageNumber ? pageNumber : pageNumberOfCategoryProduct,
+          },
         },
       });
 
-      addItemToCache({
-        [`categoryProducts/${categoryId}`]: products,
-      });
       // @ts-ignore
-      setProducts(products);
+      if (newProducts) {
+        addItemToCache({
+          [`categoryProducts/${categoryId}`]: newProducts,
+        });
+      }
+
+      if (products.length > 0) {
+        // @ts-ignore
+        if (newProducts.length > 0) {
+          // @ts-ignore
+          const myProducts = [...products, ...newProducts];
+          // @ts-ignore
+          setProducts(myProducts);
+        } else {
+          // @ts-ignore
+          setProducts(products);
+        }
+      } else {
+        // @ts-ignore
+        setProducts(newProducts);
+      }
+      setProductOf('category');
       setIsLoading(false);
     }
   };
 
-  const setTagProducts = async (tagId) => {
-    setIsLoading(true);
+  const setTagProducts = async (tagId, pageNumber?: number) => {
+    if (!pageNumber || !(pageNumber > 1)) {
+      setIsLoading(true);
+    }
 
-    if (checkIfItemExistsInCache(`tagProducts/${tagId}`, cache)) {
+    if (
+      checkIfItemExistsInCache(`tagProducts/${tagId}`, cache) &&
+      !pageNumber
+    ) {
       const products = cache[`tagProducts/${tagId}`];
       // @ts-ignore
       setProducts(products);
       setIsLoading(false);
     } else {
-      const products = await handleTagProductsFetch({
+      const newProducts = await handleTagProductsFetch({
         urlOptions: {
           placeHolders: {
             id: tagId,
           },
+          params: {
+            limitNumber: 15,
+            pageNumber: pageNumber ? pageNumber : pageNumberOfTagProduct,
+          },
         },
       });
 
-      addItemToCache({
-        [`tagProducts/${tagId}`]: products,
-      });
       // @ts-ignore
-      setProducts(products);
+      if (newProducts) {
+        addItemToCache({
+          [`tagProducts/${tagId}`]: newProducts,
+        });
+      }
+
+      if (products.length > 0) {
+        // @ts-ignore
+        if (newProducts.length > 0) {
+          // @ts-ignore
+          const myProducts = [...products, ...newProducts];
+          // @ts-ignore
+          setProducts(myProducts);
+        } else {
+          // @ts-ignore
+          setProducts(products);
+        }
+      } else {
+        // @ts-ignore
+        setProducts(newProducts);
+      }
+
+      setProductOf('tag');
+
       setIsLoading(false);
     }
   };
 
-  const setBrandProducts = async (brandId) => {
-    setIsLoading(true);
+  const setBrandProducts = async (brandId, pageNumber?: number) => {
+    if (!pageNumber || !(pageNumber > 1)) {
+      setIsLoading(true);
+    }
 
-    if (checkIfItemExistsInCache(`brandProducts/${brandId}`, cache)) {
+    if (
+      checkIfItemExistsInCache(`brandProducts/${brandId}`, cache) &&
+      !pageNumber
+    ) {
       const products = cache[`brandProducts/${brandId}`];
       // @ts-ignore
       setProducts(products);
       setIsLoading(false);
     } else {
-      const products = await handleTagProductsFetch({
+      const newProducts = await handleBrandProductsFetch({
         urlOptions: {
           placeHolders: {
             id: brandId,
           },
+          params: {
+            limitNumber: 15,
+            pageNumber: pageNumber ? pageNumber : pageNumberOfBrandProduct,
+          },
         },
       });
 
-      addItemToCache({
-        [`brandProducts/${brandId}`]: products,
-      });
       // @ts-ignore
-      setProducts(products);
+      if (newProducts) {
+        addItemToCache({
+          [`brandProducts/${brandId}`]: newProducts,
+        });
+      }
+
+      if (products.length > 0) {
+        // @ts-ignore
+        if (newProducts.length > 0) {
+          // @ts-ignore
+          const myProducts = [...products, ...newProducts];
+          // @ts-ignore
+          setProducts(myProducts);
+        } else {
+          // @ts-ignore
+          setProducts(products);
+        }
+      } else {
+        // @ts-ignore
+        setProducts(newProducts);
+      }
+
+      setProductOf('brand');
       setIsLoading(false);
     }
   };
@@ -551,6 +672,22 @@ const ProductList = ({
     setUiSelectItemActive('brand', brandId);
   };
 
+  const fetchMoreProductsData = () => {
+    if (productOf && productOf === 'product') {
+      getProducts(pageNumberOfProduct + 1);
+      setPageNumberOfProduct((pageNumber) => pageNumber + 1);
+    } else if (productOf && productOf === 'category') {
+      setCategoryProducts(id, pageNumberOfCategoryProduct + 1);
+      setPageNumberOfCategoryProduct((pageNumber) => pageNumber + 1);
+    } else if (productOf && productOf === 'tag') {
+      setTagProducts(id, pageNumberOfTagProduct + 1);
+      setPageNumberOfTagProduct((pageNumber) => pageNumber + 1);
+    } else if (productOf && productOf === 'brand') {
+      setBrandProducts(id, pageNumberOfBrandProduct + 1);
+      setPageNumberOfBrandProduct((pageNumber) => pageNumber + 1);
+    }
+  };
+
   return (
     <>
       <div className='Bcak-bg'>
@@ -585,7 +722,12 @@ const ProductList = ({
                     );
                   })}
               </div>
-              <Products products={products} isLoading={isLoading} />
+              <Products
+                products={products}
+                isLoading={isLoading}
+                productOf={productOf}
+                fetchMoreProductsData={fetchMoreProductsData}
+              />
             </div>
           </div>
         </div>

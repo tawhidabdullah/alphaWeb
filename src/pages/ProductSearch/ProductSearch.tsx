@@ -4,12 +4,12 @@ import queryString from 'query-string';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { useHandleFetch } from '../../hooks';
-import Footer from '../../layout/Footer';
 import { Spinner } from '../../components/Loading';
 import Select from 'react-select';
 import { ProductCard } from '../../components/Product';
 import { checkIfItemExistsInCache } from '../../utils';
 import { cacheOperations } from '../../state/ducks/cache';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 interface Props {
   location: any;
@@ -50,6 +50,11 @@ const ProductSearch = ({
     value: 'all',
     label: 'All Categories',
   });
+
+  const [
+    pageNumberOfCategoryProduct,
+    setPageNumberOfCategoryProduct,
+  ] = React.useState(1);
 
   const handleSelectCategoryChange = (value) => {
     setSelectedCategoryValueForSort(value);
@@ -147,6 +152,10 @@ const ProductSearch = ({
 
   React.useEffect(() => {
     const getProducts = async () => {
+      if (!(pageNumberOfCategoryProduct > 1)) {
+        setIsLoading(true);
+      }
+
       let cat = [];
       if (!(categories.length > 0)) {
         // @ts-ignore
@@ -155,15 +164,11 @@ const ProductSearch = ({
       }
 
       try {
-        setIsLoading(true);
-
         if (cat && cat.length > 0) {
           const categoryId = searchCategoryValue;
           const newCategories = [...cat];
           newCategories.forEach((cat) => {
             if (cat['id'] === categoryId) {
-              console.log('fuckyou');
-
               // @ts-ignore
               cat[`is${cat['id']}`] = true;
               // @ts-ignore
@@ -200,128 +205,211 @@ const ProductSearch = ({
         if (selectedValueForSort.value === 'Relevance') {
           if (
             checkIfItemExistsInCache(
-              `productSearch/${searchCategoryValue}/${queryValue}`,
+              `productSearch/Relevance${searchCategoryValue}/${queryValue}`,
               cache
-            )
+            ) &&
+            !(pageNumberOfCategoryProduct > 1)
           ) {
             const products =
-              cache[`productSearch/${searchCategoryValue}/${queryValue}`];
+              cache[
+                `productSearch/Relevance${searchCategoryValue}/${queryValue}`
+              ];
             // @ts-ignore
             setProducts(products);
             setIsLoading(false);
           } else {
-            const products = await handleProductSearchFetch({
+            const newProducts = await handleProductSearchFetch({
               urlOptions: {
                 params: {
                   searchCategoryValue,
                   queryValue,
+                  sortValue: 'price',
+                  pageNumber: pageNumberOfCategoryProduct,
                 },
               },
             });
 
-            if (products) {
+            if (newProducts) {
               addItemToCache({
-                [`productSearch/${searchCategoryValue}/${queryValue}`]: products,
+                [`productSearch/Relevance${searchCategoryValue}/${queryValue}`]: products,
               });
             }
 
-            // @ts-ignore
-            setProducts(products);
+            if (products.length > 0) {
+              // @ts-ignore
+              if (newProducts.length > 0) {
+                // @ts-ignore
+                const myProducts = [...products, ...newProducts];
+                // @ts-ignore
+                setProducts(myProducts);
+              } else {
+                // @ts-ignore
+                setProducts(products);
+              }
+            } else {
+              // @ts-ignore
+              setProducts(newProducts);
+            }
+
             setIsLoading(false);
           }
         } else if (selectedValueForSort.value === 'priceHighToLow') {
           if (
             checkIfItemExistsInCache(
-              `productSearch/${searchCategoryValue}/${queryValue}`,
+              `productSearch/priceHighToLow${searchCategoryValue}/${queryValue}`,
               cache
-            )
+            ) &&
+            !(pageNumberOfCategoryProduct > 1)
           ) {
             const products =
-              cache[`productSearch/${searchCategoryValue}/${queryValue}`];
+              cache[
+                `productSearch/priceHighToLow${searchCategoryValue}/${queryValue}`
+              ];
             // @ts-ignore
             setProducts(products);
             setIsLoading(false);
           } else {
-            const products = await handleProductSearchFetch({
+            const newProducts = await handleProductSearchFetch({
               urlOptions: {
                 params: {
                   searchCategoryValue,
                   queryValue,
+                  sortValue: 'price',
+                  sortOrderValue: -1,
+                  limitNumber: 15,
+                  pageNumber: pageNumberOfCategoryProduct,
                 },
               },
             });
-            if (products) {
+
+            if (newProducts) {
               addItemToCache({
-                [`productSearch/${searchCategoryValue}/${queryValue}`]: products,
+                [`productSearch/priceHighToLow${searchCategoryValue}/${queryValue}`]: products,
               });
             }
 
-            // @ts-ignore
-            setProducts(products);
+            if (products.length > 0) {
+              // @ts-ignore
+              if (newProducts.length > 0) {
+                // @ts-ignore
+                const myProducts = [...products, ...newProducts];
+                // @ts-ignore
+                setProducts(myProducts);
+              } else {
+                // @ts-ignore
+                setProducts(products);
+              }
+            } else {
+              // @ts-ignore
+              setProducts(newProducts);
+            }
+
             setIsLoading(false);
           }
         } else if (selectedValueForSort.value === 'priceLowToHigh') {
           if (
             checkIfItemExistsInCache(
-              `productSearch/${searchCategoryValue}/${queryValue}`,
+              `productSearch/priceLowToHigh${searchCategoryValue}/${queryValue}`,
               cache
-            )
+            ) &&
+            !(pageNumberOfCategoryProduct > 1)
           ) {
             const products =
-              cache[`productSearch/${searchCategoryValue}/${queryValue}`];
+              cache[
+                `productSearch/priceLowToHigh${searchCategoryValue}/${queryValue}`
+              ];
             // @ts-ignore
             setProducts(products);
             setIsLoading(false);
           } else {
-            const products = await handleProductSearchFetch({
+            const newProducts = await handleProductSearchFetch({
               urlOptions: {
                 params: {
                   searchCategoryValue,
                   queryValue,
+                  sortValue: 'price',
+                  sortOrderValue: 1,
+                  limitNumber: 15,
+                  pageNumber: pageNumberOfCategoryProduct,
                 },
               },
             });
 
-            if (products) {
+            if (newProducts) {
               addItemToCache({
-                [`productSearch/${searchCategoryValue}/${queryValue}`]: products,
+                [`productSearch/priceLowToHigh${searchCategoryValue}/${queryValue}`]: products,
               });
             }
 
-            // @ts-ignore
-            setProducts(products);
+            if (products.length > 0) {
+              // @ts-ignore
+              if (newProducts.length > 0) {
+                // @ts-ignore
+                const myProducts = [...products, ...newProducts];
+                // @ts-ignore
+                setProducts(myProducts);
+              } else {
+                // @ts-ignore
+                setProducts(products);
+              }
+            } else {
+              // @ts-ignore
+              setProducts(newProducts);
+            }
+
             setIsLoading(false);
           }
         } else if (selectedValueForSort.value === 'newestFirst') {
           if (
             checkIfItemExistsInCache(
-              `productSearch/${searchCategoryValue}/${queryValue}`,
+              `productSearch/newestFirst${searchCategoryValue}/${queryValue}`,
               cache
-            )
+            ) &&
+            !(pageNumberOfCategoryProduct > 1)
           ) {
             const products =
-              cache[`productSearch/${searchCategoryValue}/${queryValue}`];
+              cache[
+                `productSearch/newestFirst${searchCategoryValue}/${queryValue}`
+              ];
             // @ts-ignore
             setProducts(products);
             setIsLoading(false);
           } else {
-            const products = await handleProductSearchFetch({
+            const newProducts = await handleProductSearchFetch({
               urlOptions: {
                 params: {
                   searchCategoryValue,
                   queryValue,
+                  sortValue: 'added',
+                  sortOrderValue: -1,
+                  limitNumber: 15,
+                  pageNumber: pageNumberOfCategoryProduct,
                 },
               },
             });
 
-            if (products) {
+            if (newProducts) {
               addItemToCache({
-                [`productSearch/${searchCategoryValue}/${queryValue}`]: products,
+                [`productSearch/newestFirst${searchCategoryValue}/${queryValue}`]: products,
               });
             }
 
-            // @ts-ignore
-            setProducts(products);
+            if (products.length > 0) {
+              // @ts-ignore
+              if (newProducts.length > 0) {
+                // @ts-ignore
+                const myProducts = [...products, ...newProducts];
+                // @ts-ignore
+                setProducts(myProducts);
+              } else {
+                // @ts-ignore
+                setProducts(products);
+              }
+            } else {
+              // @ts-ignore
+              setProducts(newProducts);
+            }
+
             setIsLoading(false);
           }
         }
@@ -330,8 +418,17 @@ const ProductSearch = ({
         setIsLoading(false);
       }
     };
-    queryValue && getProducts();
-  }, [queryValue, searchCategoryValue, selectedValueForSort]);
+    getProducts();
+  }, [
+    queryValue,
+    searchCategoryValue,
+    selectedValueForSort,
+    pageNumberOfCategoryProduct,
+  ]);
+
+  const fetchMoreProductsData = () => {
+    setPageNumberOfCategoryProduct((pageNumber) => pageNumber + 1);
+  };
 
   return (
     <>
@@ -452,6 +549,34 @@ const ProductSearch = ({
               ''
             )}
 
+            {products.length > 0 && (
+              <InfiniteScroll
+                style={{
+                  overflow: 'hidden',
+                }}
+                dataLength={products.length}
+                next={fetchMoreProductsData}
+                hasMore={true}
+                loader={<h4></h4>}
+              >
+                <div
+                  style={{
+                    paddingTop: '10px',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    justifyContent: 'space-around',
+                    alignItems: 'center',
+                  }}
+                >
+                  {products.map((product) => {
+                    return (
+                      <ProductCard product={product} productListing={true} />
+                    );
+                  })}
+                </div>
+              </InfiniteScroll>
+            )}
+
             <div
               style={{
                 paddingTop: '10px',
@@ -461,15 +586,7 @@ const ProductSearch = ({
                 alignItems: 'center',
               }}
             >
-              {(!isLoading &&
-                products &&
-                products.length > 0 &&
-                products.map((product) => {
-                  return (
-                    <ProductCard product={product} productListing={true} />
-                  );
-                })) ||
-                (isLoading && <Spinner />)}
+              {isLoading && <Spinner />}
 
               {!isLoading && products && !(products.length > 0) ? (
                 <div
@@ -507,7 +624,6 @@ const ProductSearch = ({
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 };

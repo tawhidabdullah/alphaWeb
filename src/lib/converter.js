@@ -325,6 +325,18 @@ class Converter {
 
   /**
    * @public
+   * @method getDeliveryCharge convert api data from API to general format based on config server
+   * @param {Object} data response objectc from alpha
+   * @returns {Object}  converted data
+   */
+  async getDeliveryCharge(data) {
+    const convertedData = data;
+
+    return convertedData;
+  }
+
+  /**
+   * @public
    * @method cityList convert api data from API to general format based on config server
    * @param {Object} data response objectc from alpha
    * @returns {Object}  converted data

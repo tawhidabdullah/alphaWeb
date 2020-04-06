@@ -13,6 +13,7 @@ const personalInfoInitialValues = {
   firstName: '',
   lastName: '',
   address1: '',
+  address2: '',
 };
 
 const mobilePhoneInitialValues = {
@@ -33,9 +34,13 @@ const personalInfoValidationSchema = Yup.object().shape({
     .required()
     .min(2, 'First name must have at least 2 characters '),
   address1: Yup.string()
-    .label('Address')
+    .label('Address line 1')
     .required()
-    .min(3, 'Address must have at least 3 characters '),
+    .min(3, 'Address line 1 must have at least 3 characters '),
+  address2: Yup.string()
+    .label('Address line 2')
+    .required()
+    .min(3, 'Address line 2 must have at least 3 characters '),
 });
 
 const mobilePhoneValidationSchema = Yup.object().shape({
@@ -63,8 +68,8 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
   ] = useHandleFetch({}, 'updateCurrentCustomerData');
 
   const [selectedCountryValue, setSelectedCountryValue] = React.useState({
-    value: 'country',
-    label: 'Country',
+    value: 'Bangladesh',
+    label: 'Bangladesh',
   });
 
   const [selectedCityValue, setSelectedCityValue] = React.useState({
@@ -135,6 +140,12 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
     ) {
       const cityList = cache[`cityList/${selectedCountryValue.value}`];
       setCityList(cityList);
+      // @ts-ignore
+      const cityValue = cityList.length > 0 && cityList[0];
+      setSelectedCityValue({
+        value: cityValue['name'],
+        label: cityValue['name'],
+      });
     } else {
       const getAndSetCityList = async () => {
         const cityList = await handleCityListFetch({
@@ -148,6 +159,12 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
         if (cityList) {
           // @ts-ignore
           setCityList(cityList);
+          // @ts-ignore
+          const cityValue = cityList.length > 0 && cityList[0];
+          setSelectedCityValue({
+            value: cityValue['name'],
+            label: cityValue['name'],
+          });
           addItemToCache({
             [`cityList/${selectedCountryValue.value}`]: cityList,
           });
@@ -231,20 +248,6 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
                   }
                 />
 
-                <TextFeildGroup
-                  label='Address'
-                  name='address1'
-                  placeholder='Enter your address'
-                  type='text'
-                  value={values.address1}
-                  onChange={handleChange('address1')}
-                  errors={
-                    errors.address1 ||
-                    (!isSubmitting &&
-                      updateCurrentCustomerData.error['error']['address1'])
-                  }
-                />
-
                 {countryList.length > 0 && (
                   <div>
                     <Select
@@ -286,33 +289,33 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
                   </div>
                 )}
 
-                {/* <TextFeildGroup
-                  label='Country'
-                  name='country'
-                  placeholder='Enter your country'
+                <TextFeildGroup
+                  label='Address line 1'
+                  name='address1'
+                  placeholder='Enter your address line 1'
                   type='text'
-                  value={values.country}
-                  onChange={handleChange('country')}
+                  value={values.address1}
+                  onChange={handleChange('address1')}
                   errors={
-                    errors.country ||
+                    errors.address1 ||
                     (!isSubmitting &&
-                      updateCurrentCustomerData.error['error']['country'])
+                      updateCurrentCustomerData.error['error']['address1'])
                   }
                 />
 
                 <TextFeildGroup
-                  label='City'
-                  name='city'
-                  placeholder='Enter your city'
+                  label='Address line 2'
+                  name='address2'
+                  placeholder='Enter your address line 2'
                   type='text'
-                  value={values.city}
-                  onChange={handleChange('city')}
+                  value={values.address2}
+                  onChange={handleChange('address2')}
                   errors={
-                    errors.city ||
+                    errors.address2 ||
                     (!isSubmitting &&
-                      updateCurrentCustomerData.error['error']['city'])
+                      updateCurrentCustomerData.error['error']['address2'])
                   }
-                /> */}
+                />
 
                 <div
                   style={{
@@ -349,8 +352,8 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
 
             {customerData['lastName'] && (
               <TextFeildGroup
-                label='Firstname'
-                name='firstName'
+                label='Lastname'
+                name='lastname'
                 value={customerData['lastName']}
                 disabled={true}
               />
@@ -376,9 +379,18 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
 
             {customerData['address1'] && (
               <TextFeildGroup
-                label='Address'
+                label='Address line 1'
                 name='address1'
                 value={customerData['address1']}
+                disabled={true}
+              />
+            )}
+
+            {customerData['address2'] && (
+              <TextFeildGroup
+                label='Address line 2'
+                name='address2'
+                value={customerData['address2']}
                 disabled={true}
               />
             )}

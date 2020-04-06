@@ -107,15 +107,6 @@ const CheckoutForm = ({
         </>
       )}
 
-      <TextFeildGroup
-        label='Address'
-        name='address1'
-        placeholder='Enter your address'
-        type='text'
-        value={values.address1}
-        onChange={handleChange('address1')}
-        errors={errors.address1 || (!isSubmitting && serverErrors.address1)}
-      />
       {countryList.length > 0 && (
         <div>
           <Select
@@ -154,34 +145,25 @@ const CheckoutForm = ({
         </div>
       )}
 
-      {paymentMethod !== 'cod' && (
-        <>
-          <TextFeildGroup
-            name='paymentNumber'
-            label='Payment Mobile Number'
-            placeholder='017xxx'
-            type='text'
-            value={values.paymentNumber}
-            onChange={handleChange('paymentNumber')}
-            errors={
-              errors.paymentNumber ||
-              (!isSubmitting && serverErrors.paymentNumber)
-            }
-          />
+      <TextFeildGroup
+        label='Address line 1'
+        name='address1'
+        placeholder='Enter your address line 1'
+        type='text'
+        value={values.address1}
+        onChange={handleChange('address1')}
+        errors={errors.address1 || (!isSubmitting && serverErrors.address1)}
+      />
 
-          <TextFeildGroup
-            label='Transaction Id'
-            name='paymentId'
-            placeholder='Enter Trans Id...'
-            type='text'
-            value={values.paymentId}
-            onChange={handleChange('paymentId')}
-            errors={
-              errors.paymentId || (!isSubmitting && serverErrors.paymentId)
-            }
-          />
-        </>
-      )}
+      <TextFeildGroup
+        label='Address line 2'
+        name='address2'
+        placeholder='Enter your address line 2'
+        type='text'
+        value={values.address2}
+        onChange={handleChange('address2')}
+        errors={errors.address2 || (!isSubmitting && serverErrors.address2)}
+      />
     </>
   );
 };

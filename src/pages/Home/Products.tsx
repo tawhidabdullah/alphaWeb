@@ -41,6 +41,10 @@ const Products = ({
             placeHolders: {
               id: categoryId,
             },
+            params: {
+              limitNumber: 10,
+              pageNumber: 1,
+            },
           },
         });
 

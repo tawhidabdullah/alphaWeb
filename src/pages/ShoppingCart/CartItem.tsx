@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { numberWithCommas } from '../../utils';
 import { useHandleFetch } from '../../hooks';
 
@@ -28,6 +28,7 @@ const CartItem = ({
     'updateCartItem'
   );
 
+  const [quantityValue, setQuantityValue] = useState(quantity);
   const handleChangeQuantity = async (value) => {
     console.log(value);
     if (value === 'minus') {
@@ -84,8 +85,29 @@ const CartItem = ({
     }
   };
 
-  const handleQuantityChange = (e) => {};
+  useEffect(() => {
+    if (quantityValue > 1) {
+      const updateQuantity = async () => {
+        const updateCartItemRes = await handleUpdateCartItemFetch({
+          urlOptions: {
+            placeHolders: {
+              cartKey,
+            },
+          },
+          body: {
+            quantity: quantityValue,
+          },
+        });
 
+        // @ts-ignore
+        if (updateCartItemRes) {
+          return changeQuantity(product, updateCartItemRes['quantity']);
+        }
+      };
+
+      updateQuantity();
+    }
+  }, [quantityValue]);
   return (
     <div className='row align-items-center mb-3'>
       <div
@@ -137,12 +159,10 @@ const CartItem = ({
               className='plus'
             />
             <input
-              onChange={handleQuantityChange}
+              onChange={(e) => setQuantityValue(e.target.value)}
               type='number'
-              step='1'
-              max='10'
               min='1'
-              value={quantity}
+              value={quantityValue}
               title='Qty'
               className='qty'
               size={4}

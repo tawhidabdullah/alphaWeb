@@ -82,18 +82,6 @@ const CheckoutForm = ({
           errors.shippingEmail || (!isSubmitting && serverErrors.shippingEmail)
         }
       />
-      <TextFeildGroup
-        label='Address'
-        name='Shipping Address'
-        placeholder='Enter your Shipping Address'
-        type='text'
-        value={values.shippingAddress1}
-        onChange={handleChange('shippingAddress1')}
-        errors={
-          errors.shippingAddress1 ||
-          (!isSubmitting && serverErrors.shippingAddress1)
-        }
-      />
 
       {countryList.length > 0 && (
         <div>
@@ -133,6 +121,32 @@ const CheckoutForm = ({
           </div>
         </div>
       )}
+
+      <TextFeildGroup
+        label='Shipping Address line 1'
+        name='shippingAddress1'
+        placeholder='Enter your Shipping Address line 1'
+        type='text'
+        value={values.shippingAddress1}
+        onChange={handleChange('shippingAddress1')}
+        errors={
+          errors.shippingAddress1 ||
+          (!isSubmitting && serverErrors.shippingAddress1)
+        }
+      />
+
+      <TextFeildGroup
+        label='Shipping Address line 2'
+        name='shippingAddress2'
+        placeholder='Enter your Shipping Address line 2'
+        type='text'
+        value={values.shippingAddress2}
+        onChange={handleChange('shippingAddress2')}
+        errors={
+          errors.shippingAddress2 ||
+          (!isSubmitting && serverErrors.shippingAddress2)
+        }
+      />
     </>
   );
 };

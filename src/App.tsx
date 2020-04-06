@@ -15,6 +15,7 @@ import Signup from './pages/Auth/Signup';
 import Checkout from './pages/Checkout';
 import Dashboard from './Dashboard';
 import { NotFoundPage } from './pages/NotFound';
+import Footer from './layout/Footer';
 
 const App = () => {
   return (
@@ -54,6 +55,7 @@ const App = () => {
 
           <Route path='*' component={NotFoundPage} />
         </Switch>
+        <Footer />
       </React.Fragment>
     </BrowserRouter>
   );

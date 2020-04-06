@@ -14,10 +14,10 @@ import { useHandleFetch } from '../../hooks';
 import { Spinner } from '../../components/Loading';
 import { AuthButton } from '../../components/Button';
 import Checkbox from '../../components/Checkbox';
-import Select from 'react-select';
 import { cacheOperations } from '../../state/ducks/cache';
 import { checkIfItemExistsInCache } from '../../utils';
 import { cartOperations } from '../../state/ducks/cart';
+import PaymentForm from './PaymentForm';
 
 // import checkout component
 import CheckoutSuccessModal from './CheckoutSuccessModal';
@@ -52,9 +52,13 @@ const validationSchemaForNotSigninCod = Yup.object().shape({
     'Passwords must match'
   ),
   address1: Yup.string()
-    .label('Address')
+    .label('Address line 1')
     .required()
-    .min(3, 'Address must have at least 3 characters '),
+    .min(3, 'Address line 1 must have at least 3 characters '),
+  address2: Yup.string()
+    .label('Address line 2')
+    .required()
+    .min(3, 'Address line 2 must have at least 3 characters '),
 });
 
 const validationSchemaForCod = Yup.object().shape({
@@ -74,9 +78,13 @@ const validationSchemaForCod = Yup.object().shape({
     .required('Email is required')
     .email('Enter a valid email'),
   address1: Yup.string()
-    .label('Address')
+    .label('Address line 1')
     .required()
-    .min(3, 'Address must have at least 3 characters '),
+    .min(3, 'Address line 1 must have at least 3 characters '),
+  address2: Yup.string()
+    .label('Address line 2')
+    .required()
+    .min(3, 'Address line 2 must have at least 3 characters '),
 });
 
 const validationSchemaForNotSigninOtherPaymentMethods = Yup.object().shape({
@@ -96,9 +104,13 @@ const validationSchemaForNotSigninOtherPaymentMethods = Yup.object().shape({
     .required('Email is required')
     .email('Enter a valid email'),
   address1: Yup.string()
-    .label('Address')
+    .label('Address line 1')
     .required()
-    .min(3, 'Address must have at least 3 characters '),
+    .min(3, 'Address line 1 must have at least 3 characters '),
+  address2: Yup.string()
+    .label('Address line 2')
+    .required()
+    .min(3, 'Address line 2 must have at least 3 characters '),
 
   paymentNumber: Yup.string()
     .required('Please tell us your mobile number.')
@@ -131,9 +143,13 @@ const validationSchemaForOtherPaymentMethods = Yup.object().shape({
     .required('Email is required')
     .email('Enter a valid email'),
   address1: Yup.string()
-    .label('Address')
+    .label('Address line 1')
     .required()
-    .min(3, 'Address must have at least 3 characters '),
+    .min(3, 'Address line 1 must have at least 3 characters '),
+  address2: Yup.string()
+    .label('Address line 2')
+    .required()
+    .min(3, 'Address line 2 must have at least 3 characters '),
 
   paymentNumber: Yup.string()
     .required('Please tell us your mobile number.')
@@ -158,9 +174,13 @@ const shippingAddressValidationSchema = Yup.object().shape({
     .required('Email is required')
     .email('Enter a valid email'),
   shippingAddress1: Yup.string()
-    .label('shipping Address')
+    .label('Shipping Address line 1')
     .required()
-    .min(3, 'Shipping Address must have at least 3 characters '),
+    .min(3, 'Shipping Address line 1 must have at least 3 characters '),
+  shippingAddress2: Yup.string()
+    .label('Shipping Address line 2')
+    .required()
+    .min(3, 'Shipping Address line 2 must have at least 3 characters '),
 });
 
 const shippingAddressInitialValues = {
@@ -169,6 +189,7 @@ const shippingAddressInitialValues = {
   shippingCountry: '',
   shippingCity: '',
   shippingAddress1: '',
+  shippingAddress2: '',
   shippingPhone: '',
   shippingEmail: '',
 };
@@ -181,6 +202,7 @@ const otherPaymentMethodIntialValues = {
   firstName: '',
   lastName: '',
   address1: '',
+  address2: '',
   paymentNumber: '',
   paymentId: '',
 };
@@ -191,6 +213,7 @@ const otherPaymentMethodNotSigninIntialValues = {
   firstName: '',
   lastName: '',
   address1: '',
+  address2: '',
   paymentNumber: '',
   paymentId: '',
 };
@@ -203,6 +226,7 @@ const codInitialValues = {
   firstName: '',
   lastName: '',
   address1: '',
+  address2: '',
 };
 
 const codInitialNotSigninValues = {
@@ -211,6 +235,7 @@ const codInitialNotSigninValues = {
   firstName: '',
   lastName: '',
   address1: '',
+  address2: '',
 };
 
 interface Props {
@@ -241,8 +266,8 @@ const Checkout = ({
   const [isAuthLoading, setIsAuthLoading] = useState(false);
   const [serverErrors, setServerErrors] = useState({});
   const [selectedCountryValue, setSelectedCountryValue] = React.useState({
-    value: 'country',
-    label: 'Country',
+    value: 'Bangladesh',
+    label: 'Bangladesh',
   });
 
   const [selectedCityValue, setSelectedCityValue] = React.useState({
@@ -262,7 +287,7 @@ const Checkout = ({
     selectedShippingCountryValue,
     setSelectedShippingCountryValue,
   ] = React.useState({
-    value: 'Shipping Country',
+    value: 'Bangladesh',
     label: 'Shipping Country',
   });
 
@@ -277,6 +302,10 @@ const Checkout = ({
   );
 
   const [cityListState, handleCityListFetch] = useHandleFetch([], 'cityList');
+  const [deliveryChargeState, handleDeliveryChargeFetch] = useHandleFetch(
+    [],
+    'getDeliveryCharge'
+  );
 
   const [countryList, setCountryList] = useState([]);
   const [cityList, setCityList] = useState([]);
@@ -302,6 +331,12 @@ const Checkout = ({
     ) {
       const cityList = cache[`cityList/${selectedCountryValue.value}`];
       setCityList(cityList);
+      // @ts-ignore
+      const cityValue = cityList.length > 0 && cityList[0];
+      setSelectedCityValue({
+        value: cityValue['name'],
+        label: cityValue['name'],
+      });
     } else {
       const getAndSetCityList = async () => {
         const cityList = await handleCityListFetch({
@@ -315,6 +350,12 @@ const Checkout = ({
         if (cityList) {
           // @ts-ignore
           setCityList(cityList);
+          // @ts-ignore
+          const cityValue = cityList.length > 0 && cityList[0];
+          setSelectedCityValue({
+            value: cityValue['name'],
+            label: cityValue['name'],
+          });
           addItemToCache({
             [`cityList/${selectedCountryValue.value}`]: cityList,
           });
@@ -335,6 +376,12 @@ const Checkout = ({
       const shippingCityList =
         cache[`cityList/${selectedShippingCountryValue.value}`];
       setShippingCityList(shippingCityList);
+      // @ts-ignore
+      const cityValue = shippingCityList.length > 0 && shippingCityList[0];
+      setSelectedCityValue({
+        value: cityValue['name'],
+        label: cityValue['name'],
+      });
     } else {
       const getAndSetShippingCityList = async () => {
         const shippingCityList = await handleCityListFetch({
@@ -348,6 +395,14 @@ const Checkout = ({
         if (shippingCityList) {
           // @ts-ignore
           setShippingCityList(shippingCityList);
+
+          // @ts-ignore
+          const cityValue = shippingCityList.length > 0 && shippingCityList[0];
+          setSelectedCityValue({
+            value: cityValue['name'],
+            label: cityValue['name'],
+          });
+
           addItemToCache({
             [`cityList/${selectedShippingCountryValue.value}`]: shippingCityList,
           });
@@ -420,6 +475,7 @@ const Checkout = ({
             password2: values.passwordConfirmation,
           }),
           address1: values.address1,
+          address2: values.address2,
           firstName: values.firstName,
           lastName: values.lastName,
           country: selectedCountryValue.value,
@@ -436,6 +492,7 @@ const Checkout = ({
             shippingCountry: selectedShippingCountryValue.value,
             shippingCity: selectedShippingCityValue.value,
             shippingAddress1: values.shippingAddress1,
+            shippingAddress2: values.shippingAddress2,
             shippingPhone: values.shippingPhone,
             shippingEmail: values.shippingEmail,
           }),
@@ -456,6 +513,7 @@ const Checkout = ({
             password2: values.passwordConfirmation,
           }),
           address1: values.address1,
+          address2: values.address2,
           firstName: values.firstName,
           lastName: values.lastName,
           country: selectedCountryValue.value,
@@ -470,6 +528,7 @@ const Checkout = ({
             shippingCountry: selectedShippingCountryValue.value,
             shippingCity: selectedShippingCityValue.value,
             shippingAddress1: values.shippingAddress1,
+            shippingAddress2: values.shippingAddress2,
             shippingPhone: values.shippingPhone,
             shippingEmail: values.shippingEmail,
           }),
@@ -617,174 +676,206 @@ const Checkout = ({
                   <div className='row'>
                     <div className='col-md-7 createOrderContainer'>
                       <div>
-                        <h2 className='shipping-heading'>Payment Method</h2>
-                        <div className='paymentMethods'>
-                          <RadioGroup
-                            onChange={onRadioGroupChange}
-                            value={paymentMethod}
-                          >
-                            <ReversedRadioButton value='cod' padding={12}>
-                              Cash on Delivery
-                            </ReversedRadioButton>
-                            <ReversedRadioButton value='nagad' padding={12}>
-                              <div
-                                style={{
-                                  width: '100px',
-                                  height: '20px',
-                                }}
-                              >
-                                <img
-                                  style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'contain',
-                                  }}
-                                  src={require('../../assets/paymentMethodImages/nagadIcon.png')}
+                        <div>
+                          <div className='checkoutSection'>
+                            <h2
+                              style={{
+                                fontSize: '20px',
+                                color: '#444',
+                                marginTop: '20px',
+                                fontWeight: 400,
+                              }}
+                            >
+                              Billing Address
+                            </h2>
+
+                            {session.isAuthenticated ? (
+                              <Checkbox
+                                name={'useAccountBillingAddresss'}
+                                label={'Use Account Billing Addresss'}
+                                inputType={'checkbox'}
+                                value={'useAccountBillingAddresss'}
+                                onChange={(e) =>
+                                  setIsUseAccountBillingAddresss(
+                                    e.target.checked
+                                  )
+                                }
+                              />
+                            ) : (
+                              ''
+                            )}
+
+                            {!isUseAccountBillingAddresss ? (
+                              <>
+                                <CheckoutForm
+                                  isSubmitting={isSubmitting}
+                                  paymentMethod={paymentMethod}
+                                  values={values}
+                                  handleChange={handleChange}
+                                  handleBlur={handleBlur}
+                                  touched={touched}
+                                  errors={errors}
+                                  serverErrors={serverErrors}
+                                  isAuthenticated={session.isAuthenticated}
+                                  handleSelectCountryChange={
+                                    handleSelectCountryChange
+                                  }
+                                  selectedCountryValue={selectedCountryValue}
+                                  countryList={countryList}
+                                  cityList={cityList}
+                                  handleSelectCityChange={
+                                    handleSelectCityChange
+                                  }
+                                  selectedCityValue={selectedCityValue}
                                 />
-                              </div>
-                            </ReversedRadioButton>
-                            <ReversedRadioButton value='rocket' padding={12}>
-                              <div
-                                style={{
-                                  width: '100px',
-                                  height: '20px',
-                                }}
-                              >
-                                <img
-                                  style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'contain',
-                                  }}
-                                  src={require('../../assets/paymentMethodImages/rocketIcon.jpg')}
-                                />
-                              </div>
-                            </ReversedRadioButton>
-                            <ReversedRadioButton value='bkash' padding={12}>
-                              <div
-                                style={{
-                                  width: '100px',
-                                  height: '20px',
-                                }}
-                              >
-                                <img
-                                  style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'contain',
-                                  }}
-                                  src={require('../../assets/paymentMethodImages/bkashIcon.png')}
-                                />
-                              </div>
-                            </ReversedRadioButton>
-                          </RadioGroup>
-                        </div>
-                        <div
-                          style={{
-                            marginTop: '30px',
-                          }}
-                        >
-                          {session.isAuthenticated ? (
+                              </>
+                            ) : (
+                              ''
+                            )}
+                          </div>
+
+                          <div className='checkoutSection'>
+                            <h2
+                              style={{
+                                fontSize: '20px',
+                                color: '#444',
+                                fontWeight: 400,
+                                margin: '20px 0',
+                              }}
+                            >
+                              Shipping Address
+                            </h2>
                             <Checkbox
-                              name={'useAccountBillingAddresss'}
-                              label={'Use Account Billing Addresss'}
+                              name={'shipToDifferentAddress'}
+                              label={'Ship To Different Address'}
                               inputType={'checkbox'}
-                              value={'useAccountBillingAddresss'}
+                              value={'shipToDifferentAddress'}
                               onChange={(e) =>
-                                setIsUseAccountBillingAddresss(e.target.checked)
+                                setIsShipToDifferentAddress(e.target.checked)
                               }
                             />
-                          ) : (
-                            ''
-                          )}
 
-                          {!isUseAccountBillingAddresss ? (
-                            <>
-                              <h2
-                                style={{
-                                  fontSize: '20px',
-                                  color: '#444',
-                                  marginTop: '20px',
-                                  fontWeight: 400,
-                                }}
+                            {isShipToDifferentAddress ? (
+                              <>
+                                <ShippingCheckout
+                                  isSubmitting={isSubmitting}
+                                  paymentMethod={paymentMethod}
+                                  values={values}
+                                  handleChange={handleChange}
+                                  handleBlur={handleBlur}
+                                  touched={touched}
+                                  errors={errors}
+                                  serverErrors={serverErrors}
+                                  isAuthenticated={session.isAuthenticated}
+                                  handleSelectShippingCityChange={
+                                    handleSelectShippingCityChange
+                                  }
+                                  handleSelectShippingCountryChange={
+                                    handleSelectShippingCountryChange
+                                  }
+                                  selectedShippingCityValue={
+                                    selectedShippingCityValue
+                                  }
+                                  selectedShippingCountryValue={
+                                    selectedShippingCountryValue
+                                  }
+                                  shippingCityList={shippingCityList}
+                                  countryList={countryList}
+                                />
+                              </>
+                            ) : (
+                              ''
+                            )}
+                          </div>
+
+                          <div className='checkoutSection'>
+                            <h2
+                              style={{
+                                fontSize: '20px',
+                                color: '#444',
+                                margin: '20px 0',
+                                fontWeight: 400,
+                              }}
+                            >
+                              Payment Methods
+                            </h2>
+                            <div className='paymentMethods'>
+                              <RadioGroup
+                                onChange={onRadioGroupChange}
+                                value={paymentMethod}
                               >
-                                Billing Address
-                              </h2>
-                              <CheckoutForm
-                                isSubmitting={isSubmitting}
-                                paymentMethod={paymentMethod}
-                                values={values}
-                                handleChange={handleChange}
-                                handleBlur={handleBlur}
-                                touched={touched}
-                                errors={errors}
-                                serverErrors={serverErrors}
-                                isAuthenticated={session.isAuthenticated}
-                                handleSelectCountryChange={
-                                  handleSelectCountryChange
-                                }
-                                selectedCountryValue={selectedCountryValue}
-                                countryList={countryList}
-                                cityList={cityList}
-                                handleSelectCityChange={handleSelectCityChange}
-                                selectedCityValue={selectedCityValue}
-                              />
-                            </>
-                          ) : (
-                            ''
-                          )}
+                                <ReversedRadioButton value='cod' padding={12}>
+                                  Cash on Delivery
+                                </ReversedRadioButton>
+                                <ReversedRadioButton value='nagad' padding={12}>
+                                  <div
+                                    style={{
+                                      width: '100px',
+                                      height: '20px',
+                                    }}
+                                  >
+                                    <img
+                                      alt='paymentImg'
+                                      style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'contain',
+                                      }}
+                                      src={require('../../assets/paymentMethodImages/nagadIcon.png')}
+                                    />
+                                  </div>
+                                </ReversedRadioButton>
+                                <ReversedRadioButton
+                                  value='rocket'
+                                  padding={12}
+                                >
+                                  <div
+                                    style={{
+                                      width: '100px',
+                                      height: '20px',
+                                    }}
+                                  >
+                                    <img
+                                      alt='paymentImg'
+                                      style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'contain',
+                                      }}
+                                      src={require('../../assets/paymentMethodImages/rocketIcon.jpg')}
+                                    />
+                                  </div>
+                                </ReversedRadioButton>
+                                <ReversedRadioButton value='bkash' padding={12}>
+                                  <div
+                                    style={{
+                                      width: '100px',
+                                      height: '20px',
+                                    }}
+                                  >
+                                    <img
+                                      alt='paymentImg'
+                                      style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'contain',
+                                      }}
+                                      src={require('../../assets/paymentMethodImages/bkashIcon.png')}
+                                    />
+                                  </div>
+                                </ReversedRadioButton>
+                              </RadioGroup>
+                            </div>
 
-                          <Checkbox
-                            name={'shipToDifferentAddress'}
-                            label={'Ship To Different Address'}
-                            inputType={'checkbox'}
-                            value={'shipToDifferentAddress'}
-                            onChange={(e) =>
-                              setIsShipToDifferentAddress(e.target.checked)
-                            }
-                          />
-
-                          {isShipToDifferentAddress ? (
-                            <>
-                              <h2
-                                style={{
-                                  fontSize: '20px',
-                                  color: '#444',
-                                  fontWeight: 400,
-                                  margin: '30px 0',
-                                }}
-                              >
-                                Shipping Address
-                              </h2>
-                              <ShippingCheckout
-                                isSubmitting={isSubmitting}
-                                paymentMethod={paymentMethod}
-                                values={values}
-                                handleChange={handleChange}
-                                handleBlur={handleBlur}
-                                touched={touched}
-                                errors={errors}
-                                serverErrors={serverErrors}
-                                isAuthenticated={session.isAuthenticated}
-                                handleSelectShippingCityChange={
-                                  handleSelectShippingCityChange
-                                }
-                                handleSelectShippingCountryChange={
-                                  handleSelectShippingCountryChange
-                                }
-                                selectedShippingCityValue={
-                                  selectedShippingCityValue
-                                }
-                                selectedShippingCountryValue={
-                                  selectedShippingCountryValue
-                                }
-                                shippingCityList={shippingCityList}
-                                countryList={countryList}
-                              />
-                            </>
-                          ) : (
-                            ''
-                          )}
+                            <PaymentForm
+                              isSubmitting={isSubmitting}
+                              paymentMethod={paymentMethod}
+                              values={values}
+                              handleChange={handleChange}
+                              errors={errors}
+                              serverErrors={serverErrors}
+                            />
+                          </div>
 
                           <div
                             style={{

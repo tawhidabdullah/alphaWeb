@@ -47,15 +47,15 @@
     },
 
     "categoryProducts": {
-      "url": "/api/category/:id/product",
+      "url": "/api/category/:id/product?limit=limitNumber&page=pageNumber",
       "method": "get"
     },
     "categoryDetail": {
-      "url": "/api/category/:id",
+      "url": "/api/category/:id?limit=limitNumber&page=pageNumber",
       "method": "get"
     },
     "tagProducts": {
-      "url": "/api/tag/:id/product",
+      "url": "/api/tag/:id/product?limit=limitNumber&page=pageNumber",
       "method": "get"
     },
     "brandProducts": {
@@ -63,7 +63,7 @@
       "method": "get"
     },
     "productSearch": {
-      "url": "/api/search?searchCategory=searchCategoryValue&query=queryValue",
+      "url": "/api/search?searchCategory=searchCategoryValue&query=queryValue&sort=sortValue&sortOrder=sortOrderValue&limit=limitNumber&page=pageNumber",
       "method": "get"
     },
     "productDetail": {
@@ -75,7 +75,7 @@
       "method": "get"
     },
     "productList": {
-      "url": "/api/product",
+      "url": "/api/product?limit=limitNumber&page=pageNumber",
       "mehod": "get"
     },
     "tagList": {
@@ -92,6 +92,10 @@
     },
     "cityList": {
       "url": "/api/geo/:country/city",
+      "method": "get"
+    },
+    "getDeliveryCharge": {
+      "url": "/delivery/:country/:city",
       "method": "get"
     },
     "signup": {

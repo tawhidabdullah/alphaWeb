@@ -1,6 +1,5 @@
 import React, { useLayoutEffect, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import Footer from '../../layout/Footer';
 import { cacheOperations } from '../../state/ducks/cache';
 // import Home components
 import TopTags from './TopTags';
@@ -79,7 +78,6 @@ const Home = ({
         cache={cache}
         addItemToCache={addItemToCache}
       />
-      <Footer />
     </>
   );
 };
@@ -101,3 +99,18 @@ export default connect(
   mapDispatchToProps
   // @ts-ignore
 )(Home);
+
+/* 
+1. where the fuck is delivery charge????
+
+/productList/:id ei url koitheke anso
+
+tmare na bolsilm url shob jeno database er url hoy??
+
+category er product view korle oita url category/:id
+
+brand view korle brand/:id
+
+
+
+*/
