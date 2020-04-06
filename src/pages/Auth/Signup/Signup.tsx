@@ -104,7 +104,6 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
         address2: values.address2,
         firstName: values.firstName,
         lastName: values.lastName,
-
         country: selectedCountryValue.value,
         city: selectedCityValue.value,
       },
@@ -435,4 +434,4 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
   // @ts-ignore
-)(withRouter(MyAccount));
+)(withRouter(Signup));
