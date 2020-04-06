@@ -120,6 +120,7 @@ cart page e clear shopping cart dile only locally cart clear hoitese
 reload dile abar ager moto
 
 
+search page e search bar e onno kono keyword search dile kono action hocche na
 
 quantity control gula majhe majhe kaj kore majhe majhe kore na
 
