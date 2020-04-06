@@ -19,8 +19,6 @@ const initialValues = {
   passwordConfirmation: '',
   firstName: '',
   lastName: '',
-  country: '',
-  city: '',
   address1: '',
   address2: '',
 };
@@ -54,14 +52,6 @@ const validationSchema = Yup.object().shape({
     .label('Address line 2')
     .required()
     .min(3, 'Address line 2 must have at least 3 characters '),
-  city: Yup.string()
-    .label('City')
-    .required()
-    .min(3, 'City must have at least 3 characters '),
-  country: Yup.string()
-    .label('Country')
-    .required()
-    .min(3, 'Country must have at least 3 characters '),
 });
 
 interface Props {
@@ -323,8 +313,7 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
                   />
 
                   <div className='select-invalid-feedback'>
-                    {errors.country ||
-                      (!isSubmitting && signupState.error['error']['country'])}
+                    {!isSubmitting && signupState.error['error']['country']}
                   </div>
                 </div>
               )}
@@ -344,8 +333,7 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
                     }))}
                   />
                   <div className='select-invalid-feedback'>
-                    {errors.city ||
-                      (!isSubmitting && signupState.error['error']['city'])}
+                    {!isSubmitting && signupState.error['error']['city']}
                   </div>
                 </div>
               )}
@@ -386,9 +374,7 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
                   !values.phone ||
                   !values.email ||
                   !values.passwordConfirmation ||
-                  !values.address1 ||
-                  !values.city ||
-                  !values.country
+                  !values.address1
                 }
               >
                 {isSubmitting ? 'Registering...' : 'Register'}
