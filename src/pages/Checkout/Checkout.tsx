@@ -199,7 +199,7 @@ const shippingAddressInitialValues = {
 };
 
 const otherPaymentMethodIntialValues = {
-  phone: null,
+  phone: '',
   email: '',
   password: '',
   passwordConfirmation: '',
@@ -223,7 +223,7 @@ const otherPaymentMethodNotSigninIntialValues = {
 };
 
 const codInitialValues = {
-  phone: null,
+  phone: '',
   email: '',
   password: '',
   passwordConfirmation: '',

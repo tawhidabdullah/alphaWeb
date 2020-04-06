@@ -1,9 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
+import Select from 'react-select';
+import { connect } from 'react-redux';
 import { AuthButton } from '../../../components/Button';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import { useHandleFetch } from '../../../hooks';
+import { checkIfItemExistsInCache } from '../../../utils';
+import { cacheOperations } from '../../../state/ducks/cache';
 
 // import input fields
 import { TextFeildGroup } from '../../../components/Field';
@@ -18,6 +22,7 @@ const initialValues = {
   country: '',
   city: '',
   address1: '',
+  address2: '',
 };
 
 const validationSchema = Yup.object().shape({
@@ -42,9 +47,13 @@ const validationSchema = Yup.object().shape({
     'Passwords must match'
   ),
   address1: Yup.string()
-    .label('Address')
+    .label('Address line 1')
     .required()
-    .min(3, 'Address must have at least 3 characters '),
+    .min(3, 'Address line 1 must have at least 3 characters '),
+  address2: Yup.string()
+    .label('Address line 2')
+    .required()
+    .min(3, 'Address line 2 must have at least 3 characters '),
   city: Yup.string()
     .label('City')
     .required()
@@ -57,10 +66,32 @@ const validationSchema = Yup.object().shape({
 
 interface Props {
   history: any;
+  addItemToCache: (any) => void;
+  cache: any;
 }
 
-const Signup = (props: Props) => {
+const Signup = ({ addItemToCache, cache, history }: Props) => {
   const [signupState, handlePost] = useHandleFetch({}, 'signup');
+
+  const [selectedCountryValue, setSelectedCountryValue] = useState({
+    value: 'Bangladesh',
+    label: 'Bangladesh',
+  });
+
+  const [selectedCityValue, setSelectedCityValue] = useState({
+    value: 'city',
+    label: 'City',
+  });
+
+  const [countryListState, handleCountryListFetch] = useHandleFetch(
+    [],
+    'countryList'
+  );
+
+  const [cityListState, handleCityListFetch] = useHandleFetch([], 'cityList');
+
+  const [countryList, setCountryList] = useState([]);
+  const [cityList, setCityList] = useState([]);
 
   const handleSubmit = async (values, actions) => {
     const signupRes = await handlePost({
@@ -70,16 +101,18 @@ const Signup = (props: Props) => {
         password: values.password,
         password2: values.passwordConfirmation,
         address1: values.address1,
+        address2: values.address2,
         firstName: values.firstName,
         lastName: values.lastName,
-        country: values.country,
-        city: values.city,
+
+        country: selectedCountryValue.value,
+        city: selectedCityValue.value,
       },
     });
 
     // @ts-ignore
     if (signupRes && signupRes['status'] === 'ok') {
-      props.history.push('/signin');
+      history.push('/signin');
     }
 
     actions.setSubmitting(false);
@@ -89,6 +122,76 @@ const Signup = (props: Props) => {
     'errors',
     signupState.error['error'] && signupState.error['error']
   );
+
+  useEffect(() => {
+    if (checkIfItemExistsInCache(`countryList`, cache)) {
+      const countryList = cache['countryList'];
+      setCountryList(countryList);
+    } else {
+      const getAndSetCountryList = async () => {
+        const countryList = await handleCountryListFetch({});
+        // @ts-ignore
+        if (countryList) {
+          // @ts-ignore
+          setCountryList(countryList);
+          addItemToCache({
+            countryList: countryList,
+          });
+        }
+      };
+
+      getAndSetCountryList();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (
+      checkIfItemExistsInCache(`cityList/${selectedCountryValue.value}`, cache)
+    ) {
+      const cityList = cache[`cityList/${selectedCountryValue.value}`];
+      setCityList(cityList);
+      // @ts-ignore
+      const cityValue = cityList.length > 0 && cityList[0];
+      setSelectedCityValue({
+        value: cityValue['name'],
+        label: cityValue['name'],
+      });
+    } else {
+      const getAndSetCityList = async () => {
+        const cityList = await handleCityListFetch({
+          urlOptions: {
+            placeHolders: {
+              country: selectedCountryValue.value,
+            },
+          },
+        });
+        // @ts-ignore
+        if (cityList) {
+          // @ts-ignore
+          setCityList(cityList);
+          // @ts-ignore
+          const cityValue = cityList.length > 0 && cityList[0];
+          setSelectedCityValue({
+            value: cityValue['name'],
+            label: cityValue['name'],
+          });
+          addItemToCache({
+            [`cityList/${selectedCountryValue.value}`]: cityList,
+          });
+        }
+      };
+
+      getAndSetCityList();
+    }
+  }, [selectedCountryValue]);
+
+  const handleSelectCountryChange = (value) => {
+    setSelectedCountryValue(value);
+  };
+
+  const handleSelectCityChange = (value) => {
+    setSelectedCityValue(value);
+  };
 
   return (
     <div className='auth'>
@@ -161,7 +264,7 @@ const Signup = (props: Props) => {
                 label='Phone'
                 name='phone'
                 placeholder='Enter your phone'
-                type='number'
+                type='text'
                 value={values.phone}
                 onChange={handleChange('phone')}
                 errors={
@@ -180,45 +283,6 @@ const Signup = (props: Props) => {
                 errors={
                   errors.email ||
                   (!isSubmitting && signupState.error['error']['email'])
-                }
-              />
-
-              <TextFeildGroup
-                label='Address'
-                name='address1'
-                placeholder='Enter your address'
-                type='text'
-                value={values.address1}
-                onChange={handleChange('address1')}
-                errors={
-                  errors.address1 ||
-                  (!isSubmitting && signupState.error['error']['address1'])
-                }
-              />
-
-              <TextFeildGroup
-                label='City'
-                name='city'
-                placeholder='Enter your city'
-                type='text'
-                value={values.city}
-                onChange={handleChange('city')}
-                errors={
-                  errors.city ||
-                  (!isSubmitting && signupState.error['error']['city'])
-                }
-              />
-
-              <TextFeildGroup
-                label='Country'
-                name='country'
-                placeholder='Enter your country'
-                type='text'
-                value={values.country}
-                onChange={handleChange('country')}
-                errors={
-                  errors.country ||
-                  (!isSubmitting && signupState.error['error']['country'])
                 }
               />
 
@@ -245,6 +309,71 @@ const Signup = (props: Props) => {
                 errors={
                   errors.passwordConfirmation ||
                   (!isSubmitting && signupState.error['error']['password2'])
+                }
+              />
+
+              {countryList.length > 0 && (
+                <div>
+                  <Select
+                    value={selectedCountryValue}
+                    onChange={(value) => handleSelectCountryChange(value)}
+                    options={countryList.map((country) => ({
+                      value: country['name'],
+                      label: country['name'],
+                    }))}
+                  />
+
+                  <div className='select-invalid-feedback'>
+                    {errors.country ||
+                      (!isSubmitting && signupState.error['error']['country'])}
+                  </div>
+                </div>
+              )}
+
+              {cityList && (
+                <div
+                  style={{
+                    margin: '20px 0',
+                  }}
+                >
+                  <Select
+                    value={selectedCityValue}
+                    onChange={(value) => handleSelectCityChange(value)}
+                    options={cityList.map((city) => ({
+                      value: city['name'],
+                      label: city['name'],
+                    }))}
+                  />
+                  <div className='select-invalid-feedback'>
+                    {errors.city ||
+                      (!isSubmitting && signupState.error['error']['city'])}
+                  </div>
+                </div>
+              )}
+
+              <TextFeildGroup
+                label='Address line 1'
+                name='address1'
+                placeholder='Enter your address line 1'
+                type='text'
+                value={values.address1}
+                onChange={handleChange('address1')}
+                errors={
+                  errors.address1 ||
+                  (!isSubmitting && signupState.error['error']['address1'])
+                }
+              />
+
+              <TextFeildGroup
+                label='Address line 2'
+                name='address2'
+                placeholder='Enter your address line 2'
+                type='text'
+                value={values.address2}
+                onChange={handleChange('address2')}
+                errors={
+                  errors.address2 ||
+                  (!isSubmitting && signupState.error['error']['address2'])
                 }
               />
 
@@ -280,7 +409,7 @@ const Signup = (props: Props) => {
       >
         Have an account?{' '}
         <span
-          onClick={() => props.history.push('/signin')}
+          onClick={() => history.push('/signin')}
           style={{
             color: '#6b21ac',
             cursor: 'pointer',
@@ -293,4 +422,17 @@ const Signup = (props: Props) => {
   );
 };
 
-export default withRouter(Signup);
+const mapDispatchToProps = {
+  addItemToCache: cacheOperations.addItemToCache,
+};
+
+const mapStateToProps = (state) => ({
+  cache: state.cache,
+});
+
+// @ts-ignore
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+  // @ts-ignore
+)(withRouter(MyAccount));
