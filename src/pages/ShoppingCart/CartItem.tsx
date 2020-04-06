@@ -148,31 +148,30 @@ const CartItem = ({
         </div>
         <div className='col-4 col-sm-4 col-md-4'>
           <div className='quantity'>
-            <input
+            {/* <input
               onClick={(e) => {
                 handleChangeQuantity('plus');
               }}
               type='button'
               value='+'
               className='plus'
-            />
+            /> */}
             <input
               onChange={(e) => setQuantityValue(e.target.value)}
-              type='number'
-              min='1'
+              type='text'
               value={quantityValue}
               title='Qty'
               className='qty'
               size={4}
             />
-            <input
+            {/* <input
               onClick={() => {
                 handleChangeQuantity('minus');
               }}
               type='button'
               value='-'
               className='minus'
-            />
+            /> */}
           </div>
         </div>
         <div className='col-2 col-sm-2 col-md-2 text-right'>

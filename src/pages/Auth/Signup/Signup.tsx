@@ -25,17 +25,16 @@ const initialValues = {
 
 const validationSchema = Yup.object().shape({
   firstName: Yup.string()
-    .label('Name')
+    .label('First name')
     .required()
     .min(2, 'First name must have at least 2 characters '),
   lastName: Yup.string()
-    .label('Name')
+    .label('Last name')
     .required()
     .min(2, 'Last name must have at least 2 characters '),
   phone: Yup.string()
     .required('Please tell us your mobile number.')
     .max(13, 'Please enter a valid mobile number.'),
-  email: Yup.string().label('Email').email('Enter a valid email'),
   password: Yup.string()
     .label('Password')
     .required()
@@ -231,94 +230,111 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
               >
                 <span>Personal Information</span>
               </div>
-              <TextFeildGroup
-                label='FirstName'
-                name='firstName'
-                placeholder='Enter your firstName'
-                type='text'
-                value={values.firstName}
-                onChange={handleChange('firstName')}
-                errors={
-                  errors.firstName ||
-                  (!isSubmitting && signupState.error['error']['firstName'])
-                }
-              />
 
-              <TextFeildGroup
-                label='Lastname'
-                name='lastName'
-                placeholder='Enter your lastName'
-                type='text'
-                value={values.lastName}
-                onChange={handleChange('lastName')}
-                errors={
-                  errors.lastName ||
-                  (!isSubmitting && signupState.error['error']['lastName'])
-                }
-              />
-
-              {countryList.length > 0 && (
-                <div>
-                  <Select
-                    value={selectedCountryValue}
-                    onChange={(value) => handleSelectCountryChange(value)}
-                    options={countryList.map((country) => ({
-                      value: country['name'],
-                      label: country['name'],
-                    }))}
+              <div className='formContainerOfTwo'>
+                <div className='formContainerOfTwoItem'>
+                  <TextFeildGroup
+                    label='FirstName'
+                    name='firstName'
+                    placeholder='firstName'
+                    type='text'
+                    value={values.firstName}
+                    onChange={handleChange('firstName')}
+                    errors={
+                      errors.firstName ||
+                      (!isSubmitting && signupState.error['error']['firstName'])
+                    }
                   />
-
-                  <div className='select-invalid-feedback'>
-                    {!isSubmitting && signupState.error['error']['country']}
-                  </div>
                 </div>
-              )}
 
-              {cityList && (
-                <div
-                  style={{
-                    margin: '20px 0',
-                  }}
-                >
-                  <Select
-                    value={selectedCityValue}
-                    onChange={(value) => handleSelectCityChange(value)}
-                    options={cityList.map((city) => ({
-                      value: city['name'],
-                      label: city['name'],
-                    }))}
+                <div className='formContainerOfTwoItem'>
+                  <TextFeildGroup
+                    label='Lastname'
+                    name='lastName'
+                    placeholder='lastName'
+                    type='text'
+                    value={values.lastName}
+                    onChange={handleChange('lastName')}
+                    errors={
+                      errors.lastName ||
+                      (!isSubmitting && signupState.error['error']['lastName'])
+                    }
                   />
-                  <div className='select-invalid-feedback'>
-                    {!isSubmitting && signupState.error['error']['city']}
-                  </div>
                 </div>
-              )}
+              </div>
 
-              <TextFeildGroup
-                label='Address line 1'
-                name='address1'
-                placeholder='Enter your address line 1'
-                type='text'
-                value={values.address1}
-                onChange={handleChange('address1')}
-                errors={
-                  errors.address1 ||
-                  (!isSubmitting && signupState.error['error']['address1'])
-                }
-              />
+              <div className='formContainerOfTwo'>
+                <div className='formContainerOfTwoItem'>
+                  {countryList.length > 0 && (
+                    <div>
+                      <label className='formLabel'>Country</label>
+                      <Select
+                        value={selectedCountryValue}
+                        onChange={(value) => handleSelectCountryChange(value)}
+                        options={countryList.map((country) => ({
+                          value: country['name'],
+                          label: country['name'],
+                        }))}
+                      />
 
-              <TextFeildGroup
-                label='Address line 2'
-                name='address2'
-                placeholder='Enter your address line 2'
-                type='text'
-                value={values.address2}
-                onChange={handleChange('address2')}
-                errors={
-                  errors.address2 ||
-                  (!isSubmitting && signupState.error['error']['address2'])
-                }
-              />
+                      <div className='select-invalid-feedback'>
+                        {!isSubmitting && signupState.error['error']['country']}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className='formContainerOfTwoItem'>
+                  {cityList && (
+                    <div>
+                      <label className='formLabel'>City</label>
+
+                      <Select
+                        value={selectedCityValue}
+                        onChange={(value) => handleSelectCityChange(value)}
+                        options={cityList.map((city) => ({
+                          value: city['name'],
+                          label: city['name'],
+                        }))}
+                      />
+                      <div className='select-invalid-feedback'>
+                        {!isSubmitting && signupState.error['error']['city']}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className='formContainerOfTwo'>
+                <div className='formContainerOfTwoItem'>
+                  <TextFeildGroup
+                    label='Address'
+                    name='address1'
+                    placeholder='Address line 1'
+                    type='text'
+                    value={values.address1}
+                    onChange={handleChange('address1')}
+                    errors={
+                      errors.address1 ||
+                      (!isSubmitting && signupState.error['error']['address1'])
+                    }
+                  />
+                </div>
+                <div className='formContainerOfTwoItem'>
+                  <TextFeildGroup
+                    label='Address'
+                    name='address2'
+                    placeholder='Address line 2'
+                    type='text'
+                    value={values.address2}
+                    onChange={handleChange('address2')}
+                    errors={
+                      errors.address2 ||
+                      (!isSubmitting && signupState.error['error']['address2'])
+                    }
+                  />
+                </div>
+              </div>
 
               <div
                 className='block-title authTitle'
@@ -332,7 +348,7 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
               <TextFeildGroup
                 label='Phone'
                 name='phone'
-                placeholder='Enter your phone'
+                placeholder='Mobile phone no'
                 type='text'
                 value={values.phone}
                 onChange={handleChange('phone')}
@@ -345,7 +361,7 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
               <TextFeildGroup
                 label='Email'
                 name='email'
-                placeholder='Enter your email'
+                placeholder='Email address'
                 type='text'
                 value={values.email}
                 onChange={handleChange('email')}
@@ -358,7 +374,7 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
               <TextFeildGroup
                 label='Password'
                 name='password'
-                placeholder='Enter your password'
+                placeholder='******'
                 type='password'
                 value={values.password}
                 onChange={handleChange('password')}
@@ -371,7 +387,7 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
               <TextFeildGroup
                 label='Confirm Password'
                 name='passwordConfirmation'
-                placeholder='Enter your confirm password'
+                placeholder='******'
                 type='password'
                 value={values.passwordConfirmation}
                 onChange={handleChange('passwordConfirmation')}
@@ -389,7 +405,6 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
                   !values.lastName ||
                   !values.password ||
                   !values.phone ||
-                  !values.email ||
                   !values.passwordConfirmation ||
                   !values.address1
                 }

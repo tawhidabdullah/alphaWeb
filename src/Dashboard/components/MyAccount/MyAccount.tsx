@@ -233,102 +233,117 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
               handleBlur,
             }) => (
               <>
-                <TextFeildGroup
-                  label='FirstName'
-                  name='firstName'
-                  placeholder='Enter your firstName'
-                  type='text'
-                  value={values.firstName}
-                  onChange={handleChange('firstName')}
-                  errors={
-                    errors.firstName ||
-                    (!isSubmitting &&
-                      updateCurrentCustomerData.error['error']['firstName'])
-                  }
-                />
-
-                <TextFeildGroup
-                  label='Lastname'
-                  name='lastName'
-                  placeholder='Enter your lastName'
-                  type='text'
-                  value={values.lastName}
-                  onChange={handleChange('lastName')}
-                  errors={
-                    errors.lastName ||
-                    (!isSubmitting &&
-                      updateCurrentCustomerData.error['error']['lastName'])
-                  }
-                />
-
-                {countryList.length > 0 && (
-                  <div>
-                    <Select
-                      value={selectedCountryValue}
-                      onChange={(value) => handleSelectCountryChange(value)}
-                      options={countryList.map((country) => ({
-                        value: country['name'],
-                        label: country['name'],
-                      }))}
-                    />
-
-                    <div className='select-invalid-feedback'>
-                      {errors.country ||
+                <div className='formContainerOfTwo'>
+                  <div className='formContainerOfTwoItem'>
+                    <TextFeildGroup
+                      label='FirstName'
+                      name='firstName'
+                      placeholder='FirstName'
+                      type='text'
+                      value={values.firstName}
+                      onChange={handleChange('firstName')}
+                      errors={
+                        errors.firstName ||
                         (!isSubmitting &&
-                          updateCurrentCustomerData.error['error']['country'])}
-                    </div>
-                  </div>
-                )}
-
-                {cityList && (
-                  <div
-                    style={{
-                      margin: '20px 0',
-                    }}
-                  >
-                    <Select
-                      value={selectedCityValue}
-                      onChange={(value) => handleSelectCityChange(value)}
-                      options={cityList.map((city) => ({
-                        value: city['name'],
-                        label: city['name'],
-                      }))}
+                          updateCurrentCustomerData.error['error']['firstName'])
+                      }
                     />
-                    <div className='select-invalid-feedback'>
-                      {errors.city ||
-                        (!isSubmitting &&
-                          updateCurrentCustomerData.error['error']['city'])}
-                    </div>
                   </div>
-                )}
+                  <div className='formContainerOfTwoItem'>
+                    <TextFeildGroup
+                      label='Lastname'
+                      name='lastName'
+                      placeholder='Lastname'
+                      type='text'
+                      value={values.lastName}
+                      onChange={handleChange('lastName')}
+                      errors={
+                        errors.lastName ||
+                        (!isSubmitting &&
+                          updateCurrentCustomerData.error['error']['lastName'])
+                      }
+                    />
+                  </div>
+                </div>
 
-                <TextFeildGroup
-                  label='Address line 1'
-                  name='address1'
-                  placeholder='Enter your address line 1'
-                  type='text'
-                  value={values.address1}
-                  onChange={handleChange('address1')}
-                  errors={
-                    errors.address1 ||
-                    (!isSubmitting &&
-                      updateCurrentCustomerData.error['error']['address1'])
-                  }
-                />
+                <div className='formContainerOfTwo'>
+                  <div className='formContainerOfTwoItem'>
+                    {countryList.length > 0 && (
+                      <div>
+                        <label className='formLabel'>Country</label>
+                        <Select
+                          value={selectedCountryValue}
+                          onChange={(value) => handleSelectCountryChange(value)}
+                          options={countryList.map((country) => ({
+                            value: country['name'],
+                            label: country['name'],
+                          }))}
+                        />
 
-                <TextFeildGroup
-                  label='Address line 2'
-                  name='address2'
-                  placeholder='Enter your address line 2'
-                  type='text'
-                  value={values.address2}
-                  onChange={handleChange('address2')}
-                  errors={
-                    errors.address2 ||
-                    (!isSubmitting &&
-                      updateCurrentCustomerData.error['error']['address2'])
-                  }
-                />
+                        <div className='select-invalid-feedback'>
+                          {errors.country ||
+                            (!isSubmitting &&
+                              updateCurrentCustomerData.error['error'][
+                                'country'
+                              ])}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className='formContainerOfTwoItem'>
+                    {cityList && (
+                      <div>
+                        <label className='formLabel'>City</label>
+                        <Select
+                          value={selectedCityValue}
+                          onChange={(value) => handleSelectCityChange(value)}
+                          options={cityList.map((city) => ({
+                            value: city['name'],
+                            label: city['name'],
+                          }))}
+                        />
+                        <div className='select-invalid-feedback'>
+                          {errors.city ||
+                            (!isSubmitting &&
+                              updateCurrentCustomerData.error['error']['city'])}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className='formContainerOfTwo'>
+                  <div className='formContainerOfTwoItem'>
+                    <TextFeildGroup
+                      label='Address'
+                      name='address1'
+                      placeholder='Address line 1'
+                      type='text'
+                      value={values.address1}
+                      onChange={handleChange('address1')}
+                      errors={
+                        errors.address1 ||
+                        (!isSubmitting &&
+                          updateCurrentCustomerData.error['error']['address1'])
+                      }
+                    />
+                  </div>
+                  <div className='formContainerOfTwoItem'>
+                    <TextFeildGroup
+                      label='Address'
+                      name='address2'
+                      placeholder='Address line 2'
+                      type='text'
+                      value={values.address2}
+                      onChange={handleChange('address2')}
+                      errors={
+                        errors.address2 ||
+                        (!isSubmitting &&
+                          updateCurrentCustomerData.error['error']['address2'])
+                      }
+                    />
+                  </div>
+                </div>
 
                 <div
                   style={{
@@ -354,7 +369,7 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
 
         {!isPersonalInfoEdit && Object.keys(customerData).length > 0 && (
           <>
-            {customerData['firstName'] && (
+            {customerData['firstName'] && !customerData['lastName'] && (
               <TextFeildGroup
                 label='Firstname'
                 name='firstName'
@@ -363,7 +378,7 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
               />
             )}
 
-            {customerData['lastName'] && (
+            {customerData['lastName'] && !customerData['firstName'] && (
               <TextFeildGroup
                 label='Lastname'
                 name='lastname'
@@ -372,7 +387,7 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
               />
             )}
 
-            {customerData['country'] && (
+            {customerData['country'] && !customerData['city'] && (
               <TextFeildGroup
                 label='Country'
                 name='country'
@@ -381,7 +396,7 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
               />
             )}
 
-            {customerData['city'] && (
+            {customerData['city'] && !customerData['country'] && (
               <TextFeildGroup
                 label='City'
                 name='city'
@@ -390,7 +405,7 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
               />
             )}
 
-            {customerData['address1'] && (
+            {customerData['address1'] && !customerData['address2'] && (
               <TextFeildGroup
                 label='Address line 1'
                 name='address1'
@@ -399,13 +414,76 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
               />
             )}
 
-            {customerData['address2'] && (
+            {customerData['address2'] && !customerData['address1'] && (
               <TextFeildGroup
                 label='Address line 2'
                 name='address2'
                 value={customerData['address2']}
                 disabled={true}
               />
+            )}
+
+            {customerData['firstName'] && customerData['lastName'] && (
+              <div className='formContainerOfTwo'>
+                <div className='formContainerOfTwoItem'>
+                  <TextFeildGroup
+                    label='Firstname'
+                    name='firstName'
+                    value={customerData['firstName']}
+                    disabled={true}
+                  />
+                </div>
+                <div className='formContainerOfTwoItem'>
+                  <TextFeildGroup
+                    label='Lastname'
+                    name='lastname'
+                    value={customerData['lastName']}
+                    disabled={true}
+                  />
+                </div>
+              </div>
+            )}
+
+            {customerData['country'] && customerData['city'] && (
+              <div className='formContainerOfTwo'>
+                <div className='formContainerOfTwoItem'>
+                  <TextFeildGroup
+                    label='Country'
+                    name='country'
+                    value={customerData['country']}
+                    disabled={true}
+                  />
+                </div>
+                <div className='formContainerOfTwoItem'>
+                  <TextFeildGroup
+                    label='City'
+                    name='city'
+                    value={customerData['city']}
+                    disabled={true}
+                  />
+                </div>
+              </div>
+            )}
+
+            {customerData['address1'] && customerData['address2'] && (
+              <div className='formContainerOfTwo'>
+                <div className='formContainerOfTwoItem'>
+                  <TextFeildGroup
+                    label='Address line 1'
+                    name='address1'
+                    value={customerData['address1']}
+                    disabled={true}
+                  />
+                </div>
+                <div className='formContainerOfTwoItem'>
+                  <TextFeildGroup
+                    label='Address line 2'
+                    name='address2'
+                    value={customerData['address2']}
+                    disabled={true}
+                  />
+                </div>
+              </div>
             )}
           </>
         )}

@@ -39,10 +39,7 @@ const validationSchemaForNotSigninCod = Yup.object().shape({
   phone: Yup.string()
     .required('Please tell us your mobile number.')
     .max(13, 'Please enter a valid mobile number.'),
-  email: Yup.string()
-    .label('Email')
-    .required('Email is required')
-    .email('Enter a valid email'),
+  email: Yup.string().label('Email').email('Please enter a valid email'),
   password: Yup.string()
     .label('Password')
     .required()
@@ -73,10 +70,7 @@ const validationSchemaForCod = Yup.object().shape({
   phone: Yup.string()
     .required('Please tell us your mobile number.')
     .max(13, 'Please enter a valid mobile number.'),
-  email: Yup.string()
-    .label('Email')
-    .required('Email is required')
-    .email('Enter a valid email'),
+  email: Yup.string().label('Email').email('Please enter a valid email'),
   address1: Yup.string()
     .label('Address line 1')
     .required()
@@ -99,10 +93,7 @@ const validationSchemaForNotSigninOtherPaymentMethods = Yup.object().shape({
   phone: Yup.string()
     .required('Please tell us your mobile number.')
     .max(13, 'Please enter a valid mobile number.'),
-  email: Yup.string()
-    .label('Email')
-    .required('Email is required')
-    .email('Enter a valid email'),
+  email: Yup.string().label('Email').email('Please enter a valid email'),
   address1: Yup.string()
     .label('Address line 1')
     .required()
@@ -140,10 +131,7 @@ const validationSchemaForOtherPaymentMethods = Yup.object().shape({
   phone: Yup.string()
     .required('Please tell us your mobile number.')
     .max(13, 'Please enter a valid mobile number.'),
-  email: Yup.string()
-    .label('Email')
-    .required('Email is required')
-    .email('Enter a valid email'),
+  email: Yup.string().label('Email').email('Please enter a valid email'),
   address1: Yup.string()
     .label('Address line 1')
     .required()
@@ -163,28 +151,27 @@ const validationSchemaForOtherPaymentMethods = Yup.object().shape({
 
 const shippingAddressValidationSchema = Yup.object().shape({
   shippingFirstName: Yup.string()
-    .label('Shipping FirstName')
+    .label('FirstName')
     .required()
-    .min(2, 'Shipping FirstName name must have at least 2 characters '),
+    .min(2, 'FirstName name must have at least 2 characters '),
   shippingLastName: Yup.string()
-    .label('Shipping LastName')
+    .label('LastName')
     .required()
-    .min(2, 'Shipping LastName must have at least 2 characters '),
+    .min(2, 'LastName must have at least 2 characters '),
   shippingPhone: Yup.string()
     .required('Please tell us your mobile number.')
     .max(13, 'Please enter a valid mobile number.'),
   shippingEmail: Yup.string()
     .label('Email')
-    .required('Email is required')
-    .email('Enter a valid email'),
+    .email('Please enter a valid email'),
   shippingAddress1: Yup.string()
-    .label('Shipping Address line 1')
+    .label('Address line 1')
     .required()
-    .min(3, 'Shipping Address line 1 must have at least 3 characters '),
+    .min(3, 'Address line 1 must have at least 3 characters '),
   shippingAddress2: Yup.string()
-    .label('Shipping Address line 2')
+    .label('Address line 2')
     .required()
-    .min(3, 'Shipping Address line 2 must have at least 3 characters '),
+    .min(3, 'Address line 2 must have at least 3 characters '),
 });
 
 const shippingAddressInitialValues = {
@@ -883,8 +870,9 @@ const Checkout = ({
                               <RadioGroup
                                 onChange={onRadioGroupChange}
                                 value={paymentMethod}
+                                horizontal={true}
                               >
-                                <ReversedRadioButton value='cod' padding={12}>
+                                <ReversedRadioButton value='cod' padding={9}>
                                   Cash on Delivery
                                 </ReversedRadioButton>
                                 <ReversedRadioButton value='nagad' padding={12}>

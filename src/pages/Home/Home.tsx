@@ -112,5 +112,15 @@ category er product view korle oita url category/:id
 brand view korle brand/:id
 
 
+// nesscessary polishing 
+cart page e clear shopping cart dile only locally cart clear hoitese
+
+
+
+reload dile abar ager moto
+
+
+
+quantity control gula majhe majhe kaj kore majhe majhe kore na
 
 */

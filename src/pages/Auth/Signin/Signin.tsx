@@ -14,15 +14,12 @@ const validationSchema = Yup.object().shape({
   username: Yup.string()
     .label('Username')
     .required('Username must have at least 3 characters'),
-  password: Yup.string()
-    .label('Password')
-    .required()
-    .min(4, 'Password must have at least 4 characters')
+  password: Yup.string().label('Password').required('Password is required'),
 });
 
 const initialValues = {
   username: '',
-  password: ''
+  password: '',
 };
 
 interface Props {
@@ -37,8 +34,8 @@ const Signin = (props: Props) => {
     const signinRes = await handlePost({
       body: {
         username: values.username,
-        password: values.password
-      }
+        password: values.password,
+      },
     });
 
     // @ts-ignore
@@ -62,7 +59,7 @@ const Signin = (props: Props) => {
         style={{
           fontSize: '30px',
           color: '#17252a',
-          fontWeight: 400
+          fontWeight: 400,
         }}
       >
         Signin
@@ -73,7 +70,7 @@ const Signin = (props: Props) => {
           marginTop: '10px',
           fontSize: '17px',
           color: '#17252a',
-          fontWeight: 400
+          fontWeight: 400,
         }}
       >
         Signin to MyStyle
@@ -93,7 +90,7 @@ const Signin = (props: Props) => {
             isValid,
             isSubmitting,
             touched,
-            handleBlur
+            handleBlur,
           }) => (
             <>
               <TextFeildGroup
@@ -138,7 +135,7 @@ const Signin = (props: Props) => {
           marginTop: '20px',
           fontSize: '15px',
           color: '#17252a',
-          fontWeight: 400
+          fontWeight: 400,
         }}
       >
         Don't have an account?{' '}
@@ -146,7 +143,7 @@ const Signin = (props: Props) => {
           onClick={() => props.history.push('/signup')}
           style={{
             color: '#6b21ac',
-            cursor: 'pointer'
+            cursor: 'pointer',
           }}
         >
           Signup{' '}
@@ -157,7 +154,7 @@ const Signin = (props: Props) => {
 };
 
 const mapDispatchToProps = {
-  login: sessionOperations.login
+  login: sessionOperations.login,
 };
 
 // @ts-ignore

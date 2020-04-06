@@ -55,3 +55,26 @@
 .cf:after {
   clear: both;
 }
+
+.formContainerOfTwo {
+  display: flex;
+}
+
+.formContainerOfTwo .formContainerOfTwoItem:first-child {
+  width: 48% !important;
+  margin-right: 2%;
+}
+
+.formContainerOfTwo .formContainerOfTwoItem:last-child {
+  width: 48% !important;
+  margin-left: 2%;
+}
+
+.formLabel {
+  font-size: 15px;
+  color: $color-nobab-dark-2;
+  text-align: left;
+  width: 100%;
+  color: #555;
+  margin-bottom: 0.6em;
+}

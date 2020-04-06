@@ -36,34 +36,131 @@ const CheckoutForm = ({
 }: Props) => {
   return (
     <>
+      <div
+        className='block-title authTitle sm'
+        style={{
+          margin: '20px 0',
+        }}
+      >
+        <span>personal Information</span>
+      </div>
+
+      <div className='formContainerOfTwo'>
+        <div className='formContainerOfTwoItem'>
+          <TextFeildGroup
+            label='FirstName'
+            name='shippingFirstName'
+            placeholder='FirstName'
+            type='text'
+            value={values.shippingFirstName}
+            onChange={handleChange('shippingFirstName')}
+            errors={
+              errors.shippingFirstName ||
+              (!isSubmitting && serverErrors.shippingFirstName)
+            }
+          />
+        </div>
+        <div className='formContainerOfTwoItem'>
+          <TextFeildGroup
+            label='LastName'
+            name='shippingLastName'
+            placeholder='LastName'
+            type='text'
+            value={values.shippingLastName}
+            onChange={handleChange('shippingLastName')}
+            errors={
+              errors.shippingLastName ||
+              (!isSubmitting && serverErrors.shippingLastName)
+            }
+          />
+        </div>
+      </div>
+
+      <div className='formContainerOfTwo'>
+        <div className='formContainerOfTwoItem'>
+          {countryList.length > 0 && (
+            <div>
+              <label className='formLabel'>Country</label>
+
+              <Select
+                value={selectedShippingCountryValue}
+                onChange={(value) => handleSelectShippingCountryChange(value)}
+                options={countryList.map((country) => ({
+                  value: country['name'],
+                  label: country['name'],
+                }))}
+              />
+              <div className='select-invalid-feedback'>
+                {errors.shippingCountry ||
+                  (!isSubmitting && serverErrors.shippingCountry)}
+              </div>
+            </div>
+          )}
+        </div>
+        <div className='formContainerOfTwoItem'>
+          {shippingCityList && (
+            <div>
+              <label className='formLabel'>City</label>
+              <Select
+                value={selectedShippingCityValue}
+                onChange={(value) => handleSelectShippingCityChange(value)}
+                options={shippingCityList.map((city) => ({
+                  value: city['name'],
+                  label: city['name'],
+                }))}
+              />
+
+              <div className='select-invalid-feedback'>
+                {errors.shippingCity ||
+                  (!isSubmitting && serverErrors.shippingCity)}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className='formContainerOfTwo'>
+        <div className='formContainerOfTwoItem'>
+          <TextFeildGroup
+            label='Address'
+            name='shippingAddress1'
+            placeholder='Address line 1'
+            type='text'
+            value={values.shippingAddress1}
+            onChange={handleChange('shippingAddress1')}
+            errors={
+              errors.shippingAddress1 ||
+              (!isSubmitting && serverErrors.shippingAddress1)
+            }
+          />
+        </div>
+        <div className='formContainerOfTwoItem'>
+          <TextFeildGroup
+            label='Address'
+            name='shippingAddress2'
+            placeholder='Address line 2'
+            type='text'
+            value={values.shippingAddress2}
+            onChange={handleChange('shippingAddress2')}
+            errors={
+              errors.shippingAddress2 ||
+              (!isSubmitting && serverErrors.shippingAddress2)
+            }
+          />
+        </div>
+      </div>
+      <div
+        className='block-title authTitle sm'
+        style={{
+          margin: '20px 0',
+        }}
+      >
+        <span>Contact Information</span>
+      </div>
       <TextFeildGroup
-        label='Shipping FirstName'
-        name='shippingFirstName'
-        placeholder='Enter your Shipping FirstName'
-        type='text'
-        value={values.shippingFirstName}
-        onChange={handleChange('shippingFirstName')}
-        errors={
-          errors.shippingFirstName ||
-          (!isSubmitting && serverErrors.shippingFirstName)
-        }
-      />
-      <TextFeildGroup
-        label='Shipping LastName'
-        name='shippingLastName'
-        placeholder='Enter your Shipping LastName'
-        type='text'
-        value={values.shippingLastName}
-        onChange={handleChange('shippingLastName')}
-        errors={
-          errors.shippingLastName ||
-          (!isSubmitting && serverErrors.shippingLastName)
-        }
-      />
-      <TextFeildGroup
-        label='Shipping Phone'
+        label='Phone'
         name='shippingPhone'
-        placeholder='Enter your Shipping Phone'
+        placeholder='Mobile phone no'
         type='text'
         value={values.shippingPhone}
         onChange={handleChange('shippingPhone')}
@@ -72,79 +169,14 @@ const CheckoutForm = ({
         }
       />
       <TextFeildGroup
-        label='Shipping Email'
+        label='Email'
         name='shippingEmail'
-        placeholder='Enter your Shipping Email'
+        placeholder='Email address'
         type='text'
         value={values.shippingEmail}
         onChange={handleChange('shippingEmail')}
         errors={
           errors.shippingEmail || (!isSubmitting && serverErrors.shippingEmail)
-        }
-      />
-
-      {countryList.length > 0 && (
-        <div>
-          <Select
-            value={selectedShippingCountryValue}
-            onChange={(value) => handleSelectShippingCountryChange(value)}
-            options={countryList.map((country) => ({
-              value: country['name'],
-              label: country['name'],
-            }))}
-          />
-          <div className='select-invalid-feedback'>
-            {errors.shippingCountry ||
-              (!isSubmitting && serverErrors.shippingCountry)}
-          </div>
-        </div>
-      )}
-
-      {shippingCityList && (
-        <div
-          style={{
-            margin: '20px 0',
-          }}
-        >
-          <Select
-            value={selectedShippingCityValue}
-            onChange={(value) => handleSelectShippingCityChange(value)}
-            options={shippingCityList.map((city) => ({
-              value: city['name'],
-              label: city['name'],
-            }))}
-          />
-
-          <div className='select-invalid-feedback'>
-            {errors.shippingCity ||
-              (!isSubmitting && serverErrors.shippingCity)}
-          </div>
-        </div>
-      )}
-
-      <TextFeildGroup
-        label='Shipping Address line 1'
-        name='shippingAddress1'
-        placeholder='Enter your Shipping Address line 1'
-        type='text'
-        value={values.shippingAddress1}
-        onChange={handleChange('shippingAddress1')}
-        errors={
-          errors.shippingAddress1 ||
-          (!isSubmitting && serverErrors.shippingAddress1)
-        }
-      />
-
-      <TextFeildGroup
-        label='Shipping Address line 2'
-        name='shippingAddress2'
-        placeholder='Enter your Shipping Address line 2'
-        type='text'
-        value={values.shippingAddress2}
-        onChange={handleChange('shippingAddress2')}
-        errors={
-          errors.shippingAddress2 ||
-          (!isSubmitting && serverErrors.shippingAddress2)
         }
       />
     </>

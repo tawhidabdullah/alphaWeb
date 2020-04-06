@@ -18,7 +18,7 @@ const MobileNav = ({
   const handleSearch = () => {
     history.push({
       pathname: '/productSearch',
-      search: `?key=${searchBarValue}`,
+      search: `?searchCategory=all&query=${searchBarValue}`,
     });
   };
 
