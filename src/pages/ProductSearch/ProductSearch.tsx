@@ -66,6 +66,7 @@ const ProductSearch = ({
   };
 
   const handleSelectCategory = (id) => {
+    setPageNumberOfCategoryProduct(1);
     history.push({
       pathname: '/productSearch',
       search: `?searchCategory=${id}&query=${queryValue}`,
@@ -73,6 +74,7 @@ const ProductSearch = ({
   };
 
   const setSortBySelect = (value) => {
+    setPageNumberOfCategoryProduct(1);
     setSelectedValueForSort(value);
   };
 
@@ -221,28 +223,44 @@ const ProductSearch = ({
                 params: {
                   searchCategoryValue,
                   queryValue,
-                  sortValue: 'price',
+                  sortOrderValue: 1,
+                  sortValue: 'added',
                   pageNumber: pageNumberOfCategoryProduct,
+                  limitNumber: 15,
                 },
               },
             });
 
-            if (newProducts) {
+            if (pageNumberOfCategoryProduct === 1 && newProducts) {
               addItemToCache({
-                [`productSearch/Relevance${searchCategoryValue}/${queryValue}`]: products,
+                [`productSearch/Relevance${searchCategoryValue}/${queryValue}`]: newProducts,
               });
             }
 
             if (products.length > 0) {
               // @ts-ignore
               if (newProducts.length > 0) {
-                // @ts-ignore
-                const myProducts = [...products, ...newProducts];
-                // @ts-ignore
-                setProducts(myProducts);
+                if (pageNumberOfCategoryProduct > 1) {
+                  // @ts-ignore
+                  const myProducts = [...products, ...newProducts];
+                  // @ts-ignore
+                  setProducts(myProducts);
+                } else {
+                  // @ts-ignore
+                  setProducts(newProducts);
+                }
               } else {
-                // @ts-ignore
-                setProducts(products);
+                if (pageNumberOfCategoryProduct === 1) {
+                  // @ts-ignore
+                  setProducts(newProducts);
+                } else {
+                  if (newProducts) {
+                    // @ts-ignore
+                    const myProducts = [...products, ...newProducts];
+                    // @ts-ignore
+                    setProducts(myProducts);
+                  }
+                }
               }
             } else {
               // @ts-ignore
@@ -280,22 +298,36 @@ const ProductSearch = ({
               },
             });
 
-            if (newProducts) {
+            if (pageNumberOfCategoryProduct === 1 && newProducts) {
               addItemToCache({
-                [`productSearch/priceHighToLow${searchCategoryValue}/${queryValue}`]: products,
+                [`productSearch/priceHighToLow${searchCategoryValue}/${queryValue}`]: newProducts,
               });
             }
 
             if (products.length > 0) {
               // @ts-ignore
               if (newProducts.length > 0) {
-                // @ts-ignore
-                const myProducts = [...products, ...newProducts];
-                // @ts-ignore
-                setProducts(myProducts);
+                if (pageNumberOfCategoryProduct > 1) {
+                  // @ts-ignore
+                  const myProducts = [...products, ...newProducts];
+                  // @ts-ignore
+                  setProducts(myProducts);
+                } else {
+                  // @ts-ignore
+                  setProducts(newProducts);
+                }
               } else {
-                // @ts-ignore
-                setProducts(products);
+                if (pageNumberOfCategoryProduct === 1) {
+                  // @ts-ignore
+                  setProducts(newProducts);
+                } else {
+                  if (newProducts) {
+                    // @ts-ignore
+                    const myProducts = [...products, ...newProducts];
+                    // @ts-ignore
+                    setProducts(myProducts);
+                  }
+                }
               }
             } else {
               // @ts-ignore
@@ -333,22 +365,36 @@ const ProductSearch = ({
               },
             });
 
-            if (newProducts) {
+            if (pageNumberOfCategoryProduct === 1 && newProducts) {
               addItemToCache({
-                [`productSearch/priceLowToHigh${searchCategoryValue}/${queryValue}`]: products,
+                [`productSearch/priceLowToHigh${searchCategoryValue}/${queryValue}`]: newProducts,
               });
             }
 
             if (products.length > 0) {
               // @ts-ignore
               if (newProducts.length > 0) {
-                // @ts-ignore
-                const myProducts = [...products, ...newProducts];
-                // @ts-ignore
-                setProducts(myProducts);
+                if (pageNumberOfCategoryProduct > 1) {
+                  // @ts-ignore
+                  const myProducts = [...products, ...newProducts];
+                  // @ts-ignore
+                  setProducts(myProducts);
+                } else {
+                  // @ts-ignore
+                  setProducts(newProducts);
+                }
               } else {
-                // @ts-ignore
-                setProducts(products);
+                if (pageNumberOfCategoryProduct === 1) {
+                  // @ts-ignore
+                  setProducts(newProducts);
+                } else {
+                  if (newProducts) {
+                    // @ts-ignore
+                    const myProducts = [...products, ...newProducts];
+                    // @ts-ignore
+                    setProducts(myProducts);
+                  }
+                }
               }
             } else {
               // @ts-ignore
@@ -386,22 +432,36 @@ const ProductSearch = ({
               },
             });
 
-            if (newProducts) {
+            if (pageNumberOfCategoryProduct === 1 && newProducts) {
               addItemToCache({
-                [`productSearch/newestFirst${searchCategoryValue}/${queryValue}`]: products,
+                [`productSearch/newestFirst${searchCategoryValue}/${queryValue}`]: newProducts,
               });
             }
 
             if (products.length > 0) {
               // @ts-ignore
               if (newProducts.length > 0) {
-                // @ts-ignore
-                const myProducts = [...products, ...newProducts];
-                // @ts-ignore
-                setProducts(myProducts);
+                if (pageNumberOfCategoryProduct > 1) {
+                  // @ts-ignore
+                  const myProducts = [...products, ...newProducts];
+                  // @ts-ignore
+                  setProducts(myProducts);
+                } else {
+                  // @ts-ignore
+                  setProducts(newProducts);
+                }
               } else {
-                // @ts-ignore
-                setProducts(products);
+                if (pageNumberOfCategoryProduct === 1) {
+                  // @ts-ignore
+                  setProducts(newProducts);
+                } else {
+                  if (newProducts) {
+                    // @ts-ignore
+                    const myProducts = [...products, ...newProducts];
+                    // @ts-ignore
+                    setProducts(myProducts);
+                  }
+                }
               }
             } else {
               // @ts-ignore
@@ -547,7 +607,7 @@ const ProductSearch = ({
               ''
             )}
 
-            {products.length > 0 && (
+            {products && (
               <InfiniteScroll
                 style={{
                   overflow: 'hidden',
@@ -566,11 +626,12 @@ const ProductSearch = ({
                     alignItems: 'center',
                   }}
                 >
-                  {products.map((product) => {
-                    return (
-                      <ProductCard product={product} productListing={true} />
-                    );
-                  })}
+                  {products.length > 0 &&
+                    products.map((product) => {
+                      return (
+                        <ProductCard product={product} productListing={true} />
+                      );
+                    })}
                 </div>
               </InfiniteScroll>
             )}

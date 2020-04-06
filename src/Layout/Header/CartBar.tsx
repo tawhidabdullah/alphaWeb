@@ -90,7 +90,12 @@ const CartBar = ({
                 </React.Fragment>
               );
             })) || (
-            <div className='cart-footer'>
+            <div
+              style={{
+                height: '100%',
+                background: 'red',
+              }}
+            >
               <button
                 className='clear-cart banner-btn'
                 onClick={() => {
