@@ -41,7 +41,6 @@ const ProductDetail = (props: Props) => {
         const productDetail =
           props['cache'][`productDetail/${categoryName}/${productName}`];
         setProductDetail(productDetail);
-        console.log('cacheproductDetail', productDetail);
 
         // @ts-ignore
         const product = productDetail;

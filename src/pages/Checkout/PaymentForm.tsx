@@ -24,27 +24,28 @@ const CheckoutForm = ({
       {paymentMethod !== 'cod' && (
         <>
           <TextFeildGroup
-            name='paymentNumber'
+            name='paymentAccountNumber'
             label='Payment Mobile Number'
             placeholder='017xxx'
             type='text'
-            value={values.paymentNumber}
-            onChange={handleChange('paymentNumber')}
+            value={values.paymentAccountNumber}
+            onChange={handleChange('paymentAccountNumber')}
             errors={
-              errors.paymentNumber ||
-              (!isSubmitting && serverErrors.paymentNumber)
+              errors.paymentAccountNumber ||
+              (!isSubmitting && serverErrors.paymentAccountNumber)
             }
           />
 
           <TextFeildGroup
             label='Transaction Id'
-            name='paymentId'
+            name='transactionId'
             placeholder='Enter Trans Id...'
             type='text'
-            value={values.paymentId}
-            onChange={handleChange('paymentId')}
+            value={values.transactionId}
+            onChange={handleChange('transactionId')}
             errors={
-              errors.paymentId || (!isSubmitting && serverErrors.paymentId)
+              errors.transactionId ||
+              (!isSubmitting && serverErrors.transactionId)
             }
           />
         </>

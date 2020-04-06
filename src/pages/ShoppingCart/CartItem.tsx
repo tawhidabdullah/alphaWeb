@@ -30,7 +30,6 @@ const CartItem = ({
 
   const [quantityValue, setQuantityValue] = useState(quantity);
   const handleChangeQuantity = async (value) => {
-    console.log(value);
     if (value === 'minus') {
       if (quantity === 1) {
         return;
@@ -71,7 +70,6 @@ const CartItem = ({
   };
 
   const handleRemoveFromCart = async () => {
-    console.log('cartKey', cartKey);
     const removeFromCartRes = await handleRemoveFromCartFetch({
       urlOptions: {
         placeHolders: {

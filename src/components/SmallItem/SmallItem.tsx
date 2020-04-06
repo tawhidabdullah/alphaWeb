@@ -39,7 +39,6 @@ const SmallItem = ({
             },
           },
         });
-        console.log('fuckit', productId);
 
         // @ts-ignore
         setProduct(product);

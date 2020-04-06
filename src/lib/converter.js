@@ -71,7 +71,6 @@ class Converter {
    * @returns {Object}  converted data
    */
   async getCart(resData) {
-    console.log('resDataCart', resData);
     const cartItems = resData.items || [];
     const convertedData =
       cartItems.length > 0 &&
@@ -87,8 +86,6 @@ class Converter {
           cartKey: cartItem.cartKey,
         };
       });
-
-    console.log('cartkeys', convertedData);
 
     return convertedData;
   }
@@ -687,8 +684,6 @@ class Converter {
           };
         })) ||
       [];
-
-    console.log('convertedData', convertedData);
 
     return convertedData;
   }

@@ -66,10 +66,6 @@ const CartOverLayCartItem = ({
       if (updateCartItemRes) {
         return changeQuantity(product, updateCartItemRes['quantity']);
       }
-
-      console.log('updateCartItemRes', updateCartItemRes);
-
-      // return changeQuantity(product, ++quantity);
     }
   };
 

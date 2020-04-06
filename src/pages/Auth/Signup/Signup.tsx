@@ -81,7 +81,6 @@ const Signup = (props: Props) => {
     if (signupRes && signupRes['status'] === 'ok') {
       props.history.push('/signin');
     }
-    console.log('signupRes', signupRes);
 
     actions.setSubmitting(false);
   };

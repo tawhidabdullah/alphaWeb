@@ -114,7 +114,6 @@ const ProductList = ({
     }
 
     if (checkIfItemExistsInCache(`product`, cache) && !pageNumber) {
-      console.log('cache11');
       const products = cache[`product`];
       // @ts-ignore
       setProducts(products);

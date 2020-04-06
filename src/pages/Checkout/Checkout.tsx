@@ -112,10 +112,12 @@ const validationSchemaForNotSigninOtherPaymentMethods = Yup.object().shape({
     .required()
     .min(3, 'Address line 2 must have at least 3 characters '),
 
-  paymentNumber: Yup.string()
+  paymentAccountNumber: Yup.string()
     .required('Please tell us your mobile number.')
     .matches(phoneRegExp, 'Please enter a valid mobile number.'),
-  paymentId: Yup.string().label('Payment Id').required('Payment is Required'),
+  transactionId: Yup.string()
+    .label('Payment Id')
+    .required('Transaction id is Required'),
   password: Yup.string()
     .label('Password')
     .required()
@@ -151,10 +153,12 @@ const validationSchemaForOtherPaymentMethods = Yup.object().shape({
     .required()
     .min(3, 'Address line 2 must have at least 3 characters '),
 
-  paymentNumber: Yup.string()
+  paymentAccountNumber: Yup.string()
     .required('Please tell us your mobile number.')
     .matches(phoneRegExp, 'Please enter a valid mobile number.'),
-  paymentId: Yup.string().label('Payment Id').required('Payment is Required'),
+  transactionId: Yup.string()
+    .label('Payment Id')
+    .required('Transaction id is Required'),
 });
 
 const shippingAddressValidationSchema = Yup.object().shape({
@@ -203,8 +207,8 @@ const otherPaymentMethodIntialValues = {
   lastName: '',
   address1: '',
   address2: '',
-  paymentNumber: '',
-  paymentId: '',
+  paymentAccountNumber: '',
+  transactionId: '',
 };
 
 const otherPaymentMethodNotSigninIntialValues = {
@@ -214,8 +218,8 @@ const otherPaymentMethodNotSigninIntialValues = {
   lastName: '',
   address1: '',
   address2: '',
-  paymentNumber: '',
-  paymentId: '',
+  paymentAccountNumber: '',
+  transactionId: '',
 };
 
 const codInitialValues = {
@@ -288,7 +292,7 @@ const Checkout = ({
     setSelectedShippingCountryValue,
   ] = React.useState({
     value: 'Bangladesh',
-    label: 'Shipping Country',
+    label: 'Bangladesh',
   });
 
   const [
@@ -306,6 +310,9 @@ const Checkout = ({
     [],
     'getDeliveryCharge'
   );
+
+  const [billingDeliveryCharge, setBillingDeliveryCharge] = useState({});
+  const [shippingDeliveryCharge, setShippingDeliveryCharge] = useState({});
 
   const [countryList, setCountryList] = useState([]);
   const [cityList, setCityList] = useState([]);
@@ -378,7 +385,7 @@ const Checkout = ({
       setShippingCityList(shippingCityList);
       // @ts-ignore
       const cityValue = shippingCityList.length > 0 && shippingCityList[0];
-      setSelectedCityValue({
+      setSelectedShippingCityValue({
         value: cityValue['name'],
         label: cityValue['name'],
       });
@@ -398,7 +405,7 @@ const Checkout = ({
 
           // @ts-ignore
           const cityValue = shippingCityList.length > 0 && shippingCityList[0];
-          setSelectedCityValue({
+          setSelectedShippingCityValue({
             value: cityValue['name'],
             label: cityValue['name'],
           });
@@ -412,6 +419,76 @@ const Checkout = ({
       getAndSetShippingCityList();
     }
   }, [selectedShippingCountryValue]);
+
+  useEffect(() => {
+    if (
+      checkIfItemExistsInCache(
+        `getDeliveryCharge/${selectedCityValue.value}`,
+        cache
+      )
+    ) {
+      const deliveryCharge =
+        cache[`getDeliveryCharge/${selectedCityValue.value}`];
+      setBillingDeliveryCharge(deliveryCharge);
+    } else {
+      const getAndSetBillingDeliveryCharge = async () => {
+        const billingDeliveryCharge = await handleDeliveryChargeFetch({
+          urlOptions: {
+            placeHolders: {
+              country: selectedCountryValue.value,
+              city: selectedCityValue.value,
+            },
+          },
+        });
+        // @ts-ignore
+        if (billingDeliveryCharge) {
+          // @ts-ignore
+          setBillingDeliveryCharge(billingDeliveryCharge);
+
+          addItemToCache({
+            [`getDeliveryCharge/${selectedCityValue.value}`]: billingDeliveryCharge,
+          });
+        }
+      };
+
+      getAndSetBillingDeliveryCharge();
+    }
+  }, [selectedCityValue]);
+
+  useEffect(() => {
+    if (
+      checkIfItemExistsInCache(
+        `getDeliveryCharge/${selectedShippingCityValue.value}`,
+        cache
+      )
+    ) {
+      const shippingDeliveryCharge =
+        cache[`getDeliveryCharge/${selectedShippingCityValue.value}`];
+      setShippingDeliveryCharge(shippingDeliveryCharge);
+    } else {
+      const getAndSetShippingDeliveryCharge = async () => {
+        const shippingDeliveryCharge = await handleDeliveryChargeFetch({
+          urlOptions: {
+            placeHolders: {
+              country: selectedShippingCountryValue.value,
+              city: selectedShippingCityValue.value,
+            },
+          },
+        });
+        // @ts-ignore
+        if (shippingDeliveryCharge) {
+          // @ts-ignore
+          setShippingDeliveryCharge(shippingDeliveryCharge);
+
+          addItemToCache({
+            [`getDeliveryCharge/${selectedShippingCityValue.value}`]: shippingDeliveryCharge,
+          });
+        }
+      };
+
+      getAndSetShippingDeliveryCharge();
+    }
+  }, [selectedShippingCityValue]);
 
   useEffect(() => {
     if (checkIfItemExistsInCache(`countryList`, cache)) {
@@ -481,8 +558,8 @@ const Checkout = ({
           country: selectedCountryValue.value,
           city: selectedCityValue.value,
           paymentMethod: paymentMethod,
-          paymentAccountNumber: values.paymentNumber,
-          transactionId: values.paymentId,
+          paymentAccountNumber: values.paymentAccountNumber,
+          transactionId: values.transactionId,
           useAccountBillingAddress: isUseAccountBillingAddresss,
           shipToDifferentAddress: isShipToDifferentAddress,
 
@@ -537,7 +614,6 @@ const Checkout = ({
         await handleCreateOrderFetch({
           body: createOrderData,
         });
-        console.log('createOrderData', createOrderData);
         actions.setSubmitting(false);
         clearCart();
       }
@@ -645,10 +721,16 @@ const Checkout = ({
       if (createOrderState['data']['success']) {
         setIsModalShown(true);
       }
-
-      console.log('createOrderState', createOrderState);
     }
   }, [createOrderState]);
+
+  const getTotalPrice = (total, charge) => {
+    if (charge) {
+      return parseInt(total) + charge;
+    } else {
+      return total;
+    }
+  };
 
   return (
     <>
@@ -920,14 +1002,59 @@ const Checkout = ({
                                       );
                                     })}
                                 </div>
+                                <div className='order-price'>
+                                  <div className='order-summary-price'>
+                                    <h3>Delivery Charge</h3>
+                                    <span
+                                      style={{
+                                        fontWeight: 500,
+                                      }}
+                                    >
+                                      ৳
+                                      {isShipToDifferentAddress
+                                        ? shippingDeliveryCharge['charge'] &&
+                                          shippingDeliveryCharge['charge']
+                                        : billingDeliveryCharge['charge'] &&
+                                          billingDeliveryCharge['charge']}
+                                    </span>
+                                  </div>
+                                  <div className='order-summary-price'>
+                                    <h3>{cartItems.length} items in Cart</h3>
+                                    <span
+                                      style={{
+                                        fontWeight: 500,
+                                      }}
+                                    >
+                                      ৳{totalPrice}
+                                    </span>
+                                  </div>
+                                </div>
                                 <div className='order-summary-price'>
-                                  <h3>{cartItems.length} items in Cart</h3>
+                                  <h3
+                                    style={{
+                                      fontWeight: 700,
+                                    }}
+                                  >
+                                    Total
+                                  </h3>
                                   <span
                                     style={{
                                       fontWeight: 700,
                                     }}
                                   >
-                                    ৳{totalPrice}
+                                    ৳
+                                    {getTotalPrice(
+                                      totalPrice,
+                                      isShipToDifferentAddress
+                                        ? shippingDeliveryCharge['charge'] &&
+                                            parseInt(
+                                              shippingDeliveryCharge['charge']
+                                            )
+                                        : billingDeliveryCharge['charge'] &&
+                                            parseInt(
+                                              billingDeliveryCharge['charge']
+                                            )
+                                    )}
                                   </span>
                                 </div>
                               </>
@@ -1010,4 +1137,10 @@ password, password2
 // shipToDifferentAddress and useAccountBillingAddresss they both can be true together. 
 
 // ccart/update/remove/:cartkey
+
+
+if billing address is false, then delivery charge will be based on shipping address
+if shipping address is false, then delivery charge will be based on billing address
+if both billing address and shipping address are true, then delivery charge will be based on shipping address
+
 */

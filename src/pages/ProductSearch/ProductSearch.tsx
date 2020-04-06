@@ -113,8 +113,6 @@ const ProductSearch = ({
     'productSearch'
   );
 
-  console.log('productSearchState', productSearchState);
-
   const getCategories = async () => {
     let categories = [];
 
