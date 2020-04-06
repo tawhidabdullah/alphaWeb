@@ -223,6 +223,14 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
             handleBlur,
           }) => (
             <>
+              <div
+                className='block-title authTitle'
+                style={{
+                  margin: '20px 0',
+                }}
+              >
+                <span>Personal Information</span>
+              </div>
               <TextFeildGroup
                 label='FirstName'
                 name='firstName'
@@ -246,58 +254,6 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
                 errors={
                   errors.lastName ||
                   (!isSubmitting && signupState.error['error']['lastName'])
-                }
-              />
-
-              <TextFeildGroup
-                label='Phone'
-                name='phone'
-                placeholder='Enter your phone'
-                type='text'
-                value={values.phone}
-                onChange={handleChange('phone')}
-                errors={
-                  errors.phone ||
-                  (!isSubmitting && signupState.error['error']['phone'])
-                }
-              />
-
-              <TextFeildGroup
-                label='Email'
-                name='email'
-                placeholder='Enter your email'
-                type='text'
-                value={values.email}
-                onChange={handleChange('email')}
-                errors={
-                  errors.email ||
-                  (!isSubmitting && signupState.error['error']['email'])
-                }
-              />
-
-              <TextFeildGroup
-                label='Password'
-                name='password'
-                placeholder='Enter your password'
-                type='password'
-                value={values.password}
-                onChange={handleChange('password')}
-                errors={
-                  errors.password ||
-                  (!isSubmitting && signupState.error['error']['password'])
-                }
-              />
-
-              <TextFeildGroup
-                label='Confirm Password'
-                name='passwordConfirmation'
-                placeholder='Enter your confirm password'
-                type='password'
-                value={values.passwordConfirmation}
-                onChange={handleChange('passwordConfirmation')}
-                errors={
-                  errors.passwordConfirmation ||
-                  (!isSubmitting && signupState.error['error']['password2'])
                 }
               />
 
@@ -361,6 +317,67 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
                 errors={
                   errors.address2 ||
                   (!isSubmitting && signupState.error['error']['address2'])
+                }
+              />
+
+              <div
+                className='block-title authTitle'
+                style={{
+                  margin: '20px 0',
+                }}
+              >
+                <span>Contact Information</span>
+              </div>
+
+              <TextFeildGroup
+                label='Phone'
+                name='phone'
+                placeholder='Enter your phone'
+                type='text'
+                value={values.phone}
+                onChange={handleChange('phone')}
+                errors={
+                  errors.phone ||
+                  (!isSubmitting && signupState.error['error']['phone'])
+                }
+              />
+
+              <TextFeildGroup
+                label='Email'
+                name='email'
+                placeholder='Enter your email'
+                type='text'
+                value={values.email}
+                onChange={handleChange('email')}
+                errors={
+                  errors.email ||
+                  (!isSubmitting && signupState.error['error']['email'])
+                }
+              />
+
+              <TextFeildGroup
+                label='Password'
+                name='password'
+                placeholder='Enter your password'
+                type='password'
+                value={values.password}
+                onChange={handleChange('password')}
+                errors={
+                  errors.password ||
+                  (!isSubmitting && signupState.error['error']['password'])
+                }
+              />
+
+              <TextFeildGroup
+                label='Confirm Password'
+                name='passwordConfirmation'
+                placeholder='Enter your confirm password'
+                type='password'
+                value={values.passwordConfirmation}
+                onChange={handleChange('passwordConfirmation')}
+                errors={
+                  errors.passwordConfirmation ||
+                  (!isSubmitting && signupState.error['error']['password2'])
                 }
               />
 

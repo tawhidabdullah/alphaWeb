@@ -199,7 +199,7 @@ const shippingAddressInitialValues = {
 };
 
 const otherPaymentMethodIntialValues = {
-  phone: '',
+  phone: null,
   email: '',
   password: '',
   passwordConfirmation: '',
@@ -223,7 +223,7 @@ const otherPaymentMethodNotSigninIntialValues = {
 };
 
 const codInitialValues = {
-  phone: '',
+  phone: null,
   email: '',
   password: '',
   passwordConfirmation: '',
@@ -440,15 +440,13 @@ const Checkout = ({
             },
           },
         });
-        // @ts-ignore
-        if (billingDeliveryCharge) {
-          // @ts-ignore
-          setBillingDeliveryCharge(billingDeliveryCharge);
 
-          addItemToCache({
-            [`getDeliveryCharge/${selectedCityValue.value}`]: billingDeliveryCharge,
-          });
-        }
+        // @ts-ignore
+        setBillingDeliveryCharge(billingDeliveryCharge);
+
+        addItemToCache({
+          [`getDeliveryCharge/${selectedCityValue.value}`]: billingDeliveryCharge,
+        });
       };
 
       getAndSetBillingDeliveryCharge();
@@ -476,19 +474,18 @@ const Checkout = ({
           },
         });
         // @ts-ignore
-        if (shippingDeliveryCharge) {
-          // @ts-ignore
-          setShippingDeliveryCharge(shippingDeliveryCharge);
+        setShippingDeliveryCharge(shippingDeliveryCharge);
 
-          addItemToCache({
-            [`getDeliveryCharge/${selectedShippingCityValue.value}`]: shippingDeliveryCharge,
-          });
-        }
+        addItemToCache({
+          [`getDeliveryCharge/${selectedShippingCityValue.value}`]: shippingDeliveryCharge,
+        });
       };
 
       getAndSetShippingDeliveryCharge();
     }
   }, [selectedShippingCityValue]);
+
+  console.log('billingDeliveryCharge', billingDeliveryCharge);
 
   useEffect(() => {
     if (checkIfItemExistsInCache(`countryList`, cache)) {
@@ -732,6 +729,12 @@ const Checkout = ({
     }
   };
 
+  const isDeliveryChargeExists = (charge) => {
+    if (charge) {
+      return true;
+    } else return false;
+  };
+
   return (
     <>
       {!isAuthLoading && (
@@ -760,16 +763,14 @@ const Checkout = ({
                       <div>
                         <div>
                           <div className='checkoutSection'>
-                            <h2
+                            <div
+                              className='block-title authTitle'
                               style={{
-                                fontSize: '20px',
-                                color: '#444',
-                                marginTop: '20px',
-                                fontWeight: 400,
+                                margin: '20px 0',
                               }}
                             >
-                              Billing Address
-                            </h2>
+                              <span>Billing Address</span>
+                            </div>
 
                             {session.isAuthenticated ? (
                               <Checkbox
@@ -817,16 +818,14 @@ const Checkout = ({
                           </div>
 
                           <div className='checkoutSection'>
-                            <h2
+                            <div
+                              className='block-title authTitle'
                               style={{
-                                fontSize: '20px',
-                                color: '#444',
-                                fontWeight: 400,
                                 margin: '20px 0',
                               }}
                             >
-                              Shipping Address
-                            </h2>
+                              <span>Shipping Address</span>
+                            </div>
                             <Checkbox
                               name={'shipToDifferentAddress'}
                               label={'Ship To Different Address'}
@@ -871,16 +870,15 @@ const Checkout = ({
                           </div>
 
                           <div className='checkoutSection'>
-                            <h2
+                            <div
+                              className='block-title authTitle'
                               style={{
-                                fontSize: '20px',
-                                color: '#444',
                                 margin: '20px 0',
-                                fontWeight: 400,
                               }}
                             >
-                              Payment Methods
-                            </h2>
+                              <span>Payment Methods</span>
+                            </div>
+
                             <div className='paymentMethods'>
                               <RadioGroup
                                 onChange={onRadioGroupChange}
@@ -966,23 +964,36 @@ const Checkout = ({
                           >
                             <AuthButton
                               onclick={handleSubmit}
-                              disabled={!isValid}
+                              disabled={
+                                !isValid ||
+                                !isDeliveryChargeExists(
+                                  isShipToDifferentAddress
+                                    ? shippingDeliveryCharge['charge'] &&
+                                        shippingDeliveryCharge['charge']
+                                    : billingDeliveryCharge['charge'] &&
+                                        billingDeliveryCharge['charge']
+                                )
+                              }
                             >
-                              {isSubmitting ? 'Ordering...' : 'Order'}
+                              {isSubmitting ? 'Checkout...' : 'Checkout'}
                             </AuthButton>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div className='col-md-5'>
+                    <div className='col-md-5 order-md-1'>
                       <div className='row'>
                         <div className='col-md-12 '>
                           <div className='order-summary'>
                             <h2
                               style={{
-                                marginBottom: '20px',
-                                padding: '15px 10px',
-                                borderBottom: '2px solid #ccc',
+                                fontSize: '20px',
+                                color: '#444',
+                                paddingBottom: '15px',
+                                paddingTop: '5px',
+                                fontWeight: 400,
+                                marginBottom: '10px',
+                                borderBottom: '1px solid #ddd',
                               }}
                             >
                               Order Summary
@@ -1004,21 +1015,6 @@ const Checkout = ({
                                 </div>
                                 <div className='order-price'>
                                   <div className='order-summary-price'>
-                                    <h3>Delivery Charge</h3>
-                                    <span
-                                      style={{
-                                        fontWeight: 500,
-                                      }}
-                                    >
-                                      ৳
-                                      {isShipToDifferentAddress
-                                        ? shippingDeliveryCharge['charge'] &&
-                                          shippingDeliveryCharge['charge']
-                                        : billingDeliveryCharge['charge'] &&
-                                          billingDeliveryCharge['charge']}
-                                    </span>
-                                  </div>
-                                  <div className='order-summary-price'>
                                     <h3>{cartItems.length} items in Cart</h3>
                                     <span
                                       style={{
@@ -1028,6 +1024,36 @@ const Checkout = ({
                                       ৳{totalPrice}
                                     </span>
                                   </div>
+
+                                  {isDeliveryChargeExists(
+                                    isShipToDifferentAddress
+                                      ? shippingDeliveryCharge['charge'] &&
+                                          shippingDeliveryCharge['charge']
+                                      : billingDeliveryCharge['charge'] &&
+                                          billingDeliveryCharge['charge']
+                                  ) ? (
+                                    <div className='order-summary-price'>
+                                      <h3>Delivery Charge</h3>
+                                      <span
+                                        style={{
+                                          fontWeight: 500,
+                                        }}
+                                      >
+                                        ৳
+                                        {isShipToDifferentAddress
+                                          ? shippingDeliveryCharge['charge'] &&
+                                            shippingDeliveryCharge['charge']
+                                          : billingDeliveryCharge['charge'] &&
+                                            billingDeliveryCharge['charge']}
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    <div className='order-summary-price'>
+                                      <h3>
+                                        Delivery is not available in your area
+                                      </h3>
+                                    </div>
+                                  )}
                                 </div>
                                 <div className='order-summary-price'>
                                   <h3
@@ -1059,16 +1085,34 @@ const Checkout = ({
                                 </div>
                               </>
                             ) : (
-                              <button
-                                className='clear-cart banner-btn'
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  history.push('/');
+                              <div
+                                style={{
+                                  height: '100%',
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
                                 }}
-                                // onClick={this.handleToggleCartBar}
                               >
-                                Add Products
-                              </button>
+                                <p
+                                  style={{
+                                    letterSpacing: '-1px',
+                                    marginBottom: '20px',
+                                    fontSize: '20px',
+                                    fontWeight: 600,
+                                  }}
+                                >
+                                  Your Cart is empty
+                                </p>
+                                <button
+                                  className='clear-cart banner-btn'
+                                  onClick={() => {
+                                    history.push('/');
+                                  }}
+                                >
+                                  Add Products
+                                </button>
+                              </div>
                             )}
                           </div>
                         </div>

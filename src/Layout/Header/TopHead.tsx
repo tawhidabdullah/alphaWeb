@@ -8,6 +8,7 @@ interface Props {
   logout: () => void;
   addItemToCache: (any) => void;
   cache: any;
+  clearCart: () => void;
 }
 
 const TopHead = ({
@@ -16,6 +17,7 @@ const TopHead = ({
   logout,
   addItemToCache,
   cache,
+  clearCart,
 }: Props) => {
   const [welcomeState, handleWelcomeFetch] = useHandleFetch([], 'welcome');
   const [welcome, setWelcome] = useState([]);
@@ -45,7 +47,7 @@ const TopHead = ({
 
   const handleLogout = async () => {
     await handleLogoutFetch({});
-
+    clearCart();
     logout();
   };
   return (

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { sessionOperations } from '../../state/ducks/session';
 import { categoryOperations } from '../../state/ducks/category';
 import { cacheOperations } from '../../state/ducks/cache';
+import { cartOperations } from '../../state/ducks/cart';
 
 // import header components
 import TopHead from './TopHead';
@@ -28,6 +29,7 @@ interface Props {
   category: any;
   addItemToCache: (any) => void;
   cache: any;
+  clearCart: () => void;
 }
 
 const Header = ({
@@ -40,6 +42,7 @@ const Header = ({
   category,
   addItemToCache,
   cache,
+  clearCart,
 }: Props) => {
   const [windowWidth, setWindowWidth] = useState(0);
   const [isShowCartBar, setIsShowCartBar] = useState(false);
@@ -97,6 +100,7 @@ const Header = ({
         logout={logout}
         cache={cache}
         addItemToCache={addItemToCache}
+        clearCart={clearCart}
       />
 
       <div
@@ -181,6 +185,7 @@ const mapDispatchToProps = {
   addCategory: categoryOperations.addCategory,
   getCategory: categoryOperations.getCategory,
   addItemToCache: cacheOperations.addItemToCache,
+  clearCart: cartOperations.clearCart,
 };
 
 const mapStateToProps = (state) => ({

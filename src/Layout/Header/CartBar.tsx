@@ -73,8 +73,8 @@ const CartBar = ({
         </span>
 
         <div className='cart-content'>
-          {(cartItems &&
-            cartItems.length &&
+          {cartItems &&
+            cartItems.length > 0 &&
             cartItems.map((cartItem) => {
               return (
                 <React.Fragment key={cartItem._id}>
@@ -89,25 +89,40 @@ const CartBar = ({
                   />
                 </React.Fragment>
               );
-            })) || (
-            <div
+            })}
+        </div>
+
+        {cartItems && !(cartItems.length > 0) && (
+          <div
+            style={{
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <p
               style={{
-                height: '100%',
-                background: 'red',
+                letterSpacing: '-1px',
+                marginBottom: '20px',
+                fontSize: '20px',
+                fontWeight: 600,
               }}
             >
-              <button
-                className='clear-cart banner-btn'
-                onClick={() => {
-                  handleToggleCartBar();
-                  history.push('/');
-                }}
-              >
-                Add Products
-              </button>
-            </div>
-          )}
-        </div>
+              Your Cart is empty
+            </p>
+            <button
+              className='clear-cart banner-btn'
+              onClick={() => {
+                handleToggleCartBar();
+                history.push('/');
+              }}
+            >
+              Add Products
+            </button>
+          </div>
+        )}
         {cartItems && cartItems.length > 0 && (
           <div className='cart-footer'>
             <div className='cart-total'>

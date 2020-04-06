@@ -16,6 +16,11 @@ const personalInfoInitialValues = {
   address2: '',
 };
 
+const contactInfoInitialValues = {
+  phone: '',
+  email: '',
+};
+
 const mobilePhoneInitialValues = {
   phone: '',
 };
@@ -43,6 +48,11 @@ const personalInfoValidationSchema = Yup.object().shape({
     .min(3, 'Address line 2 must have at least 3 characters '),
 });
 
+const contactInfoSchema = Yup.object().shape({
+  phone: Yup.string().required(),
+  email: Yup.string().label('Email').email('Enter a valid email'),
+});
+
 const mobilePhoneValidationSchema = Yup.object().shape({
   phone: Yup.string().required(),
 });
@@ -59,6 +69,7 @@ interface Props {
 
 const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
   const [isPersonalInfoEdit, setIsPersonalInfoEdit] = useState(false);
+  const [iscontactInfoEdit, setIsContactInfoEdit] = useState(false);
   const [isMobilePhoneEdit, setIsMobilePhoneEdit] = useState(false);
   const [isEmailAddressEdit, setIsEmailAddressEdit] = useState(false);
   const [customerData, setCustomerData] = useState(customerDetail);
@@ -109,6 +120,8 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
         setIsMobilePhoneEdit(false);
       } else if (type === 'address') {
         setIsEmailAddressEdit(false);
+      } else if (type === 'contact') {
+        setIsContactInfoEdit(false);
       }
     }
   };
@@ -398,26 +411,26 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
         )}
       </div>
       <div className='myAccountSectionHeader'>
-        <h2 className='myAccountSectionHeader-main'>Mobile number</h2>
+        <h2 className='myAccountSectionHeader-main'>Contact Information</h2>
         <h2
           className='myAccountSectionHeader-button'
-          onClick={() => setIsMobilePhoneEdit((value) => !value)}
+          onClick={() => setIsContactInfoEdit((value) => !value)}
         >
-          {isMobilePhoneEdit ? 'Remove Edit' : 'Change Mobile Phone'}
+          {iscontactInfoEdit ? 'Remove Edit' : 'Change Information'}
         </h2>
       </div>
       <div className='myAccountSectionForm'>
-        {isMobilePhoneEdit && (
+        {iscontactInfoEdit && (
           <Formik
             initialValues={
-              isMobilePhoneEdit && Object.keys(customerData).length > 0
+              iscontactInfoEdit && Object.keys(customerData).length > 0
                 ? customerData
-                : mobilePhoneInitialValues
+                : contactInfoInitialValues
             }
             onSubmit={(values, actions) =>
-              handleUpdateProfileData(values, actions, 'mobile')
+              handleUpdateProfileData(values, actions, 'contact')
             }
-            validationSchema={mobilePhoneValidationSchema}
+            validationSchema={contactInfoSchema}
             validateOnChange={true}
             enableReinitialize={true}
           >
@@ -436,13 +449,27 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
                   label='Phone'
                   name='phone'
                   placeholder='Enter your phone'
-                  type='number'
+                  type='text'
                   value={values.phone}
                   onChange={handleChange('phone')}
                   errors={
                     errors.phone ||
                     (!isSubmitting &&
                       updateCurrentCustomerData.error['error']['phone'])
+                  }
+                />
+
+                <TextFeildGroup
+                  label='Email'
+                  name='email'
+                  placeholder='Enter your email'
+                  type='text'
+                  value={values.email}
+                  onChange={handleChange('email')}
+                  errors={
+                    errors.email ||
+                    (!isSubmitting &&
+                      updateCurrentCustomerData.error['error']['email'])
                   }
                 />
 
@@ -463,7 +490,7 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
           </Formik>
         )}
 
-        {!isMobilePhoneEdit && Object.keys(customerData).length > 0 && (
+        {!iscontactInfoEdit && Object.keys(customerData).length > 0 && (
           <>
             {customerData['phone'] && (
               <TextFeildGroup
@@ -473,76 +500,7 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
                 disabled={true}
               />
             )}
-          </>
-        )}
-      </div>
-      <div className='myAccountSectionHeader'>
-        <h2 className='myAccountSectionHeader-main'>Email Address</h2>
-        <h2
-          className='myAccountSectionHeader-button'
-          onClick={() => setIsEmailAddressEdit((value) => !value)}
-        >
-          {isEmailAddressEdit ? 'Remove Edit' : 'Change Email Address'}
-        </h2>
-      </div>
-      <div className='myAccountSectionForm'>
-        {isEmailAddressEdit && (
-          <Formik
-            initialValues={
-              isEmailAddressEdit && Object.keys(customerData).length > 0
-                ? customerData
-                : emailAddressInitialValues
-            }
-            onSubmit={(values, actions) =>
-              handleUpdateProfileData(values, actions, 'address')
-            }
-            validationSchema={emailAddressValidationSchema}
-            validateOnChange={true}
-            enableReinitialize={true}
-          >
-            {({
-              handleChange,
-              values,
-              handleSubmit,
-              errors,
-              isValid,
-              isSubmitting,
-              touched,
-              handleBlur,
-            }) => (
-              <>
-                <TextFeildGroup
-                  label='Email'
-                  name='email'
-                  placeholder='Enter your email'
-                  type='text'
-                  value={values.email}
-                  onChange={handleChange('email')}
-                  errors={
-                    errors.email ||
-                    (!isSubmitting &&
-                      updateCurrentCustomerData.error['error']['email'])
-                  }
-                />
-                <div
-                  style={{
-                    width: '100px',
-                  }}
-                >
-                  <AuthButton
-                    onclick={handleSubmit}
-                    disabled={!isValid || !values.email}
-                  >
-                    {isSubmitting ? 'Saving...' : 'Save'}
-                  </AuthButton>
-                </div>
-              </>
-            )}
-          </Formik>
-        )}
 
-        {!isEmailAddressEdit && Object.keys(customerData).length > 0 && (
-          <>
             {customerData['email'] && (
               <TextFeildGroup
                 label='Email'

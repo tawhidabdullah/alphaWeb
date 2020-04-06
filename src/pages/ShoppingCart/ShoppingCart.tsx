@@ -132,7 +132,7 @@ const ShoppingCart = ({
 
             <div className='pull-right' style={{ margin: '10px', flexGrow: 1 }}>
               <div className='pull-right' style={{ margin: '5px' }}>
-                Total price: <b>{numberWithCommas(totalPrice)}৳</b>
+                Total price: <b>৳{numberWithCommas(totalPrice)}</b>
               </div>
             </div>
           </div>

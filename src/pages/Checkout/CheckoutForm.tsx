@@ -37,6 +37,15 @@ const CheckoutForm = ({
 }: Props) => {
   return (
     <>
+      <div
+        className='block-title authTitle sm'
+        style={{
+          margin: '20px 0',
+        }}
+      >
+        <span>Personal Information</span>
+      </div>
+
       <TextFeildGroup
         label='FirstName'
         name='firstName'
@@ -59,53 +68,6 @@ const CheckoutForm = ({
         onChange={handleChange('lastName')}
         errors={errors.lastName || (!isSubmitting && serverErrors.lastName)}
       />
-
-      <TextFeildGroup
-        label='Phone'
-        name='phone'
-        placeholder='Enter your phone'
-        type='text'
-        value={values.phone}
-        onChange={handleChange('phone')}
-        errors={errors.phone || (!isSubmitting && serverErrors.phone)}
-      />
-
-      <TextFeildGroup
-        label='Email'
-        name='email'
-        placeholder='Enter your email'
-        type='text'
-        value={values.email}
-        onChange={handleChange('email')}
-        errors={errors.email || (!isSubmitting && serverErrors.email)}
-      />
-
-      {!isAuthenticated && (
-        <>
-          <TextFeildGroup
-            label='Password'
-            name='password'
-            placeholder='Enter your password'
-            type='password'
-            value={values.password}
-            onChange={handleChange('password')}
-            errors={errors.password || (!isSubmitting && serverErrors.password)}
-          />
-
-          <TextFeildGroup
-            label='Confirm Password'
-            name='passwordConfirmation'
-            placeholder='Enter your confirm password'
-            type='password'
-            value={values.passwordConfirmation}
-            onChange={handleChange('passwordConfirmation')}
-            errors={
-              errors.passwordConfirmation ||
-              (!isSubmitting && serverErrors.password2)
-            }
-          />
-        </>
-      )}
 
       {countryList.length > 0 && (
         <div>
@@ -164,6 +126,62 @@ const CheckoutForm = ({
         onChange={handleChange('address2')}
         errors={errors.address2 || (!isSubmitting && serverErrors.address2)}
       />
+
+      <div
+        className='block-title authTitle sm'
+        style={{
+          margin: '20px 0',
+        }}
+      >
+        <span>Contact Information</span>
+      </div>
+
+      <TextFeildGroup
+        label='Phone'
+        name='phone'
+        placeholder='Enter your phone'
+        type='text'
+        value={values.phone}
+        onChange={handleChange('phone')}
+        errors={errors.phone || (!isSubmitting && serverErrors.phone)}
+      />
+
+      <TextFeildGroup
+        label='Email'
+        name='email'
+        placeholder='Enter your email'
+        type='text'
+        value={values.email}
+        onChange={handleChange('email')}
+        errors={errors.email || (!isSubmitting && serverErrors.email)}
+      />
+
+      {!isAuthenticated && (
+        <>
+          <TextFeildGroup
+            label='Password'
+            name='password'
+            placeholder='Enter your password'
+            type='password'
+            value={values.password}
+            onChange={handleChange('password')}
+            errors={errors.password || (!isSubmitting && serverErrors.password)}
+          />
+
+          <TextFeildGroup
+            label='Confirm Password'
+            name='passwordConfirmation'
+            placeholder='Enter your confirm password'
+            type='password'
+            value={values.passwordConfirmation}
+            onChange={handleChange('passwordConfirmation')}
+            errors={
+              errors.passwordConfirmation ||
+              (!isSubmitting && serverErrors.password2)
+            }
+          />
+        </>
+      )}
     </>
   );
 };

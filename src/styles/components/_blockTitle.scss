@@ -27,6 +27,32 @@
   width: 60px;
 }
 
+.block-title.authTitle.sm {
+  text-transform: capitalize;
+  font-size: 15px;
+  color: $color-dark-1;
+  font-weight: 500;
+  color: #444;
+  line-height: 30px;
+}
+
+.block-title.authTitle.sm span::before {
+  background-color: #777;
+  width: 30px;
+}
+
+.block-title.authTitle {
+  text-transform: capitalize;
+  font-size: 20px;
+  color: $color-dark-1;
+  font-weight: 600;
+  color: #444;
+}
+
+.block-title.authTitle span::before {
+  background-color: #666;
+}
+
 .block-title.ordertitle span::before {
   background-color: #ddd;
 }
