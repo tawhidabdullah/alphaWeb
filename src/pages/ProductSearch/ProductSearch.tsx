@@ -138,7 +138,8 @@ const ProductSearch = ({
     };
 
     const tempCategories =
-      (categories.length > 0 &&
+      (categories &&
+        categories.length > 0 &&
         categories.map((cat: object) => {
           return {
             ...cat,

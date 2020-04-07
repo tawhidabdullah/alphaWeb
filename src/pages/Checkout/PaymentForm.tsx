@@ -9,6 +9,8 @@ interface Props {
   paymentMethod: string;
   serverErrors: any;
   isSubmitting: boolean;
+  touched: any;
+  setFieldTouched: (e: any) => void;
 }
 
 const CheckoutForm = ({
@@ -18,36 +20,50 @@ const CheckoutForm = ({
   isSubmitting,
   serverErrors,
   paymentMethod,
+  touched,
+  setFieldTouched,
 }: Props) => {
   return (
     <>
       {paymentMethod !== 'cod' && (
         <>
-          <TextFeildGroup
-            name='paymentAccountNumber'
-            label='Payment Mobile Number'
-            placeholder='017xxx'
-            type='text'
-            value={values.paymentAccountNumber}
-            onChange={handleChange('paymentAccountNumber')}
-            errors={
-              errors.paymentAccountNumber ||
-              (!isSubmitting && serverErrors.paymentAccountNumber)
-            }
-          />
-
-          <TextFeildGroup
-            label='Transaction Id'
-            name='transactionId'
-            placeholder='Enter Trans Id...'
-            type='text'
-            value={values.transactionId}
-            onChange={handleChange('transactionId')}
-            errors={
-              errors.transactionId ||
-              (!isSubmitting && serverErrors.transactionId)
-            }
-          />
+          <div className='formContainerOfTwo'>
+            <div className='formContainerOfTwoItem'>
+              <TextFeildGroup
+                name='paymentAccountNumber'
+                label='Payment Mobile Number'
+                placeholder='017xxx'
+                type='text'
+                value={values.paymentAccountNumber}
+                onChange={(e) => {
+                  handleChange(e);
+                  setFieldTouched('paymentAccountNumber');
+                }}
+                errors={
+                  (touched.paymentAccountNumber &&
+                    errors.paymentAccountNumber) ||
+                  (!isSubmitting && serverErrors.paymentAccountNumber)
+                }
+              />
+            </div>
+            <div className='formContainerOfTwoItem'>
+              <TextFeildGroup
+                label='Transaction Id'
+                name='transactionId'
+                placeholder='Enter Trans Id...'
+                type='text'
+                value={values.transactionId}
+                onChange={(e) => {
+                  handleChange(e);
+                  setFieldTouched('transactionId');
+                }}
+                errors={
+                  (touched.transactionId && errors.transactionId) ||
+                  (!isSubmitting && serverErrors.transactionId)
+                }
+              />
+            </div>
+          </div>
         </>
       )}
     </>

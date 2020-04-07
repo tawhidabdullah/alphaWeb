@@ -25,14 +25,14 @@ const dataFetchReducer = (state: IState, action: Actions) => {
         isLoading: true,
         error: {
           isError: false,
-          error: {}
-        }
+          error: {},
+        },
       };
     case 'FETCH_SUCCESS':
       return {
         ...state,
         isLoading: false,
-        data: action.payload
+        data: action.payload,
       };
     case 'FETCH_FAILURE':
       return {
@@ -40,8 +40,8 @@ const dataFetchReducer = (state: IState, action: Actions) => {
         isLoading: false,
         error: {
           isError: true,
-          error: action.payload
-        }
+          error: action.payload,
+        },
       };
     default:
       throw new Error();
@@ -56,9 +56,9 @@ const useHandleFetch = (
     isLoading: false,
     error: {
       isError: false,
-      error: {}
+      error: {},
     },
-    data: initialData
+    data: initialData,
   };
 
   const [state, dispatch] = useReducer(dataFetchReducer, initialState);
@@ -73,6 +73,7 @@ const useHandleFetch = (
       return data;
     } catch (error) {
       dispatch({ type: 'FETCH_FAILURE', payload: error });
+      return initialData;
     }
   };
 

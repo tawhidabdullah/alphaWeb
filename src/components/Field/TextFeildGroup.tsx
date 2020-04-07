@@ -11,6 +11,7 @@ interface Props {
   disabled?: boolean;
   errors?: any;
   label?: string;
+  onInput?: (e: any) => void;
 }
 
 const TextFeildGroup = ({
@@ -23,6 +24,7 @@ const TextFeildGroup = ({
   disabled,
   errors,
   label,
+  onInput,
 }: Props) => {
   console.log('eror', errors);
   return (
@@ -40,6 +42,7 @@ const TextFeildGroup = ({
         onChange={onChange}
         disabled={disabled}
         id='inputFeild'
+        onInput={onInput}
       />
       {info && (
         <small

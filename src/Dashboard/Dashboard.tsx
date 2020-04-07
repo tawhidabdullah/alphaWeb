@@ -21,7 +21,7 @@ const Dashboard = (props) => {
       setIsLoading(true);
       const customerData = await handleCustomerDetailFetch({});
       // @ts-ignore
-      if (!customerData) {
+      if (!Object.keys(customerData).length > 0) {
         props.history.push('/signin');
         props.logout();
       } else {

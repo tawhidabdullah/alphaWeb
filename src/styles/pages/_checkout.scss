@@ -10,7 +10,7 @@
 .createOrderContainer {
   background-color: #fff;
   border-radius: 5px;
-  padding: 10px 10px;
+  padding: 0 10px;
 }
 
 .checkout .shipping-heading {
@@ -78,4 +78,19 @@
   margin: 2px 0;
   font-size: 15px;
   font-weight: 500;
+}
+
+.alertText {
+  font-size: 17px;
+  color: rgba(107, 33, 172, 0.5);
+  font-weight: 600;
+  line-height: 40px;
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+
+  .fa {
+    margin-right: 15px;
+    font-size: 20px;
+  }
 }

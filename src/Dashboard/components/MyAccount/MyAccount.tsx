@@ -219,7 +219,7 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
               handleUpdateProfileData(values, actions, 'personalinfo')
             }
             validationSchema={personalInfoValidationSchema}
-            validateOnChange={true}
+            validateOnBlur={false}
             enableReinitialize={true}
           >
             {({
@@ -231,6 +231,7 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
               isSubmitting,
               touched,
               handleBlur,
+              setFieldTouched,
             }) => (
               <>
                 <div className='formContainerOfTwo'>
@@ -241,9 +242,12 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
                       placeholder='FirstName'
                       type='text'
                       value={values.firstName}
-                      onChange={handleChange('firstName')}
+                      onChange={(e) => {
+                        handleChange(e);
+                        setFieldTouched('firstName');
+                      }}
                       errors={
-                        errors.firstName ||
+                        (touched.firstName && errors.firstName) ||
                         (!isSubmitting &&
                           updateCurrentCustomerData.error['error']['firstName'])
                       }
@@ -256,9 +260,12 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
                       placeholder='Lastname'
                       type='text'
                       value={values.lastName}
-                      onChange={handleChange('lastName')}
+                      onChange={(e) => {
+                        handleChange(e);
+                        setFieldTouched('lastName');
+                      }}
                       errors={
-                        errors.lastName ||
+                        (touched.lastName && errors.lastName) ||
                         (!isSubmitting &&
                           updateCurrentCustomerData.error['error']['lastName'])
                       }
@@ -312,38 +319,38 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
                   </div>
                 </div>
 
-                <div className='formContainerOfTwo'>
-                  <div className='formContainerOfTwoItem'>
-                    <TextFeildGroup
-                      label='Address'
-                      name='address1'
-                      placeholder='Address line 1'
-                      type='text'
-                      value={values.address1}
-                      onChange={handleChange('address1')}
-                      errors={
-                        errors.address1 ||
-                        (!isSubmitting &&
-                          updateCurrentCustomerData.error['error']['address1'])
-                      }
-                    />
-                  </div>
-                  <div className='formContainerOfTwoItem'>
-                    <TextFeildGroup
-                      label='Address'
-                      name='address2'
-                      placeholder='Address line 2'
-                      type='text'
-                      value={values.address2}
-                      onChange={handleChange('address2')}
-                      errors={
-                        errors.address2 ||
-                        (!isSubmitting &&
-                          updateCurrentCustomerData.error['error']['address2'])
-                      }
-                    />
-                  </div>
-                </div>
+                <TextFeildGroup
+                  label='Address'
+                  name='address1'
+                  placeholder='Address line 1'
+                  type='text'
+                  value={values.address1}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setFieldTouched('address1');
+                  }}
+                  errors={
+                    (touched.address1 && errors.address1) ||
+                    (!isSubmitting &&
+                      updateCurrentCustomerData.error['error']['address1'])
+                  }
+                />
+                <TextFeildGroup
+                  label='Address'
+                  name='address2'
+                  placeholder='Address line 2'
+                  type='text'
+                  value={values.address2}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setFieldTouched('address2');
+                  }}
+                  errors={
+                    (touched.address2 && errors.address2) ||
+                    (!isSubmitting &&
+                      updateCurrentCustomerData.error['error']['address2'])
+                  }
+                />
 
                 <div
                   style={{
@@ -405,24 +412,6 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
               />
             )}
 
-            {customerData['address1'] && !customerData['address2'] && (
-              <TextFeildGroup
-                label='Address line 1'
-                name='address1'
-                value={customerData['address1']}
-                disabled={true}
-              />
-            )}
-
-            {customerData['address2'] && !customerData['address1'] && (
-              <TextFeildGroup
-                label='Address line 2'
-                name='address2'
-                value={customerData['address2']}
-                disabled={true}
-              />
-            )}
-
             {customerData['firstName'] && customerData['lastName'] && (
               <div className='formContainerOfTwo'>
                 <div className='formContainerOfTwoItem'>
@@ -464,28 +453,25 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
                 </div>
               </div>
             )}
-
-            {customerData['address1'] && customerData['address2'] && (
-              <div className='formContainerOfTwo'>
-                <div className='formContainerOfTwoItem'>
-                  <TextFeildGroup
-                    label='Address line 1'
-                    name='address1'
-                    value={customerData['address1']}
-                    disabled={true}
-                  />
-                </div>
-                <div className='formContainerOfTwoItem'>
-                  <TextFeildGroup
-                    label='Address line 2'
-                    name='address2'
-                    value={customerData['address2']}
-                    disabled={true}
-                  />
-                </div>
-              </div>
-            )}
           </>
+        )}
+
+        {customerData['address1'] && (
+          <TextFeildGroup
+            label='Address line 1'
+            name='address1'
+            value={customerData['address1']}
+            disabled={true}
+          />
+        )}
+
+        {customerData['address2'] && (
+          <TextFeildGroup
+            label='Address line 2'
+            name='address2'
+            value={customerData['address2']}
+            disabled={true}
+          />
         )}
       </div>
       <div className='myAccountSectionHeader'>
@@ -509,7 +495,7 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
               handleUpdateProfileData(values, actions, 'contact')
             }
             validationSchema={contactInfoSchema}
-            validateOnChange={true}
+            validateOnBlur={false}
             enableReinitialize={true}
           >
             {({
@@ -521,6 +507,7 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
               isSubmitting,
               touched,
               handleBlur,
+              setFieldTouched,
             }) => (
               <>
                 <TextFeildGroup
@@ -529,9 +516,12 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
                   placeholder='Enter your phone'
                   type='text'
                   value={values.phone}
-                  onChange={handleChange('phone')}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setFieldTouched('phone');
+                  }}
                   errors={
-                    errors.phone ||
+                    (touched.phone && errors.phone) ||
                     (!isSubmitting &&
                       updateCurrentCustomerData.error['error']['phone'])
                   }
@@ -543,9 +533,12 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
                   placeholder='Enter your email'
                   type='text'
                   value={values.email}
-                  onChange={handleChange('email')}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setFieldTouched('email');
+                  }}
                   errors={
-                    errors.email ||
+                    (touched.email && errors.email) ||
                     (!isSubmitting &&
                       updateCurrentCustomerData.error['error']['email'])
                   }

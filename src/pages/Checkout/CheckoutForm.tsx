@@ -4,11 +4,9 @@ import { TextFeildGroup } from '../../components/Field';
 
 interface Props {
   values: any;
-  handleBlur: (e: any) => void;
   handleChange: any;
   touched: any;
   errors: any;
-  paymentMethod: string;
   serverErrors: any;
   isSubmitting: boolean;
   isAuthenticated: boolean;
@@ -18,6 +16,7 @@ interface Props {
   cityList: any;
   selectedCityValue: any;
   handleSelectCityChange: (any) => void;
+  setFieldTouched: (e: any) => void;
 }
 
 const CheckoutForm = ({
@@ -26,7 +25,6 @@ const CheckoutForm = ({
   errors,
   isSubmitting,
   serverErrors,
-  paymentMethod,
   isAuthenticated,
   countryList,
   selectedCountryValue,
@@ -34,6 +32,8 @@ const CheckoutForm = ({
   cityList,
   selectedCityValue,
   handleSelectCityChange,
+  setFieldTouched,
+  touched,
 }: Props) => {
   return (
     <>
@@ -54,12 +54,13 @@ const CheckoutForm = ({
             placeholder='FirstName'
             type='text'
             value={values.firstName}
-            onChange={handleChange('firstName')}
+            onChange={(e) => {
+              handleChange(e);
+              setFieldTouched('firstName');
+            }}
             errors={
-              errors.firstName ||
-              (!isSubmitting &&
-                serverErrors.firstName &&
-                serverErrors.firstName)
+              (touched.firstName && errors.firstName) ||
+              (!isSubmitting && serverErrors.firstName)
             }
           />
         </div>
@@ -70,8 +71,14 @@ const CheckoutForm = ({
             placeholder='LastName'
             type='text'
             value={values.lastName}
-            onChange={handleChange('lastName')}
-            errors={errors.lastName || (!isSubmitting && serverErrors.lastName)}
+            onChange={(e) => {
+              handleChange(e);
+              setFieldTouched('lastName');
+            }}
+            errors={
+              (touched.lastName && errors.lastName) ||
+              (!isSubmitting && serverErrors.lastName)
+            }
           />
         </div>
       </div>
@@ -117,30 +124,36 @@ const CheckoutForm = ({
         </div>
       </div>
 
-      <div className='formContainerOfTwo'>
-        <div className='formContainerOfTwoItem'>
-          <TextFeildGroup
-            label='Address'
-            name='address1'
-            placeholder='Address line 1'
-            type='text'
-            value={values.address1}
-            onChange={handleChange('address1')}
-            errors={errors.address1 || (!isSubmitting && serverErrors.address1)}
-          />
-        </div>
-        <div className='formContainerOfTwoItem'>
-          <TextFeildGroup
-            label='Address'
-            name='address2'
-            placeholder='Address line 2'
-            type='text'
-            value={values.address2}
-            onChange={handleChange('address2')}
-            errors={errors.address2 || (!isSubmitting && serverErrors.address2)}
-          />
-        </div>
-      </div>
+      <TextFeildGroup
+        label='Address'
+        name='address1'
+        placeholder='Address line 1'
+        type='text'
+        value={values.address1}
+        onChange={(e) => {
+          handleChange(e);
+          setFieldTouched('address1');
+        }}
+        errors={
+          (touched.address1 && errors.address1) ||
+          (!isSubmitting && serverErrors.address1)
+        }
+      />
+      <TextFeildGroup
+        label='Address'
+        name='address2'
+        placeholder='Address line 2'
+        type='text'
+        value={values.address2}
+        onChange={(e) => {
+          handleChange(e);
+          setFieldTouched('address2');
+        }}
+        errors={
+          (touched.address2 && errors.address2) ||
+          (!isSubmitting && serverErrors.address2)
+        }
+      />
 
       <div
         className='block-title authTitle sm'
@@ -157,8 +170,14 @@ const CheckoutForm = ({
         placeholder='Mobile phone no'
         type='text'
         value={values.phone}
-        onChange={handleChange('phone')}
-        errors={errors.phone || (!isSubmitting && serverErrors.phone)}
+        onChange={(e) => {
+          handleChange(e);
+          setFieldTouched('phone');
+        }}
+        errors={
+          (touched.phone && errors.phone) ||
+          (!isSubmitting && serverErrors.phone)
+        }
       />
 
       <TextFeildGroup
@@ -167,8 +186,14 @@ const CheckoutForm = ({
         placeholder='Email address'
         type='text'
         value={values.email}
-        onChange={handleChange('email')}
-        errors={errors.email || (!isSubmitting && serverErrors.email)}
+        onChange={(e) => {
+          handleChange(e);
+          setFieldTouched('email');
+        }}
+        errors={
+          (touched.email && errors.email) ||
+          (!isSubmitting && serverErrors.email)
+        }
       />
 
       {!isAuthenticated && (
@@ -179,8 +204,14 @@ const CheckoutForm = ({
             placeholder='******'
             type='password'
             value={values.password}
-            onChange={handleChange('password')}
-            errors={errors.password || (!isSubmitting && serverErrors.password)}
+            onChange={(e) => {
+              handleChange(e);
+              setFieldTouched('password');
+            }}
+            errors={
+              (touched.password && errors.password) ||
+              (!isSubmitting && serverErrors.password)
+            }
           />
 
           <TextFeildGroup
@@ -189,9 +220,12 @@ const CheckoutForm = ({
             placeholder='******'
             type='password'
             value={values.passwordConfirmation}
-            onChange={handleChange('passwordConfirmation')}
+            onChange={(e) => {
+              handleChange(e);
+              setFieldTouched('passwordConfirmation');
+            }}
             errors={
-              errors.passwordConfirmation ||
+              (touched.passwordConfirmation && errors.passwordConfirmation) ||
               (!isSubmitting && serverErrors.password2)
             }
           />

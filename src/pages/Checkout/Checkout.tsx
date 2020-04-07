@@ -31,11 +31,11 @@ const validationSchemaForNotSigninCod = Yup.object().shape({
   firstName: Yup.string()
     .label('Name')
     .required()
-    .min(2, 'First name must have at least 2 characters '),
+    .min(2, 'Firstname must have at least 2 characters '),
   lastName: Yup.string()
     .label('Name')
     .required()
-    .min(2, 'Last name must have at least 2 characters '),
+    .min(2, 'Lastname must have at least 2 characters '),
   phone: Yup.string()
     .required('Please tell us your mobile number.')
     .max(13, 'Please enter a valid mobile number.'),
@@ -52,21 +52,17 @@ const validationSchemaForNotSigninCod = Yup.object().shape({
     .label('Address line 1')
     .required()
     .min(3, 'Address line 1 must have at least 3 characters '),
-  address2: Yup.string()
-    .label('Address line 2')
-    .required()
-    .min(3, 'Address line 2 must have at least 3 characters '),
 });
 
 const validationSchemaForCod = Yup.object().shape({
   firstName: Yup.string()
-    .label('Name')
+    .label('Firstname')
     .required()
-    .min(2, 'First name must have at least 2 characters '),
+    .min(2, 'Firstname must have at least 2 characters '),
   lastName: Yup.string()
-    .label('Name')
+    .label('Lastname')
     .required()
-    .min(2, 'Last name must have at least 2 characters '),
+    .min(2, 'Lastname must have at least 2 characters '),
   phone: Yup.string()
     .required('Please tell us your mobile number.')
     .max(13, 'Please enter a valid mobile number.'),
@@ -75,21 +71,17 @@ const validationSchemaForCod = Yup.object().shape({
     .label('Address line 1')
     .required()
     .min(3, 'Address line 1 must have at least 3 characters '),
-  address2: Yup.string()
-    .label('Address line 2')
-    .required()
-    .min(3, 'Address line 2 must have at least 3 characters '),
 });
 
 const validationSchemaForNotSigninOtherPaymentMethods = Yup.object().shape({
   firstName: Yup.string()
-    .label('Name')
+    .label('Firstname')
     .required()
-    .min(2, 'First name must have at least 2 characters '),
+    .min(2, 'Firstname must have at least 2 characters '),
   lastName: Yup.string()
-    .label('Name')
+    .label('Lastname')
     .required()
-    .min(2, 'Last name must have at least 2 characters '),
+    .min(2, 'Lastname must have at least 2 characters '),
   phone: Yup.string()
     .required('Please tell us your mobile number.')
     .max(13, 'Please enter a valid mobile number.'),
@@ -98,10 +90,6 @@ const validationSchemaForNotSigninOtherPaymentMethods = Yup.object().shape({
     .label('Address line 1')
     .required()
     .min(3, 'Address line 1 must have at least 3 characters '),
-  address2: Yup.string()
-    .label('Address line 2')
-    .required()
-    .min(3, 'Address line 2 must have at least 3 characters '),
 
   paymentAccountNumber: Yup.string()
     .required('Please tell us your mobile number.')
@@ -121,13 +109,13 @@ const validationSchemaForNotSigninOtherPaymentMethods = Yup.object().shape({
 
 const validationSchemaForOtherPaymentMethods = Yup.object().shape({
   firstName: Yup.string()
-    .label('Name')
+    .label('Firstname')
     .required()
-    .min(2, 'First name must have at least 2 characters '),
+    .min(2, 'Firstname must have at least 2 characters '),
   lastName: Yup.string()
-    .label('Name')
+    .label('Lastname')
     .required()
-    .min(2, 'Last name must have at least 2 characters '),
+    .min(2, 'Lastname must have at least 2 characters '),
   phone: Yup.string()
     .required('Please tell us your mobile number.')
     .max(13, 'Please enter a valid mobile number.'),
@@ -136,10 +124,6 @@ const validationSchemaForOtherPaymentMethods = Yup.object().shape({
     .label('Address line 1')
     .required()
     .min(3, 'Address line 1 must have at least 3 characters '),
-  address2: Yup.string()
-    .label('Address line 2')
-    .required()
-    .min(3, 'Address line 2 must have at least 3 characters '),
 
   paymentAccountNumber: Yup.string()
     .required('Please tell us your mobile number.')
@@ -168,10 +152,6 @@ const shippingAddressValidationSchema = Yup.object().shape({
     .label('Address line 1')
     .required()
     .min(3, 'Address line 1 must have at least 3 characters '),
-  shippingAddress2: Yup.string()
-    .label('Address line 2')
-    .required()
-    .min(3, 'Address line 2 must have at least 3 characters '),
 });
 
 const shippingAddressInitialValues = {
@@ -729,6 +709,7 @@ const Checkout = ({
           // @ts-ignore
           onSubmit={(values, actions) => handleOrder(values, actions)}
           validationSchema={getUltimateValidationSchema()}
+          validateOnBlur={false}
         >
           {({
             handleChange,
@@ -738,7 +719,7 @@ const Checkout = ({
             isSubmitting,
             handleSubmit,
             touched,
-            handleBlur,
+            setFieldTouched,
           }) => (
             <>
               <div className='checkout'>
@@ -747,6 +728,27 @@ const Checkout = ({
                     <div className='col-md-7 createOrderContainer'>
                       <div>
                         <div>
+                          {!session.isAuthenticated ? (
+                            <div
+                              onClick={() => history.push('/signin')}
+                              className='alertText'
+                              style={{
+                                cursor: 'pointer',
+                              }}
+                            >
+                              <i className='fa fa-exclamation-circle'></i>
+                              <h3>Sign in to your account</h3>
+                              <span
+                                style={{
+                                  marginLeft: '10px',
+                                }}
+                              >
+                                &rarr;
+                              </span>
+                            </div>
+                          ) : (
+                            ''
+                          )}
                           <div className='checkoutSection'>
                             <div
                               className='block-title authTitle'
@@ -777,10 +779,9 @@ const Checkout = ({
                               <>
                                 <CheckoutForm
                                   isSubmitting={isSubmitting}
-                                  paymentMethod={paymentMethod}
+                                  setFieldTouched={setFieldTouched}
                                   values={values}
                                   handleChange={handleChange}
-                                  handleBlur={handleBlur}
                                   touched={touched}
                                   errors={errors}
                                   serverErrors={serverErrors}
@@ -824,11 +825,10 @@ const Checkout = ({
                             {isShipToDifferentAddress ? (
                               <>
                                 <ShippingCheckout
+                                  setFieldTouched={setFieldTouched}
                                   isSubmitting={isSubmitting}
-                                  paymentMethod={paymentMethod}
                                   values={values}
                                   handleChange={handleChange}
-                                  handleBlur={handleBlur}
                                   touched={touched}
                                   errors={errors}
                                   serverErrors={serverErrors}
@@ -940,9 +940,25 @@ const Checkout = ({
                               handleChange={handleChange}
                               errors={errors}
                               serverErrors={serverErrors}
+                              setFieldTouched={setFieldTouched}
+                              touched={touched}
                             />
                           </div>
 
+                          {isDeliveryChargeExists(
+                            isShipToDifferentAddress
+                              ? shippingDeliveryCharge['charge'] &&
+                                  shippingDeliveryCharge['charge']
+                              : billingDeliveryCharge['charge'] &&
+                                  billingDeliveryCharge['charge']
+                          ) ? (
+                            ''
+                          ) : (
+                            <div className='alertText'>
+                              <i className='fa fa-exclamation-circle'></i>
+                              <h3>Delivery is not available in your area</h3>
+                            </div>
+                          )}
                           <div
                             style={{
                               width: '100px',

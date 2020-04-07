@@ -8,6 +8,7 @@ import { Formik } from 'formik';
 import { useHandleFetch } from '../../../hooks';
 import { checkIfItemExistsInCache } from '../../../utils';
 import { cacheOperations } from '../../../state/ducks/cache';
+import { withAlert } from 'react-alert';
 
 // import input fields
 import { TextFeildGroup } from '../../../components/Field';
@@ -25,13 +26,13 @@ const initialValues = {
 
 const validationSchema = Yup.object().shape({
   firstName: Yup.string()
-    .label('First name')
+    .label('Firstname')
     .required()
     .min(2, 'First name must have at least 2 characters '),
   lastName: Yup.string()
-    .label('Last name')
+    .label('Lastname')
     .required()
-    .min(2, 'Last name must have at least 2 characters '),
+    .min(2, 'Lastname must have at least 2 characters '),
   phone: Yup.string()
     .required('Please tell us your mobile number.')
     .max(13, 'Please enter a valid mobile number.'),
@@ -39,27 +40,27 @@ const validationSchema = Yup.object().shape({
     .label('Password')
     .required()
     .min(6, 'Password must have at least 6 characters'),
-  passwordConfirmation: Yup.string().oneOf(
-    [Yup.ref('password'), null],
-    'Passwords must match'
-  ),
+  passwordConfirmation: Yup.string()
+    .label('Confirm password')
+    .required()
+    .min(6, 'Confirm password must have at least 6 characters')
+    .oneOf([Yup.ref('password'), null], 'Passwords must match'),
   address1: Yup.string()
     .label('Address line 1')
     .required()
     .min(3, 'Address line 1 must have at least 3 characters '),
-  address2: Yup.string()
-    .label('Address line 2')
-    .required()
-    .min(3, 'Address line 2 must have at least 3 characters '),
+
+  email: Yup.string().label('Email').email('Please enter a valid email'),
 });
 
 interface Props {
   history: any;
   addItemToCache: (any) => void;
   cache: any;
+  alert: any;
 }
 
-const Signup = ({ addItemToCache, cache, history }: Props) => {
+const Signup = ({ addItemToCache, cache, history, alert }: Props) => {
   const [signupState, handlePost] = useHandleFetch({}, 'signup');
 
   const [selectedCountryValue, setSelectedCountryValue] = useState({
@@ -101,15 +102,18 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
     // @ts-ignore
     if (signupRes && signupRes['status'] === 'ok') {
       history.push('/signin');
+    } else {
+      if (
+        signupState.error['isError'] &&
+        !(Object.keys(signupState.error['error']).length > 0)
+      ) {
+        actions.resetForm({});
+        alert.error('Something went wrong');
+      }
     }
 
     actions.setSubmitting(false);
   };
-
-  console.log(
-    'errors',
-    signupState.error['error'] && signupState.error['error']
-  );
 
   useEffect(() => {
     if (checkIfItemExistsInCache(`countryList`, cache)) {
@@ -209,7 +213,7 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
           initialValues={{ ...initialValues }}
           onSubmit={(values, actions) => handleSubmit(values, actions)}
           validationSchema={validationSchema}
-          validateOnChange={true}
+          validateOnBlur={false}
         >
           {({
             handleChange,
@@ -220,6 +224,7 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
             isSubmitting,
             touched,
             handleBlur,
+            setFieldTouched,
           }) => (
             <>
               <div
@@ -239,9 +244,12 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
                     placeholder='firstName'
                     type='text'
                     value={values.firstName}
-                    onChange={handleChange('firstName')}
+                    onChange={(e) => {
+                      handleChange(e);
+                      setFieldTouched('firstName');
+                    }}
                     errors={
-                      errors.firstName ||
+                      (touched.firstName && errors.firstName) ||
                       (!isSubmitting && signupState.error['error']['firstName'])
                     }
                   />
@@ -254,9 +262,12 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
                     placeholder='lastName'
                     type='text'
                     value={values.lastName}
-                    onChange={handleChange('lastName')}
+                    onChange={(e) => {
+                      handleChange(e);
+                      setFieldTouched('lastName');
+                    }}
                     errors={
-                      errors.lastName ||
+                      (touched.lastName && errors.lastName) ||
                       (!isSubmitting && signupState.error['error']['lastName'])
                     }
                   />
@@ -305,36 +316,36 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
                 </div>
               </div>
 
-              <div className='formContainerOfTwo'>
-                <div className='formContainerOfTwoItem'>
-                  <TextFeildGroup
-                    label='Address'
-                    name='address1'
-                    placeholder='Address line 1'
-                    type='text'
-                    value={values.address1}
-                    onChange={handleChange('address1')}
-                    errors={
-                      errors.address1 ||
-                      (!isSubmitting && signupState.error['error']['address1'])
-                    }
-                  />
-                </div>
-                <div className='formContainerOfTwoItem'>
-                  <TextFeildGroup
-                    label='Address'
-                    name='address2'
-                    placeholder='Address line 2'
-                    type='text'
-                    value={values.address2}
-                    onChange={handleChange('address2')}
-                    errors={
-                      errors.address2 ||
-                      (!isSubmitting && signupState.error['error']['address2'])
-                    }
-                  />
-                </div>
-              </div>
+              <TextFeildGroup
+                label='Address'
+                name='address1'
+                placeholder='Address line 1'
+                type='text'
+                value={values.address1}
+                onChange={(e) => {
+                  handleChange(e);
+                  setFieldTouched('address1');
+                }}
+                errors={
+                  (touched.address1 && errors.address1) ||
+                  (!isSubmitting && signupState.error['error']['address1'])
+                }
+              />
+              <TextFeildGroup
+                label='Address'
+                name='address2'
+                placeholder='Address line 2'
+                type='text'
+                value={values.address2}
+                onChange={(e) => {
+                  handleChange(e);
+                  setFieldTouched('address2');
+                }}
+                errors={
+                  (touched.address2 && errors.address2) ||
+                  (!isSubmitting && signupState.error['error']['address2'])
+                }
+              />
 
               <div
                 className='block-title authTitle'
@@ -351,9 +362,12 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
                 placeholder='Mobile phone no'
                 type='text'
                 value={values.phone}
-                onChange={handleChange('phone')}
+                onChange={(e) => {
+                  handleChange(e);
+                  setFieldTouched('phone');
+                }}
                 errors={
-                  errors.phone ||
+                  (touched.phone && errors.phone) ||
                   (!isSubmitting && signupState.error['error']['phone'])
                 }
               />
@@ -364,9 +378,12 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
                 placeholder='Email address'
                 type='text'
                 value={values.email}
-                onChange={handleChange('email')}
+                onChange={(e) => {
+                  handleChange(e);
+                  setFieldTouched('email');
+                }}
                 errors={
-                  errors.email ||
+                  (touched.email && errors.email) ||
                   (!isSubmitting && signupState.error['error']['email'])
                 }
               />
@@ -375,24 +392,34 @@ const Signup = ({ addItemToCache, cache, history }: Props) => {
                 label='Password'
                 name='password'
                 placeholder='******'
-                type='password'
+                type='text'
                 value={values.password}
-                onChange={handleChange('password')}
+                onChange={(e) => {
+                  handleChange(e);
+                  setFieldTouched('password');
+                }}
                 errors={
-                  errors.password ||
+                  (touched.password && errors.password) ||
                   (!isSubmitting && signupState.error['error']['password'])
                 }
               />
+
+              {console.log('touched', touched)}
+              {console.log('errors', errors)}
 
               <TextFeildGroup
                 label='Confirm Password'
                 name='passwordConfirmation'
                 placeholder='******'
-                type='password'
+                type='text'
                 value={values.passwordConfirmation}
-                onChange={handleChange('passwordConfirmation')}
+                onChange={(e) => {
+                  handleChange(e);
+                  setFieldTouched('passwordConfirmation');
+                }}
                 errors={
-                  errors.passwordConfirmation ||
+                  (touched.passwordConfirmation &&
+                    errors.passwordConfirmation) ||
                   (!isSubmitting && signupState.error['error']['password2'])
                 }
               />
@@ -452,4 +479,4 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
   // @ts-ignore
-)(withRouter(Signup));
+)(withRouter(withAlert()(Signup)));
