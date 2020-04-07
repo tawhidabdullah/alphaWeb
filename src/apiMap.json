@@ -138,6 +138,10 @@
       "url": "/api/cart/update/item/:cartKey",
       "method": "post"
     },
+    "clearCart": {
+      "url": "/api/cart/update/clear",
+      "method": "get"
+    },
     "logout": {
       "url": "/customer/api/auth/logout",
       "method": "get"

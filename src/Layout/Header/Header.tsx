@@ -18,6 +18,7 @@ import Hotline from './Hotline';
 import CartBar from './CartBar';
 import MenuBar from './MenuBar';
 import AuthenticationModal from './AuthenticationModal';
+import FloatingCartIcon from './FloatingCartIcon';
 
 interface Props {
   history: any;
@@ -48,6 +49,7 @@ const Header = ({
   const [isShowCartBar, setIsShowCartBar] = useState(false);
   const [isShowMenuBar, setIsShowMenuBar] = useState(false);
   const [isModalShown, setIsModalShown] = useState(false);
+  const [isCartIconVisiable, setIsCartIconVisiable] = useState(false);
 
   const handleToggleCartBar = () => {
     setIsShowCartBar((isShowCartBar) => !isShowCartBar);
@@ -86,10 +88,27 @@ const Header = ({
     });
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     window.addEventListener('resize', onResize);
 
     return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  const handleScroll = () => {
+    const currentScrollPos = window.pageYOffset;
+    console.log('currentScrollPos', window.pageYOffset);
+    if (!isCartIconVisiable && currentScrollPos > 200) {
+      console.log('fuckisCartIconVisiable');
+      setIsCartIconVisiable(true);
+      return;
+    }
+    setIsCartIconVisiable(false);
+  };
+
+  useLayoutEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
@@ -175,6 +194,14 @@ const Header = ({
         isModalShown={isModalShown}
         handleModalClose={handleModalClose}
         handleGoToLogin={handleGoToLogin}
+      />
+
+      <FloatingCartIcon
+        isCartIconVisiable={isCartIconVisiable}
+        isShowCartBar={isShowCartBar}
+        cartLength={cartItems.length}
+        windowWidth={windowWidth}
+        handleToggleCartBar={handleToggleCartBar}
       />
     </>
   );

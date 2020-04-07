@@ -151,6 +151,21 @@ class Converter {
 
   /**
    * @public
+   * @method clearCart convert api data from API to general format based on config server
+   * @param {Object} resData response objectc from alpha
+   * @returns {Object}  converted data
+   */
+  async clearCart(data) {
+    if (data && data['msg']) {
+      return {
+        status: 'ok',
+      };
+    }
+    return data;
+  }
+
+  /**
+   * @public
    * @method tagProducts convert api data from API to general format based on config server
    * @param {Object} data response objectc from alpha
    * @returns {Object}  converted data

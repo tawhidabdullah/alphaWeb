@@ -5,6 +5,7 @@ import { Modal, Button } from 'react-bootstrap';
 import { numberWithCommas } from '../../utils';
 import { cartOperations, cartSelectors } from '../../state/ducks/cart';
 import CartItem from './CartItem';
+import { useHandleFetch } from '../../hooks';
 
 interface Props {
   history: any;
@@ -27,6 +28,11 @@ const ShoppingCart = ({
 }: Props) => {
   const [show, setShow] = useState(false);
 
+  const [clearCartState, handleClearCartFetch] = useHandleFetch(
+    [],
+    'clearCart'
+  );
+
   const handleClose = () => {
     setShow(false);
   };
@@ -35,7 +41,14 @@ const ShoppingCart = ({
     history.push('/signin');
   };
 
-  const handleShow = () => setShow(true);
+  const handleClearShoppingCart = async () => {
+    const clearCartRes = await handleClearCartFetch({});
+
+    // @ts-ignore
+    if (clearCartRes && clearCartRes['status'] === 'ok') {
+      clearCart();
+    }
+  };
   return (
     <>
       <Modal show={show} onHide={handleClose} animation={false}>
@@ -100,7 +113,7 @@ const ShoppingCart = ({
                 <a
                   href='##'
                   className='btn btn-primary fixedBoostrapButtonTobePrimaryColor'
-                  onClick={() => clearCart()}
+                  onClick={handleClearShoppingCart}
                 >
                   Clear Shopping Cart
                 </a>

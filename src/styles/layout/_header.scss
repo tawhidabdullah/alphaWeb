@@ -1438,6 +1438,10 @@ fieldset {
   position: relative;
 }
 
+.input-select select {
+  background-color: #fff !important;
+}
+
 .searchContainer .searchIcon {
   position: absolute;
   right: 13px;
