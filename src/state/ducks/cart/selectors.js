@@ -11,10 +11,8 @@ export const getTotalPriceOfCartItems = (cartItems) => {
     return cartItem.quantity * parseInt(cartItem.product['price']);
   });
 
-  console.log('totalPriceCart', prices);
   const totalPrice = prices.reduce((a, b) => {
     return a + b;
   }, 0);
-  console.log('totalPriceCart', totalPrice);
   return totalPrice;
 };

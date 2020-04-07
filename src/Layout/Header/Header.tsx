@@ -96,9 +96,7 @@ const Header = ({
 
   const handleScroll = () => {
     const currentScrollPos = window.pageYOffset;
-    console.log('currentScrollPos', window.pageYOffset);
     if (!isCartIconVisiable && currentScrollPos > 200) {
-      console.log('fuckisCartIconVisiable');
       setIsCartIconVisiable(true);
       return;
     }

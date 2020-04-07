@@ -472,8 +472,6 @@ const Checkout = ({
     }
   }, [selectedShippingCityValue]);
 
-  console.log('billingDeliveryCharge', billingDeliveryCharge);
-
   useEffect(() => {
     if (checkIfItemExistsInCache(`countryList`, cache)) {
       const countryList = cache['countryList'];
