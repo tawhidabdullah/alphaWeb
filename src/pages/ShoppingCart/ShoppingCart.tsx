@@ -71,7 +71,12 @@ const ShoppingCart = ({
           </Button>
         </Modal.Footer>
       </Modal>
-      <div className='container'>
+      <div
+        className='container'
+        style={{
+          marginBottom: '20px',
+        }}
+      >
         <div className='card shopping-cart'>
           <div className='card-header text-light shoppingCartAndHeaderBackground'>
             <i className='fa fa-shopping-cart pr-2' aria-hidden='true' />
@@ -91,9 +96,7 @@ const ShoppingCart = ({
                 </React.Fragment>
               ))
             ) : (
-              <h1 className=' mt-5 text-center text404'>
-                There is no product in your cart
-              </h1>
+              <h1 className=' mt-5 text-center text404'>Your cart is Empty</h1>
             )}
           </div>
 
