@@ -9,6 +9,7 @@ import { useHandleFetch } from '../../../hooks';
 import { checkIfItemExistsInCache } from '../../../utils';
 import { cacheOperations } from '../../../state/ducks/cache';
 import { withAlert } from 'react-alert';
+import dictionary from '../../../dictionary';
 
 // import input fields
 import { TextFeildGroup } from '../../../components/Field';
@@ -187,27 +188,8 @@ const Signup = ({ addItemToCache, cache, history, alert }: Props) => {
 
   return (
     <div className='auth'>
-      <h1
-        className='display-4 text-center'
-        style={{
-          fontSize: '30px',
-          color: '#17252a',
-          fontWeight: 400,
-        }}
-      >
-        Register
-      </h1>
-      <p
-        className='lead text-center'
-        style={{
-          marginTop: '10px',
-          fontSize: '17px',
-          color: '#17252a',
-          fontWeight: 400,
-        }}
-      >
-        Register to MyStyle
-      </p>
+      <h1 className='display-4 text-center auth_title'>Signup</h1>
+      <p className='lead text-center authSubTitle'>{dictionary.signupTitle}</p>
       <div className='formContainer'>
         <Formik
           initialValues={{ ...initialValues }}
@@ -442,23 +424,9 @@ const Signup = ({ addItemToCache, cache, history, alert }: Props) => {
           )}
         </Formik>
       </div>
-      <p
-        className='lead text-center'
-        style={{
-          marginTop: '20px',
-          fontSize: '15px',
-          color: '#17252a',
-          fontWeight: 400,
-        }}
-      >
+      <p className='lead text-center authtextInfo'>
         Have an account?{' '}
-        <span
-          onClick={() => history.push('/signin')}
-          style={{
-            color: '#6b21ac',
-            cursor: 'pointer',
-          }}
-        >
+        <span className='authLink' onClick={() => history.push('/signin')}>
           Signin{' '}
         </span>
       </p>

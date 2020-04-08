@@ -110,13 +110,7 @@ const CartOverLayCartItem = ({
         </h4>
         <h5>৳{numberWithCommas(price)}</h5>
         <span className='remove-item' onClick={handleRemoveFromCart}>
-          <i
-            className='fa fa-trash'
-            style={{
-              marginRight: '5px',
-              color: '#6b21ac',
-            }}
-          ></i>
+          <i className='fa fa-trash'></i>
           remove
         </span>
       </div>

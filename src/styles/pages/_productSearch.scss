@@ -1,10 +1,3 @@
-$color-nobab-light-1: #feffff;
-$color-nobab-light-2: #def2f1;
-$color-nobab-primary-1: #6b21ac;
-$color-nobab-primary-2: rgba(107, 33, 172, 0.9);
-$color-nobal-light: #fefefe;
-$color-nobab-dark-2: #17252a;
-
 .category-filter {
   text-align: left;
   padding: 20px;
@@ -20,7 +13,7 @@ $color-nobab-dark-2: #17252a;
   text-align: left;
   font-size: 18px;
   font-weight: 500;
-  color: $color-nobab-dark-2;
+  color: $color-dark-1;
   margin-bottom: 13px;
 }
 .category-filter ul {
@@ -42,7 +35,7 @@ $color-nobab-dark-2: #17252a;
 }
 
 .category-filter ul li .category-filterText.active {
-  color: $color-nobab-dark-2;
+  color: $color-dark-1;
   font-weight: 600;
 }
 
@@ -59,7 +52,7 @@ $color-nobab-dark-2: #17252a;
   font-weight: 500;
   font-size: 16px;
   display: inline-block;
-  color: $color-nobab-dark-2;
+  color: $color-dark-1;
   line-height: 1.6;
 }
 
@@ -76,7 +69,7 @@ $color-nobab-dark-2: #17252a;
   font-weight: 700;
   font-size: 16px;
   display: inline-block;
-  color: $color-nobab-dark-2;
+  color: $color-dark-1;
   margin-right: 10px;
   line-height: 1.5;
 }

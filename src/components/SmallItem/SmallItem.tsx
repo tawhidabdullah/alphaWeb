@@ -64,47 +64,19 @@ const SmallItem = ({
           />
         </div>
         <div className='small-product-info'>
-          <h2
-            className='small-product-title'
-            style={{
-              color: '#17252a',
-              fontWeight: 700,
-            }}
-          >
-            {product['name']}
-          </h2>
+          <h2 className='small-product-title'>{product['name']}</h2>
 
           {parseInt(product['offerPrice']) ? (
-            <h2
-              style={{
-                color: '#17252a',
-                fontWeight: 500,
-              }}
-              className='small-product-offerPrice'
-            >
+            <h2 className='small-product-offerPrice small-product-offerPrice-dark '>
               ৳{numberWithCommas(product['offerPrice'])}
             </h2>
           ) : (
-            <h2
-              style={{
-                color: '#17252a',
-                fontWeight: 500,
-              }}
-              className='small-product-offerPrice'
-            >
+            <h2 className='small-product-price'>
               ৳{numberWithCommas(product['regularPrice'])}
             </h2>
           )}
 
-          <h2
-            style={{
-              fontWeight: 500,
-              color: '#17252a',
-            }}
-            className='small-product-offerPrice'
-          >
-            Quantity : {quantity}
-          </h2>
+          <h2 className='small-product-offerPrice'>Quantity : {quantity}</h2>
         </div>
       </div>
     )) ||
@@ -133,23 +105,11 @@ const SmallItem = ({
           {productItem.name}
         </h2>
         {!isOrder && parseInt(productItem.offerPrice) ? (
-          <h2
-            style={{
-              color: '#17252a',
-              fontWeight: 500,
-            }}
-            className='small-product-offerPrice'
-          >
+          <h2 className='small-product-offerPrice'>
             ৳{numberWithCommas(productItem.offerPrice)}
           </h2>
         ) : (
-          <h2
-            style={{
-              color: '#17252a',
-              fontWeight: 500,
-            }}
-            className='small-product-offerPrice'
-          >
+          <h2 className='small-product-offerPrice'>
             ৳{numberWithCommas(productItem.price)}
           </h2>
         )}

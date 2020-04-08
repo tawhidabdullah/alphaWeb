@@ -18,55 +18,15 @@ const FloatingCartIcon = ({
   return (
     <>
       {windowWidth > 600 && !isShowCartBar && isCartIconVisiable ? (
-        <div
-          style={{
-            position: 'sticky',
-            top: '80px',
-            right: '50px',
-            zIndex: 100000000,
-            width: '100%',
-            height: '50px',
-          }}
-        >
+        <div className='floatingCartIconContainer'>
           <div
             onClick={handleToggleCartBar}
-            style={{
-              position: 'absolute',
-              cursor: 'pointer',
-              height: '50px',
-              width: '85px',
-              background: '#fff',
-              right: 0,
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderBottomLeftRadius: '5px',
-              borderTopLeftRadius: '5px',
-              boxShadow: '0 2px 5px 0 rgba(0, 0, 0, 0.05)',
-            }}
+            className='floatingCartIconContainerInside'
           >
-            <span
-              style={{
-                padding: '0 1vh',
-                borderRadius: '30%',
-                background: '#6b21ac',
-                fontSize: '15px',
-                color: '#fff',
-                position: 'absolute',
-                top: '5px',
-                right: '15px',
-              }}
-            >
+            <span className='floatingCartIconBatch'>
               {cartLength ? ` ${cartLength}` : 0}
             </span>
-            <span
-              style={{
-                position: 'absolute',
-                top: '13px',
-                right: '25px',
-                fontSize: '22px',
-              }}
-            >
+            <span className='floatingCartIcon'>
               <i className='fa fa-shopping-cart'></i>
             </span>
           </div>

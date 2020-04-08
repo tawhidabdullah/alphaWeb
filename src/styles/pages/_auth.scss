@@ -7,6 +7,18 @@
   padding: 20px 5px;
 }
 
+.auth_title {
+  font-size: 30px !important;
+  color: $color-dark-1 !important;
+  font-weight: 400 !important;
+}
+
+.authSubTitle {
+  color: #17252a !important;
+  font-size: 17px !important;
+  margin-top: 10px !important;
+  font-weight: 400 !important;
+}
 .formContainer {
   min-width: 500px;
   max-width: 500px;
@@ -16,4 +28,16 @@
   .formContainer {
     min-width: 100%;
   }
+}
+
+.authtextInfo {
+  margin-top: 20px !important;
+  font-size: 15px !important;
+  color: $color-dark-1 !important;
+  font-weight: 400 !important;
+}
+
+.authLink {
+  color: $color-primary-1;
+  cursor: pointer;
 }

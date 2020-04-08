@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Formik } from 'formik';
@@ -7,6 +7,7 @@ import * as Yup from 'yup';
 import { useHandleFetch } from '../../../hooks';
 import { sessionOperations } from '../../../state/ducks/session';
 import { withAlert } from 'react-alert';
+import dictionary from '../../../dictionary';
 
 // import input fields
 import { TextFeildGroup } from '../../../components/Field';
@@ -68,27 +69,8 @@ const Signin = (props: Props) => {
 
   return (
     <div className='auth'>
-      <h1
-        className='display-4 text-center'
-        style={{
-          fontSize: '30px',
-          color: '#17252a',
-          fontWeight: 400,
-        }}
-      >
-        Signin
-      </h1>
-      <p
-        className='lead text-center'
-        style={{
-          marginTop: '10px',
-          fontSize: '17px',
-          color: '#17252a',
-          fontWeight: 400,
-        }}
-      >
-        Signin to MyStyle
-      </p>
+      <h1 className='display-4 text-center auth_title'>Signin</h1>
+      <p className='lead text-center authSubTitle'>{dictionary.signinTitle}</p>
       <div className='formContainer'>
         <Formik
           initialValues={{ ...initialValues }}
@@ -153,22 +135,11 @@ const Signin = (props: Props) => {
           )}
         </Formik>
       </div>
-      <p
-        className='lead text-center'
-        style={{
-          marginTop: '20px',
-          fontSize: '15px',
-          color: '#17252a',
-          fontWeight: 400,
-        }}
-      >
+      <p className='lead text-center authtextInfo'>
         Don't have an account?{' '}
         <span
+          className='authLink'
           onClick={() => props.history.push('/signup')}
-          style={{
-            color: '#6b21ac',
-            cursor: 'pointer',
-          }}
         >
           Signup{' '}
         </span>

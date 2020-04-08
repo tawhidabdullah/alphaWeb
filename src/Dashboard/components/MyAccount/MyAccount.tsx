@@ -21,14 +21,6 @@ const contactInfoInitialValues = {
   email: '',
 };
 
-const mobilePhoneInitialValues = {
-  phone: '',
-};
-
-const emailAddressInitialValues = {
-  email: '',
-};
-
 const personalInfoValidationSchema = Yup.object().shape({
   firstName: Yup.string()
     .label('Name')
@@ -53,14 +45,6 @@ const contactInfoSchema = Yup.object().shape({
   email: Yup.string().label('Email').email('Enter a valid email'),
 });
 
-const mobilePhoneValidationSchema = Yup.object().shape({
-  phone: Yup.string().required(),
-});
-
-const emailAddressValidationSchema = Yup.object().shape({
-  email: Yup.string().label('Email').email('Enter a valid email'),
-});
-
 interface Props {
   customerDetail: any;
   cache: any;
@@ -70,8 +54,6 @@ interface Props {
 const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
   const [isPersonalInfoEdit, setIsPersonalInfoEdit] = useState(false);
   const [iscontactInfoEdit, setIsContactInfoEdit] = useState(false);
-  const [isMobilePhoneEdit, setIsMobilePhoneEdit] = useState(false);
-  const [isEmailAddressEdit, setIsEmailAddressEdit] = useState(false);
   const [customerData, setCustomerData] = useState(customerDetail);
   const [
     updateCurrentCustomerData,
@@ -116,10 +98,6 @@ const MyAccount = ({ customerDetail, cache, addItemToCache }: Props) => {
       });
       if (type === 'personalinfo') {
         setIsPersonalInfoEdit(false);
-      } else if (type === 'mobile') {
-        setIsMobilePhoneEdit(false);
-      } else if (type === 'address') {
-        setIsEmailAddressEdit(false);
       } else if (type === 'contact') {
         setIsContactInfoEdit(false);
       }

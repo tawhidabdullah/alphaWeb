@@ -4,7 +4,7 @@
   // width: 100%;
   background-color: #fff;
   border-radius: 3px;
-  border-top: 1px solid #6b21ac;
+  border-top: 1px solid $color-primary-1;
 }
 
 .myAccount .myAccountSectionHeader {
@@ -19,7 +19,7 @@
   }
 
   &-button {
-    color: #6b21ac;
+    color: $color-primary-1;
     margin-left: 20px;
     font-size: 17px;
     cursor: pointer;
