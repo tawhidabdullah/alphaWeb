@@ -129,8 +129,10 @@ const MyAccount = ({ customerDetail, cache, addItemToCache, alert }: Props) => {
       });
       if (type === 'personalinfo') {
         setIsPersonalInfoEdit(false);
+        alert.success('Personal Info updated successfully');
       } else if (type === 'contact') {
         setIsContactInfoEdit(false);
+        alert.success('Contact Info updated successfully');
       }
     }
 
@@ -144,7 +146,6 @@ const MyAccount = ({ customerDetail, cache, addItemToCache, alert }: Props) => {
       },
     });
 
-    console.log('changePasswordRes', changePasswordRes);
     // @ts-ignore
     if (changePasswordRes['status'] === 'ok') {
       alert.success('Password has been changed successfully');
