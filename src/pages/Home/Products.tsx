@@ -31,10 +31,13 @@ const Products = ({
     'categoryProducts'
   );
   const [categoryProducts, setCategoryProducts] = useState([]);
+
   useEffect(() => {
     const getCategoryProducts = async (categoryId) => {
       if (checkIfItemExistsInCache(`categoryProducts/${categoryId}`, cache)) {
-        setCategoryProducts(cache[`categoryProducts/${categoryId}`]);
+        const categoryProductRes = cache[`categoryProducts/${categoryId}`];
+        const products = categoryProductRes['data'];
+        setCategoryProducts(products);
       } else {
         const categoryProductRes = await handleCategoryProductsFetch({
           urlOptions: {
@@ -49,7 +52,8 @@ const Products = ({
         });
 
         if (categoryProductRes) {
-          setCategoryProducts(categoryProductRes);
+          const products = categoryProductRes['data'];
+          setCategoryProducts(products);
           addItemToCache({
             [`categoryProducts/${categoryId}`]: categoryProductRes,
           });

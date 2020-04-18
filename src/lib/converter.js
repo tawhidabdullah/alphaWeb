@@ -20,7 +20,9 @@ class Converter {
           description: category.description && category.description,
           cover: `${config['baseURL']}${category.cover.medium}`,
           ...(category.subCategory &&
-            category.subCategory.length > 0 && {
+            category.subCategory.length > 0 &&
+            category.subCategory[0] &&
+            category.subCategory[0]['name'] && {
               subCategory: category.subCategory.map((subCat) => {
                 return {
                   id: subCat._id || '',
@@ -46,6 +48,7 @@ class Converter {
    */
   async categoryProducts(resData) {
     const data = resData.data || [];
+    const isNext = resData.page.next;
 
     const convertedData =
       data.length > 0 &&
@@ -54,14 +57,24 @@ class Converter {
           id: product._id || '',
           name: product.name && product.name,
           description: product.description && product.description,
-          cover: `${config['baseURL']}${product.cover.medium}`,
+          cover: `${config['baseURL']}${
+            (product.cover && product.cover['medium']) || ''
+          }`,
           regularPrice: product.price && product.price['regular'],
           offerPrice: product.price && product.price['offer'],
+          price:
+            parseInt(product.price['offer']) >
+            parseInt(product.price['regular'])
+              ? product.price['offer']
+              : product.price['regular'],
           url: product.url,
         };
       });
 
-    return convertedData;
+    return {
+      data: convertedData,
+      isNext: isNext,
+    };
   }
 
   /**
@@ -172,23 +185,33 @@ class Converter {
    */
   async tagProducts(resData) {
     const data = resData.data || [];
+    const isNext = resData.page.next;
 
     const convertedData =
-      (data.length > 0 &&
-        data.map((product) => {
-          return {
-            id: product._id || '',
-            name: product.name && product.name,
-            description: product.description && product.description,
-            cover: `${config['baseURL']}${product.cover.medium}`,
-            regularPrice: product.price && product.price['regular'],
-            offerPrice: product.price && product.price['offer'],
-            url: product.url,
-          };
-        })) ||
-      [];
+      data.length > 0 &&
+      data.map((product) => {
+        return {
+          id: product._id || '',
+          name: product.name && product.name,
+          description: product.description && product.description,
+          cover: `${config['baseURL']}${
+            (product.cover && product.cover['medium']) || ''
+          }`,
+          regularPrice: product.price && product.price['regular'],
+          offerPrice: product.price && product.price['offer'],
+          price:
+            parseInt(product.price['offer']) >
+            parseInt(product.price['regular'])
+              ? product.price['offer']
+              : product.price['regular'],
+          url: product.url,
+        };
+      });
 
-    return convertedData;
+    return {
+      data: convertedData,
+      isNext: isNext,
+    };
   }
 
   /**
@@ -199,6 +222,7 @@ class Converter {
    */
   async brandProducts(resData) {
     const data = resData.data || [];
+    const isNext = resData.page.next;
 
     const convertedData =
       data.length > 0 &&
@@ -207,14 +231,24 @@ class Converter {
           id: product._id || '',
           name: product.name && product.name,
           description: product.description && product.description,
-          cover: `${config['baseURL']}${product.cover.medium}`,
+          cover: `${config['baseURL']}${
+            (product.cover && product.cover['medium']) || ''
+          }`,
           regularPrice: product.price && product.price['regular'],
           offerPrice: product.price && product.price['offer'],
+          price:
+            parseInt(product.price['offer']) >
+            parseInt(product.price['regular'])
+              ? product.price['offer']
+              : product.price['regular'],
           url: product.url,
         };
       });
 
-    return convertedData;
+    return {
+      data: convertedData,
+      isNext: isNext,
+    };
   }
 
   /**
@@ -225,6 +259,7 @@ class Converter {
    */
   async productSearch(resData) {
     const data = resData.data || [];
+    const isNext = resData.page.next;
 
     const convertedData =
       (data.length > 0 &&
@@ -241,7 +276,10 @@ class Converter {
         })) ||
       [];
 
-    return convertedData;
+    return {
+      data: convertedData,
+      isNext,
+    };
   }
 
   /**
@@ -252,20 +290,28 @@ class Converter {
    */
   async productList(resData) {
     const data = resData.data || [];
+    const isNext = resData.page.next;
 
-    const convertedData =
+    let convertedData =
       data.length > 0 &&
       data.map((product) => {
         return {
           id: product._id || '',
           name: product.name && product.name,
           description: product.description && product.description,
-          cover: `${config['baseURL']}${product.cover.medium}`,
+          cover: `${config['baseURL']}${
+            (product.cover && product.cover['medium']) || ''
+          }`,
           regularPrice: product.price && product.price['regular'],
           offerPrice: product.price && product.price['offer'],
           url: product.url,
         };
       });
+
+    convertedData = {
+      data: convertedData,
+      isNext,
+    };
 
     return convertedData;
   }
@@ -384,6 +430,8 @@ class Converter {
         offerPrice: data.price && data.price['offer'],
         url: data.url,
         cover: `${config['baseURL']}${data.cover.medium}`,
+        availableStock: data.availableStock,
+        minimumStock: data.minimumStock,
         category:
           (data.category &&
             data.category.length > 0 &&
@@ -486,32 +534,40 @@ class Converter {
 
   /**
    * @public
-   * @method categoryList convert api data from API to general format based on config server
+   * @method categoryDetail convert api data from API to general format based on config server
    * @param {Object} data response objectc from wc
    * @returns {Object}  converted data
    */
   async categoryDetail(data) {
-    //map props
-    let generalFormat = dataMap[config['server']]['categoryDetail']; //get genereal format from dataMap
-
-    const formatedData = {
-      ...generalFormat,
+    const convertedData = {
       id: data.id || data._id || '',
       name: data.name && data.name,
       description: data.description && data.description,
       productCount: data.count || data.productCount,
+      subCategory:
+        data.subCategory.length > 0 &&
+        data.subCategory[0] &&
+        data.subCategory[0]['name']
+          ? data.subCategory.map((subCat) => {
+              return {
+                id: subCat._id || '',
+                name: subCat.name && subCat.name,
+                description: subCat.description && subCat.description,
+                cover: subCat.cover
+                  ? `${config['baseURL']}${subCat.cover.medium}`
+                  : '',
+              };
+            })
+          : [],
       image:
-        config['server'] !== 'wooCommerce'
-          ? (data.image &&
-              data.image.length > 0 &&
-              data.image.map((img) => `${config.baseURL}${img.medium}`)) ||
-            []
-          : (data.image && [data.image.src]) || [],
+        (data.image &&
+          data.image.length > 0 &&
+          data.image.map((img) => `${config.baseURL}${img.medium}`)) ||
+        [],
     };
 
-    return formatedData;
+    return convertedData;
   }
-
   /**
    * @public
    * @method createOrder convert api data from API to general format based on config server
@@ -535,9 +591,6 @@ class Converter {
    * @returns {Object}  converted data
    */
   async signup(data) {
-    //map props
-    let generalFormat = dataMap[config['server']]['signup']; //get genereal format from dataMap
-
     return {
       status: 'ok',
     };
@@ -550,17 +603,13 @@ class Converter {
    * @returns {Object}  converted data
    */
   async signin(data) {
-    //map props
-    let generalFormat = dataMap[config['server']]['signin']; //get genereal format from dataMap
+    if (data['msg']) {
+      return {
+        status: 'ok',
+      };
+    }
 
-    const formatedData = {
-      ...generalFormat,
-      status: data.status || 'ok',
-      cookie: data.cookie,
-      user: data.user,
-    };
-
-    return formatedData;
+    return false;
   }
 
   /**
@@ -632,76 +681,15 @@ class Converter {
 
   /**
    * @public
-   * @method currentUserOrders convert api data from API to general format based on config server
+   * @method getCurrentUserOrders convert api data from API to general format based on config server
    * @param {Object} data response objectc from wc
    * @returns {Object}  converted data
    */
   async getCurrentUserOrders(resData) {
-    //map props
-    // let generalFormat = dataMap[config['server']]['currentUserOrders']; //get genereal format from dataMap
-
-    // const x = {
-    //   page: {
-    //     totalIndex: 1,
-    //     startingIndex: 1,
-    //     endingIndex: 1,
-    //     total: 1,
-    //     current: 1,
-    //     next: null,
-    //     previous: null,
-    //     limit: 50,
-    //     items: 1,
-    //   },
-    //   data: [
-    //     {
-    //       _id: '5e8a1d90943b41413c7a415a',
-    //       date: '2020-04-05T18:04:00.066Z',
-    //       products: [
-    //         {
-    //           _id: '5e50db8580e719cc127bdbd0',
-    //           quantity: 1,
-    //           unitPrice: '550',
-    //           price: 550,
-    //         },
-    //       ],
-    //       billingAddress: {
-    //         firstName: 'Tawhid',
-    //         lastName: 'Abdullah',
-    //         country: 'Albania',
-    //         city: 'Arrën',
-    //         address1: 'useruser',
-    //         address2: null,
-    //         zipCode: null,
-    //         phone: 179534506417,
-    //         email: '333@gmail.com',
-    //         additionalInfo: null,
-    //       },
-    //       shippingAddress: {
-    //         firstName: 'Tawhid',
-    //         lastName: 'Abdullah',
-    //         country: 'Albania',
-    //         city: 'Arrën',
-    //         address1: 'useruser',
-    //         address2: null,
-    //         zipCode: null,
-    //         phone: 179534506417,
-    //         email: '333@gmail.com',
-    //         additionalInfo: null,
-    //       },
-    //       payment: {
-    //         paymentMethod: 'cod',
-    //         paymentAccountNumber: null,
-    //         transactionId: null,
-    //       },
-    //       status: 'pending',
-    //       totalPrice: 550,
-    //       customer: '5e8a1d90943b41413c7a4159',
-    //     },
-    //   ],
-    // };
-
     const data = resData.data || [];
-    const convertedData =
+    const isNext = resData.page.next;
+
+    let convertedData =
       (data.length > 0 &&
         data.map((item) => {
           return {
@@ -715,6 +703,11 @@ class Converter {
           };
         })) ||
       [];
+
+    convertedData = {
+      data: convertedData,
+      isNext,
+    };
 
     return convertedData;
   }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { withAlert } from 'react-alert';
 
 import { connect } from 'react-redux';
@@ -236,6 +236,7 @@ const Checkout = ({
   const [isModalShown, setIsModalShown] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
   const [serverErrors, setServerErrors] = useState({});
+  const [windowWidth, setWindowWidth] = useState(0);
   const [selectedCountryValue, setSelectedCountryValue] = React.useState({
     value: 'Bangladesh',
     label: 'Bangladesh',
@@ -299,6 +300,29 @@ const Checkout = ({
     'createOrder'
   );
 
+  const getWindowWidth = () => {
+    return Math.max(
+      document.documentElement.clientWidth,
+      window.innerWidth || 0
+    );
+  };
+
+  useLayoutEffect(() => {
+    setWindowWidth(getWindowWidth());
+  }, []);
+
+  const onResize = () => {
+    window.requestAnimationFrame(() => {
+      setWindowWidth(getWindowWidth());
+    });
+  };
+
+  useLayoutEffect(() => {
+    window.addEventListener('resize', onResize);
+
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
   useEffect(() => {
     if (
       checkIfItemExistsInCache(`cityList/${selectedCountryValue.value}`, cache)
@@ -343,12 +367,12 @@ const Checkout = ({
   useEffect(() => {
     if (
       checkIfItemExistsInCache(
-        `cityList/${selectedShippingCountryValue.value}`,
+        `shippingCityList/${selectedShippingCountryValue.value}`,
         cache
       )
     ) {
       const shippingCityList =
-        cache[`cityList/${selectedShippingCountryValue.value}`];
+        cache[`shippingCityList/${selectedShippingCountryValue.value}`];
       setShippingCityList(shippingCityList);
       // @ts-ignore
       const cityValue = shippingCityList.length > 0 && shippingCityList[0];
@@ -503,7 +527,7 @@ const Checkout = ({
     setPaymentMethod(value);
   };
 
-  const handleOrder = async (values, actions) => {
+  const handleCheckout = async (values, actions) => {
     if (values) {
       if (paymentMethod !== 'cod') {
         const createOrderData = {
@@ -707,7 +731,7 @@ const Checkout = ({
           enableReinitialize={isShipToDifferentAddress ? false : true}
           initialValues={getUltimateInitialValue()}
           // @ts-ignore
-          onSubmit={(values, actions) => handleOrder(values, actions)}
+          onSubmit={(values, actions) => handleCheckout(values, actions)}
           validationSchema={getUltimateValidationSchema()}
           validateOnBlur={false}
         >
@@ -868,16 +892,39 @@ const Checkout = ({
                               <RadioGroup
                                 onChange={onRadioGroupChange}
                                 value={paymentMethod}
-                                horizontal={true}
+                                horizontal={windowWidth > 380 ? true : false}
                               >
-                                <ReversedRadioButton value='cod' padding={9}>
-                                  Cash on Delivery
-                                </ReversedRadioButton>
-                                <ReversedRadioButton value='nagad' padding={12}>
+                                <ReversedRadioButton
+                                  rootColor={'rgba(0, 102, 51, 0.35)'}
+                                  pointColor={'#006633'}
+                                  value='cod'
+                                  padding={9}
+                                >
                                   <div
                                     style={{
-                                      width: '100px',
-                                      height: '20px',
+                                      ...(windowWidth < 380 && {
+                                        width: '100%',
+                                        height: '20px',
+                                      }),
+                                    }}
+                                  ></div>
+                                  Cash on Delivery
+                                </ReversedRadioButton>
+                                <ReversedRadioButton
+                                  rootColor={'rgba(0, 102, 51, 0.35)'}
+                                  pointColor={'#006633'}
+                                  value='nagad'
+                                  padding={12}
+                                >
+                                  <div
+                                    style={{
+                                      ...(windowWidth < 380 && {
+                                        width: '100%',
+                                        height: '30px',
+                                      }),
+                                      ...(windowWidth > 380 && {
+                                        height: '20px',
+                                      }),
                                     }}
                                   >
                                     <img
@@ -892,13 +939,20 @@ const Checkout = ({
                                   </div>
                                 </ReversedRadioButton>
                                 <ReversedRadioButton
+                                  rootColor={'rgba(0, 102, 51, 0.35)'}
+                                  pointColor={'#006633'}
                                   value='rocket'
                                   padding={12}
                                 >
                                   <div
                                     style={{
-                                      width: '100px',
-                                      height: '20px',
+                                      ...(windowWidth < 380 && {
+                                        width: '100%',
+                                        height: '30px',
+                                      }),
+                                      ...(windowWidth > 380 && {
+                                        height: '20px',
+                                      }),
                                     }}
                                   >
                                     <img
@@ -912,11 +966,21 @@ const Checkout = ({
                                     />
                                   </div>
                                 </ReversedRadioButton>
-                                <ReversedRadioButton value='bkash' padding={12}>
+                                <ReversedRadioButton
+                                  rootColor={'rgba(0, 102, 51, 0.35)'}
+                                  pointColor={'#006633'}
+                                  value='bkash'
+                                  padding={12}
+                                >
                                   <div
                                     style={{
-                                      width: '100px',
-                                      height: '20px',
+                                      ...(windowWidth < 380 && {
+                                        width: '100%',
+                                        height: '30px',
+                                      }),
+                                      ...(windowWidth > 380 && {
+                                        height: '20px',
+                                      }),
                                     }}
                                   >
                                     <img

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React from 'react';
+import React, { Fragment } from 'react';
 import queryString from 'query-string';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -38,6 +38,7 @@ const ProductSearch = ({
   const [isLoading, setIsLoading] = React.useState(false);
   const [categories, setCategories] = React.useState([]);
   const [activeCategoryName, setActiveCategoryName] = React.useState('');
+  const [isNext, setIsNext] = React.useState(true);
   const [selectedValueForSort, setSelectedValueForSort] = React.useState({
     value: 'Relevance',
     label: 'Relevance',
@@ -257,23 +258,36 @@ const ProductSearch = ({
           ) &&
           pageNumberOfCategoryProduct === 1
         ) {
-          const products =
+          const productsRes =
             cache[
               `productSearch/${selectedValueForSort.value}/${searchCategoryValue}/${queryValue}`
             ];
+
+          // @ts-ignore
+          const products = productsRes.data || [];
+          // @ts-ignore
+          const isNext = productsRes.isNext || null;
+          setIsNext(isNext);
+
           // @ts-ignore
           setProducts(products);
           setIsLoading(false);
         } else {
-          const newProducts = await handleProductSearchFetch({
+          const newProductsRes = await handleProductSearchFetch({
             urlOptions: {
               params,
             },
           });
 
+          // @ts-ignore
+          const newProducts = newProductsRes.data || [];
+          // @ts-ignore
+          const isNext = newProductsRes.isNext || null;
+          setIsNext(isNext);
+
           if (pageNumberOfCategoryProduct === 1) {
             addItemToCache({
-              [`productSearch/${selectedValueForSort.value}/${searchCategoryValue}/${queryValue}`]: newProducts,
+              [`productSearch/${selectedValueForSort.value}/${searchCategoryValue}/${queryValue}`]: newProductsRes,
             });
           }
 
@@ -328,7 +342,11 @@ const ProductSearch = ({
   return (
     <>
       <div
-        className={windowWidth < 770 ? 'container-fluid' : 'container'}
+        className={
+          windowWidth < 770
+            ? 'container-fluid productSearch'
+            : 'container productSearch'
+        }
         style={{
           padding: windowWidth < 770 ? '15px' : '0 0 20px 0',
         }}
@@ -367,7 +385,10 @@ const ProductSearch = ({
                     categories.length > 0 &&
                     categories.map((cat) => {
                       return (
-                        <li onClick={() => handleSelectCategory(cat['id'])}>
+                        <li
+                          onClick={() => handleSelectCategory(cat['id'])}
+                          key={cat['id']}
+                        >
                           <span
                             className={
                               cat[`is${cat['id']}`]
@@ -444,15 +465,31 @@ const ProductSearch = ({
               ''
             )}
 
-            {products && (
+            {!isLoading && products && (
               <InfiniteScroll
                 style={{
                   overflow: 'hidden',
                 }}
                 dataLength={products.length}
                 next={fetchMoreProductsData}
-                hasMore={true}
-                loader={<h4></h4>}
+                hasMore={isNext !== null}
+                loader={
+                  <div
+                    style={{
+                      width: '100%',
+                      textAlign: 'center',
+                      margin: '10px 0',
+                    }}
+                  >
+                    <h4
+                      style={{
+                        textAlign: 'center',
+                      }}
+                    >
+                      Loading...
+                    </h4>{' '}
+                  </div>
+                }
               >
                 <div
                   style={{
@@ -466,7 +503,12 @@ const ProductSearch = ({
                   {products.length > 0 &&
                     products.map((product) => {
                       return (
-                        <ProductCard product={product} productListing={true} />
+                        <Fragment key={product['id']}>
+                          <ProductCard
+                            product={product}
+                            productListing={true}
+                          />
+                        </Fragment>
                       );
                     })}
                 </div>

@@ -5,7 +5,10 @@ import { Carousel } from 'react-responsive-carousel';
 import { connect } from 'react-redux';
 import { withAlert } from 'react-alert';
 import { cartOperations } from '../../state/ducks/cart';
-import { checkIfItemExistsInCartItemById } from '../../utils';
+import {
+  checkIfItemExistsInCartItemById,
+  getCartKeyFromCartItems,
+} from '../../utils';
 import { useHandleFetch } from '../../hooks';
 
 // import responsive carousel
@@ -41,6 +44,8 @@ const ProductDetailContent = ({
     id,
     cover,
     url,
+    availableStock,
+    minimumStock,
   } = product;
 
   const [addToCartState, handleAddtoCartFetch] = useHandleFetch(
@@ -55,18 +60,21 @@ const ProductDetailContent = ({
 
   const handleOnClickAddToCart = async () => {
     if (checkIfItemExistsInCartItemById(cartItems, id)) {
-      const removeFromCartRes = await handleRemoveFromCartFetch({
-        urlOptions: {
-          placeHolders: {
-            id,
+      const cartKey = getCartKeyFromCartItems(cartItems, id);
+      if (cartKey) {
+        const removeFromCartRes = await handleRemoveFromCartFetch({
+          urlOptions: {
+            placeHolders: {
+              cartKey,
+            },
           },
-        },
-      });
+        });
 
-      // @ts-ignore
-      if (removeFromCartRes) {
-        removeFromCart && removeFromCart(product);
-        alert.success('Product Has Been Removed From the Cart');
+        // @ts-ignore
+        if (removeFromCartRes) {
+          removeFromCart && removeFromCart(product);
+          alert.success('Product Has Been Removed From the Cart');
+        }
       }
     } else {
       const addToCartRes = await handleAddtoCartFetch({
@@ -88,6 +96,7 @@ const ProductDetailContent = ({
               : parseInt(addToCartRes['regularPrice']),
           id: addToCartRes['id'],
           url: addToCartRes['url'],
+          cartKey: addToCartRes['cartKey'],
         };
         addToCart && addToCart(product, addToCartRes['quantity']);
         alert.success('Product Added To The Cart');
@@ -204,19 +213,40 @@ const ProductDetailContent = ({
             <p>{description}</p>
           </div>
           <div className='product-options-bottom'>
-            <div className='box-tocart'>
-              <div className='actions'>
-                <a
-                  className='btn-add withbackground'
-                  onClick={handleOnClickAddToCart}
-                  href='##'
-                >
-                  {(checkIfItemExistsInCartItemById(cartItems, id) &&
-                    'Added') ||
-                    'Add to Cart'}
-                </a>
+            {parseInt(availableStock) > 0 ? (
+              <div className='box-tocart'>
+                <div className='actions'>
+                  <a
+                    className='btn-add withbackground'
+                    onClick={handleOnClickAddToCart}
+                    href='##'
+                  >
+                    {!addToCartState.isLoading &&
+                      !removeFromCartState.isLoading && (
+                        <>
+                          {(checkIfItemExistsInCartItemById(cartItems, id) && (
+                            <span className='product-bottom-iconText'>
+                              🐎 Added
+                            </span>
+                          )) || (
+                            <span className='product-bottom-iconText'>
+                              🐎 Add to cart
+                            </span>
+                          )}
+                        </>
+                      )}
+
+                    {addToCartState.isLoading && '🐎 Adding...'}
+                    {removeFromCartState.isLoading && '🐎 Removing...'}
+                  </a>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className='alertText'>
+                <i className='fa fa-exclamation-circle'></i>
+                <h3>This product is out of stock</h3>
+              </div>
+            )}
           </div>
         </div>
       </div>

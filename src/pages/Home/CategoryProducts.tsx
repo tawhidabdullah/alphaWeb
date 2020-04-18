@@ -1,5 +1,4 @@
 import React from 'react';
-import { useFetch } from '../../hooks';
 import Products from './Products';
 
 interface Props {

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { ProductPlaceholder } from '../../components/Placeholders';
-import { useFetch, useHandleFetch } from '../../hooks';
+import { useHandleFetch } from '../../hooks';
 import { Spinner } from '../../components/Loading';
 import ProductDetailContent from './ProductDetailContent';
 import SmallItem from '../../components/SmallItem';
@@ -54,22 +54,31 @@ const ProductDetail = (props: Props) => {
             props.cache
           )
         ) {
-          const relatedProducts =
+          const relatedProductsRes =
             props['cache'][`categoryProducts/${categoryId}`];
 
-          if (relatedProducts && relatedProducts.length) {
+          const relatedProducts = relatedProductsRes['data'];
+
+          if (relatedProducts) {
             // @ts-ignore
             setRelatedProducts(relatedProducts);
           }
         } else {
           const setTheRelatedProducts = async () => {
-            await handleRelatedProductsFetch({
+            const relatedProductsRes = await handleRelatedProductsFetch({
               urlOptions: {
                 placeHolders: {
                   id: categoryId,
                 },
+                params: {
+                  limitNumber: 6,
+                  pageNumber: 1,
+                },
               },
             });
+
+            const relatedProducts = relatedProductsRes['data'];
+            setRelatedProducts(relatedProducts);
           };
           if (categoryId) {
             setTheRelatedProducts();
@@ -98,7 +107,7 @@ const ProductDetail = (props: Props) => {
           // @ts-ignore
           const categoryId = product.category && product.category[0].id;
           const setTheRelatedProducts = async () => {
-            const relatedProducts = await handleRelatedProductsFetch({
+            const relatedProductsRes = await handleRelatedProductsFetch({
               urlOptions: {
                 placeHolders: {
                   id: categoryId,
@@ -106,20 +115,19 @@ const ProductDetail = (props: Props) => {
               },
             });
 
+            const relatedProducts = relatedProductsRes['data'];
+
             // @ts-ignore
-            if (relatedProducts && relatedProducts.length > 0) {
-              // @ts-ignore
-              setRelatedProducts(relatedProducts);
-              if (
-                !checkIfItemExistsInCache(
-                  `categoryProducts/${categoryId}`,
-                  props.cache
-                )
-              ) {
-                props.addItemToCache({
-                  [`categoryProducts/${categoryId}`]: relatedProducts,
-                });
-              }
+            setRelatedProducts(relatedProducts);
+            if (
+              !checkIfItemExistsInCache(
+                `categoryProducts/${categoryId}`,
+                props.cache
+              )
+            ) {
+              props.addItemToCache({
+                [`categoryProducts/${categoryId}`]: relatedProductsRes,
+              });
             }
           };
           if (categoryId) {
@@ -154,7 +162,11 @@ const ProductDetail = (props: Props) => {
                         {(!relatedProductsState.isLoading &&
                           relatedProducts.length > 0 &&
                           relatedProducts.slice(0, 6).map((productItem) => {
-                            return <SmallItem productItem={productItem} />;
+                            return (
+                              <Fragment key={productItem['id']}>
+                                <SmallItem productItem={productItem} />
+                              </Fragment>
+                            );
                           })) ||
                           (relatedProductsState.isLoading && <Spinner />)}
 
@@ -187,7 +199,26 @@ const ProductDetail = (props: Props) => {
           </div>
         </div>
       ) : (
-        <h1>Product Not Found</h1>
+        !productDetailState.isLoading && (
+          <div
+            style={{
+              textAlign: 'center',
+              minHeight: '200px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <h1
+              style={{
+                fontSize: '20px',
+                fontWeight: 500,
+              }}
+            >
+              Product Not Found
+            </h1>
+          </div>
+        )
       )}
       {productDetailState.isLoading && <ProductPlaceholder />}
     </>

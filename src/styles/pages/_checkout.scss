@@ -1,6 +1,6 @@
 .checkout {
-  padding: 3px;
-  padding-bottom: 10px;
+  padding: 10px;
+  padding-bottom: 30px;
 }
 
 .checkoutSection {
@@ -10,7 +10,7 @@
 .createOrderContainer {
   background-color: #fff;
   border-radius: 5px;
-  padding: 0 10px;
+  padding: 0 10px 10px 10px;
 }
 
 .checkout .shipping-heading {
@@ -64,11 +64,11 @@
 
 // select container style
 .css-yk16xz-control {
-  min-height: 50px !important;
+  min-height: 53px !important;
 }
 
 .css-g1d714-ValueContainer {
-  min-height: 50px !important;
+  min-height: 53px !important;
 }
 
 // select-invalid-feedback
@@ -82,7 +82,7 @@
 
 .alertText {
   font-size: 17px;
-  color: rgba(107, 33, 172, 0.5);
+  color: $color-primary-1;
   font-weight: 600;
   line-height: 40px;
   display: flex;
@@ -93,4 +93,9 @@
     margin-right: 15px;
     font-size: 20px;
   }
+}
+
+.paymentMethods {
+  // display: flex;
+  // flex-wrap: wrap;
 }

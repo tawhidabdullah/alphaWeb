@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useEffect } from 'react';
+import React, { useState, useLayoutEffect, useEffect, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { useHandleFetch } from '../../hooks';
@@ -41,7 +41,7 @@ const ProductList = ({
   const [brands, setBrands] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
-
+  const [isNext, setIsNext] = useState(true);
   const [productListState, handleProductListFetch] = useHandleFetch(
     [],
     'productList'
@@ -113,28 +113,41 @@ const ProductList = ({
       setIsLoading(true);
     }
 
-    if (checkIfItemExistsInCache(`product`, cache) && !pageNumber) {
-      const products = cache[`product`];
+    if (checkIfItemExistsInCache(`product`, cache) && pageNumber === 1) {
+      const productsRes = cache[`product`];
+
+      // @ts-ignore
+      const products = productsRes.data || [];
+      // @ts-ignore
+      const isNext = productsRes.isNext || null;
+      setIsNext(isNext);
       // @ts-ignore
       setProducts(products);
       setProductOf('product');
       setIsLoading(false);
     } else {
-      const newProducts = await handleProductListFetch({
+      const newProductsRes = await handleProductListFetch({
         urlOptions: {
           params: {
-            limitNumber: 10,
+            limitNumber: 15,
             pageNumber: pageNumber ? pageNumber : pageNumberOfProduct,
           },
         },
       });
 
-      addItemToCache({
-        [`product`]: newProducts,
-      });
       // @ts-ignore
+      const newProducts = newProductsRes.data || [];
+      // @ts-ignore
+      const isNext = newProductsRes.isNext || null;
+      setIsNext(isNext);
 
-      if (products.length > 0) {
+      if (pageNumber === 1) {
+        addItemToCache({
+          [`product`]: newProductsRes,
+        });
+      }
+
+      if (products.length > 0 && pageNumber && pageNumber > 1) {
         // @ts-ignore
         if (newProducts.length > 0) {
           // @ts-ignore
@@ -162,14 +175,21 @@ const ProductList = ({
 
     if (
       checkIfItemExistsInCache(`categoryProducts/${categoryId}`, cache) &&
+      pageNumberOfCategoryProduct === 1 &&
       !pageNumber
     ) {
-      const products = cache[`categoryProducts/${categoryId}`];
+      const productsRes = cache[`categoryProducts/${categoryId}`];
+
+      // @ts-ignore
+      const products = productsRes.data || [];
+      // @ts-ignore
+      const isNext = productsRes.isNext || null;
+      setIsNext(isNext);
       // @ts-ignore
       setProducts(products);
       setIsLoading(false);
     } else {
-      const newProducts = await handleCategoryProductsFetch({
+      const newProductsRes = await handleCategoryProductsFetch({
         urlOptions: {
           placeHolders: {
             id: categoryId,
@@ -182,13 +202,19 @@ const ProductList = ({
       });
 
       // @ts-ignore
-      if (newProducts) {
+      const newProducts = newProductsRes.data || [];
+      // @ts-ignore
+      const isNext = newProductsRes.isNext || null;
+      setIsNext(isNext);
+
+      // @ts-ignore
+      if (pageNumberOfCategoryProduct === 1) {
         addItemToCache({
-          [`categoryProducts/${categoryId}`]: newProducts,
+          [`categoryProducts/${categoryId}`]: newProductsRes,
         });
       }
 
-      if (products.length > 0) {
+      if (products.length > 0 && pageNumber && pageNumber > 1) {
         // @ts-ignore
         if (newProducts.length > 0) {
           // @ts-ignore
@@ -203,9 +229,11 @@ const ProductList = ({
         // @ts-ignore
         setProducts(newProducts);
       }
-      setProductOf('category');
+
       setIsLoading(false);
     }
+
+    setProductOf('category');
   };
 
   const setTagProducts = async (tagId, pageNumber?: number) => {
@@ -217,12 +245,17 @@ const ProductList = ({
       checkIfItemExistsInCache(`tagProducts/${tagId}`, cache) &&
       !pageNumber
     ) {
-      const products = cache[`tagProducts/${tagId}`];
+      const productsRes = cache[`tagProducts/${tagId}`];
+      // @ts-ignore
+      const products = productsRes.data || [];
+      // @ts-ignore
+      const isNext = productsRes.isNext || null;
+      setIsNext(isNext);
       // @ts-ignore
       setProducts(products);
       setIsLoading(false);
     } else {
-      const newProducts = await handleTagProductsFetch({
+      const newProductsRes = await handleTagProductsFetch({
         urlOptions: {
           placeHolders: {
             id: tagId,
@@ -235,13 +268,19 @@ const ProductList = ({
       });
 
       // @ts-ignore
-      if (newProducts) {
+      const newProducts = newProductsRes.data || [];
+      // @ts-ignore
+      const isNext = newProductsRes.isNext || null;
+      setIsNext(isNext);
+
+      // @ts-ignore
+      if (pageNumberOfTagProduct === 1) {
         addItemToCache({
-          [`tagProducts/${tagId}`]: newProducts,
+          [`tagProducts/${tagId}`]: newProductsRes,
         });
       }
 
-      if (products.length > 0) {
+      if (products.length > 0 && pageNumber && pageNumber > 1) {
         // @ts-ignore
         if (newProducts.length > 0) {
           // @ts-ignore
@@ -272,12 +311,17 @@ const ProductList = ({
       checkIfItemExistsInCache(`brandProducts/${brandId}`, cache) &&
       !pageNumber
     ) {
-      const products = cache[`brandProducts/${brandId}`];
+      const productsRes = cache[`brandProducts/${brandId}`];
+      // @ts-ignore
+      const products = productsRes.data || [];
+      // @ts-ignore
+      const isNext = productsRes.isNext || null;
+      setIsNext(isNext);
       // @ts-ignore
       setProducts(products);
       setIsLoading(false);
     } else {
-      const newProducts = await handleBrandProductsFetch({
+      const newProductsRes = await handleBrandProductsFetch({
         urlOptions: {
           placeHolders: {
             id: brandId,
@@ -290,13 +334,19 @@ const ProductList = ({
       });
 
       // @ts-ignore
-      if (newProducts) {
+      const newProducts = newProductsRes.data || [];
+      // @ts-ignore
+      const isNext = newProductsRes.isNext || null;
+      setIsNext(isNext);
+
+      // @ts-ignore
+      if (pageNumberOfBrandProduct === 1) {
         addItemToCache({
-          [`brandProducts/${brandId}`]: newProducts,
+          [`brandProducts/${brandId}`]: newProductsRes,
         });
       }
 
-      if (products.length > 0) {
+      if (products.length > 0 && pageNumber && pageNumber > 1) {
         // @ts-ignore
         if (newProducts.length > 0) {
           // @ts-ignore
@@ -442,8 +492,10 @@ const ProductList = ({
         setBrands(b);
       }
       if (id === 'all') {
+        setIsNext(true);
+        setPageNumberOfProduct(1);
         // if the id is all get all the products
-        getProducts();
+        getProducts(1);
       } else if (location.state && location.state.isCategory) {
         // find the products by a category
         if (id) {
@@ -569,22 +621,6 @@ const ProductList = ({
     }
   };
 
-  const handleUiSelectSubCategory = (subCatId: string) => {
-    const newSubCategories = [...subcategories];
-    newSubCategories &&
-      newSubCategories.forEach((subCat) => {
-        if (subCat['id'] === subCatId) {
-          // @ts-ignore
-          subCat[`is${subCat['id']}`] = true;
-        } else {
-          // @ts-ignore
-          subCat[`is${subCat['id']}`] = false;
-        }
-      });
-
-    setSubcategories(newSubCategories);
-  };
-
   const setUiSelectItemActive = (type: string, id: string) => {
     if (type === 'category') {
       if (categories.length > 0) {
@@ -646,11 +682,22 @@ const ProductList = ({
     }
   };
 
+  const handleUiSelectSubCategory = (subCatId: string) => {
+    setSubcategories([]);
+
+    setPageNumberOfCategoryProduct(1);
+    setIsNext(true);
+  };
+
   const handleSelectCategory = (categoryId) => {
     history.push({
       pathname: `/productList/${categoryId}`,
       state: { isCategory: true },
     });
+
+    setPageNumberOfCategoryProduct(1);
+    setIsNext(true);
+
     setUiSelectItemActive('category', categoryId);
   };
 
@@ -659,6 +706,9 @@ const ProductList = ({
       pathname: `/productList/${tagId}`,
       state: { isTag: true },
     });
+
+    setPageNumberOfTagProduct(1);
+    setIsNext(true);
     setUiSelectItemActive('tag', tagId);
   };
 
@@ -667,7 +717,8 @@ const ProductList = ({
       pathname: `/productList/${brandId}`,
       state: { isBrand: true },
     });
-
+    setPageNumberOfBrandProduct(1);
+    setIsNext(true);
     setUiSelectItemActive('brand', brandId);
   };
 
@@ -708,20 +759,29 @@ const ProductList = ({
               history={history}
             />
             <div className='col-sm-8 col-md-9'>
-              <div className='row productListingSubCategooryContainer'>
+              <div
+                className='row productListingSubCategooryContainer'
+                style={{
+                  justifyContent:
+                    subcategories.length > 1 ? 'center' : 'flex-start',
+                }}
+              >
                 {!isLoading &&
                   subcategories.length > 0 &&
                   subcategories.map((subCat) => {
                     return (
-                      <SubCategoryCard
-                        subCat={subCat}
-                        history={history}
-                        handleUiSelectSubCategory={handleUiSelectSubCategory}
-                      />
+                      <Fragment key={subCat['id']}>
+                        <SubCategoryCard
+                          subCat={subCat}
+                          history={history}
+                          handleUiSelectSubCategory={handleUiSelectSubCategory}
+                        />
+                      </Fragment>
                     );
                   })}
               </div>
               <Products
+                isNext={isNext}
                 products={products}
                 isLoading={isLoading}
                 productOf={productOf}
