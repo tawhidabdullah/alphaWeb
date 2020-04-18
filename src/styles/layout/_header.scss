@@ -60,7 +60,7 @@
 }
 
 .top-tags-desc {
-  color: #fff;
+  color: $color-dark-1;
   font-weight: 700;
   margin-left: 10px;
 }
@@ -82,12 +82,14 @@
 }
 
 .top-tags {
-  background-color: $color-primary-1 !important;
+  background-color: #fff !important;
   display: flex;
   padding: 13px;
   align-items: center;
   flex-wrap: wrap;
   font-size: 13px;
+  margin: 14px 25px 0 28px;
+  border-radius: 5px;
 }
 
 .top-tags .tags {
@@ -100,7 +102,7 @@
   padding: 0 15px;
   font-weight: 500;
   line-height: 1.3;
-  color: #fff;
+  color: $color-dark-1;
   opacity: 1;
 }
 

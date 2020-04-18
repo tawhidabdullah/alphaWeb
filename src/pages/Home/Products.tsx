@@ -14,17 +14,17 @@ import 'react-multi-carousel/lib/styles.css';
 interface Props {
   windowWidth: number;
   categoryId: string;
-  category: any;
   cache: any;
   addItemToCache: (any) => void;
+  isRelatedProducts?: boolean;
 }
 
 const Products = ({
   windowWidth,
   categoryId,
-  category,
   cache,
   addItemToCache,
+  isRelatedProducts = false,
 }: Props) => {
   const [categoryProductsState, handleCategoryProductsFetch] = useHandleFetch(
     [],
@@ -85,7 +85,9 @@ const Products = ({
               textAlign: 'center',
             }}
           >
-            No Product Has Been Found On This Category
+            {isRelatedProducts
+              ? 'No Related Product Found'
+              : 'No Product Has Been Found On This Category'}
           </h2>
         )}
       </div>

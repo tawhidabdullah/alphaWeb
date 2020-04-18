@@ -46,7 +46,6 @@ const CategoryProducts = ({
               <Products
                 windowWidth={windowWidth}
                 categoryId={id}
-                category={category}
                 cache={cache}
                 addItemToCache={addItemToCache}
               />

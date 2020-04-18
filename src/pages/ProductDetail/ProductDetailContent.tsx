@@ -105,16 +105,16 @@ const ProductDetailContent = ({
   };
 
   return (
-    <div className='row productDetailInfo'>
-      <div className='col-md-6'>
-        <Carousel>
+    <>
+      <div className='col-md-6 productDetailInfo-carousel-column'>
+        <Carousel showArrows={false} showIndicators={false} showStatus={false}>
           {image &&
             image.length > 0 &&
             image.map((src) => {
               return (
                 <div
                   style={{
-                    maxHeight: '500px',
+                    maxHeight: '600px',
                   }}
                   key={src}
                 >
@@ -137,8 +137,6 @@ const ProductDetailContent = ({
           <h2 className='productInfo__title'>{name}</h2>
 
           <div className='productInfo__price'>
-            <div className='product-reviews-summary'></div>
-
             <div className='product-price-box'>
               {offerPrice && parseInt(offerPrice) ? (
                 <h2 className='special-price'>
@@ -214,33 +212,29 @@ const ProductDetailContent = ({
           </div>
           <div className='product-options-bottom'>
             {parseInt(availableStock) > 0 ? (
-              <div className='box-tocart'>
-                <div className='actions'>
-                  <a
-                    className='btn-add withbackground'
-                    onClick={handleOnClickAddToCart}
-                    href='##'
-                  >
-                    {!addToCartState.isLoading &&
-                      !removeFromCartState.isLoading && (
-                        <>
-                          {(checkIfItemExistsInCartItemById(cartItems, id) && (
-                            <span className='product-bottom-iconText'>
-                              🐎 Added
-                            </span>
-                          )) || (
-                            <span className='product-bottom-iconText'>
-                              🐎 Add to cart
-                            </span>
-                          )}
-                        </>
+              <a
+                className='action-button'
+                onClick={handleOnClickAddToCart}
+                href='##'
+              >
+                {!addToCartState.isLoading &&
+                  !removeFromCartState.isLoading && (
+                    <>
+                      {(checkIfItemExistsInCartItemById(cartItems, id) && (
+                        <span className='product-bottom-iconText'>
+                          🐎 Added
+                        </span>
+                      )) || (
+                        <span className='product-bottom-iconText'>
+                          🐎 Add to cart
+                        </span>
                       )}
+                    </>
+                  )}
 
-                    {addToCartState.isLoading && '🐎 Adding...'}
-                    {removeFromCartState.isLoading && '🐎 Removing...'}
-                  </a>
-                </div>
-              </div>
+                {addToCartState.isLoading && '🐎 Adding...'}
+                {removeFromCartState.isLoading && '🐎 Removing...'}
+              </a>
             ) : (
               <div className='alertText'>
                 <i className='fa fa-exclamation-circle'></i>
@@ -250,7 +244,7 @@ const ProductDetailContent = ({
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

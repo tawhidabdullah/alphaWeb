@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from 'react';
+import React, { useEffect, useState, Fragment, useLayoutEffect } from 'react';
 import { connect } from 'react-redux';
 import { ProductPlaceholder } from '../../components/Placeholders';
 import { useHandleFetch } from '../../hooks';
@@ -7,6 +7,7 @@ import ProductDetailContent from './ProductDetailContent';
 import SmallItem from '../../components/SmallItem';
 import { cacheOperations } from '../../state/ducks/cache';
 import { checkIfItemExistsInCache } from '../../utils';
+import Products from '../../pages/Home/Products';
 
 interface Props {
   match: any;
@@ -18,7 +19,31 @@ const ProductDetail = (props: Props) => {
   const categoryName = props.match.params && props.match.params['categoryName'];
   const productName = props.match.params && props.match.params['productName'];
   const [productDetail, setProductDetail] = useState({});
-  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [relatedProductId, setRelatedProductId] = useState('');
+
+  const [windowWidth, setWindowWidth] = useState(0);
+  const getWindowWidth = () => {
+    return Math.max(
+      document.documentElement.clientWidth,
+      window.innerWidth || 0
+    );
+  };
+
+  useLayoutEffect(() => {
+    setWindowWidth(getWindowWidth());
+  }, []);
+
+  const onResize = () => {
+    window.requestAnimationFrame(() => {
+      setWindowWidth(getWindowWidth());
+    });
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', onResize);
+
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   const [productDetailState, handleProductDetailFetch] = useHandleFetch(
     [],
@@ -46,44 +71,7 @@ const ProductDetail = (props: Props) => {
         const product = productDetail;
         // @ts-ignore
         const categoryId = product.category && product.category[0].id;
-
-        if (
-          categoryId &&
-          checkIfItemExistsInCache(
-            `categoryProducts/${categoryId}`,
-            props.cache
-          )
-        ) {
-          const relatedProductsRes =
-            props['cache'][`categoryProducts/${categoryId}`];
-
-          const relatedProducts = relatedProductsRes['data'];
-
-          if (relatedProducts) {
-            // @ts-ignore
-            setRelatedProducts(relatedProducts);
-          }
-        } else {
-          const setTheRelatedProducts = async () => {
-            const relatedProductsRes = await handleRelatedProductsFetch({
-              urlOptions: {
-                placeHolders: {
-                  id: categoryId,
-                },
-                params: {
-                  limitNumber: 6,
-                  pageNumber: 1,
-                },
-              },
-            });
-
-            const relatedProducts = relatedProductsRes['data'];
-            setRelatedProducts(relatedProducts);
-          };
-          if (categoryId) {
-            setTheRelatedProducts();
-          }
-        }
+        setRelatedProductId(categoryId);
       } else {
         // @ts-ignore
         const productDetail = await handleProductDetailFetch({
@@ -106,33 +94,7 @@ const ProductDetail = (props: Props) => {
           const product = productDetail;
           // @ts-ignore
           const categoryId = product.category && product.category[0].id;
-          const setTheRelatedProducts = async () => {
-            const relatedProductsRes = await handleRelatedProductsFetch({
-              urlOptions: {
-                placeHolders: {
-                  id: categoryId,
-                },
-              },
-            });
-
-            const relatedProducts = relatedProductsRes['data'];
-
-            // @ts-ignore
-            setRelatedProducts(relatedProducts);
-            if (
-              !checkIfItemExistsInCache(
-                `categoryProducts/${categoryId}`,
-                props.cache
-              )
-            ) {
-              props.addItemToCache({
-                [`categoryProducts/${categoryId}`]: relatedProductsRes,
-              });
-            }
-          };
-          if (categoryId) {
-            setTheRelatedProducts();
-          }
+          setRelatedProductId(categoryId);
         }
       }
     };
@@ -147,50 +109,29 @@ const ProductDetail = (props: Props) => {
       Object.keys(productDetail).length > 0 ? (
         <div className='singleProduct'>
           <div className='container-fluid singleProduct__container'>
-            <div className='row'>
-              <div className='col-md-9'>
-                <ProductDetailContent
-                  // @ts-ignore
-                  product={productDetail}
-                />
-              </div>
-              <div className='col-md-3 '>
-                {(!relatedProductsState.isLoading && relatedProducts && (
+            <div className='row productDetailInfo'>
+              <ProductDetailContent
+                // @ts-ignore
+                product={productDetail}
+              />
+            </div>
+            <div className='row relatedProductsContainer'>
+              <div className='col-md-12 '>
+                {(relatedProductId && (
                   <div className='relativeProductsContainer'>
-                    <div className='small__filterProducts'>
-                      <div className='small-products-items'>
-                        {(!relatedProductsState.isLoading &&
-                          relatedProducts.length > 0 &&
-                          relatedProducts.slice(0, 6).map((productItem) => {
-                            return (
-                              <Fragment key={productItem['id']}>
-                                <SmallItem productItem={productItem} />
-                              </Fragment>
-                            );
-                          })) ||
-                          (relatedProductsState.isLoading && <Spinner />)}
-
-                        {!relatedProductsState.isLoading &&
-                          relatedProducts &&
-                          !(relatedProducts.length > 0) && (
-                            <div
-                              style={{
-                                // marginTop: '200px'
-                                padding: '50px 0 60px 0',
-                                textAlign: 'center',
-                              }}
-                            >
-                              <h2
-                                style={{
-                                  lineHeight: 1.6,
-                                }}
-                              >
-                                No Related Product Found
-                              </h2>
-                            </div>
-                          )}
+                    <div className='row product-slider-section-heading'>
+                      <div className='col-md-12'>
+                        <div className='block-title'>
+                          <span>Related products</span>
+                        </div>
                       </div>
                     </div>
+                    <Products
+                      windowWidth={windowWidth}
+                      categoryId={relatedProductId}
+                      cache={props.cache}
+                      addItemToCache={props.addItemToCache}
+                    />
                   </div>
                 )) ||
                   ''}
