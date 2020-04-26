@@ -18,6 +18,7 @@ import { cacheOperations } from '../../state/ducks/cache';
 import { checkIfItemExistsInCache, getDeliveryChargeTotal } from '../../utils';
 import { cartOperations } from '../../state/ducks/cart';
 import PaymentForm from './PaymentForm';
+import dictionary from '../../dictionary';
 
 // import checkout component
 import CheckoutSuccessModal from './CheckoutSuccessModal';
@@ -526,8 +527,6 @@ const Checkout = ({
   };
 
   const isDeliveryChargeExists = (regions) => {
-    console.log('isDelivery1', regions);
-    console.log('isDelivery2', billingDeliveryCharge);
     if (!regions) {
       return false;
     } else return true;
@@ -609,6 +608,7 @@ const Checkout = ({
           transactionId: values.transactionId,
           useAccountBillingAddress: isUseAccountBillingAddresss,
           shipToDifferentAddress: isShipToDifferentAddress,
+          delivery: selectedRegion['_id'],
 
           ...(isShipToDifferentAddress && {
             shippingFirstName: values.shippingFirstName,
@@ -627,7 +627,6 @@ const Checkout = ({
         });
 
         actions.setSubmitting(false);
-        clearCart();
       } else {
         const createOrderData = {
           phone: values.phone,
@@ -645,6 +644,7 @@ const Checkout = ({
           paymentMethod: 'cod',
           useAccountBillingAddress: isUseAccountBillingAddresss,
           shipToDifferentAddress: isShipToDifferentAddress,
+          delivery: selectedRegion['_id'],
 
           ...(isShipToDifferentAddress && {
             shippingFirstName: values.shippingFirstName,
@@ -662,7 +662,6 @@ const Checkout = ({
           body: createOrderData,
         });
         actions.setSubmitting(false);
-        clearCart();
       }
     }
   };
@@ -758,6 +757,8 @@ const Checkout = ({
             alert.error(err);
           }
         });
+      } else {
+        clearCart();
       }
     }
 
@@ -775,12 +776,17 @@ const Checkout = ({
     if (charge) {
       return parseInt(total) + parseInt(charge);
     } else {
-      return total;
+      return Math.floor(total);
     }
   };
 
-  console.log('selectedRegion', selectedRegion);
-  console.log('billingcharge', billingDeliveryCharge);
+  const getPercentage = (percent, total) => {
+    return Math.floor((percent / 100) * total);
+  };
+
+  const paytotalPrice = (percentTk, total) => {
+    return total + percentTk;
+  };
 
   return (
     <>
@@ -857,32 +863,27 @@ const Checkout = ({
                               ''
                             )}
 
-                            {!isUseAccountBillingAddresss ? (
-                              <>
-                                <CheckoutForm
-                                  isSubmitting={isSubmitting}
-                                  setFieldTouched={setFieldTouched}
-                                  values={values}
-                                  handleChange={handleChange}
-                                  touched={touched}
-                                  errors={errors}
-                                  serverErrors={serverErrors}
-                                  isAuthenticated={session.isAuthenticated}
-                                  handleSelectCountryChange={
-                                    handleSelectCountryChange
-                                  }
-                                  selectedCountryValue={selectedCountryValue}
-                                  countryList={countryList}
-                                  cityList={cityList}
-                                  handleSelectCityChange={
-                                    handleSelectCityChange
-                                  }
-                                  selectedCityValue={selectedCityValue}
-                                />
-                              </>
-                            ) : (
-                              ''
-                            )}
+                            <CheckoutForm
+                              isSubmitting={isSubmitting}
+                              setFieldTouched={setFieldTouched}
+                              values={values}
+                              handleChange={handleChange}
+                              touched={touched}
+                              errors={errors}
+                              serverErrors={serverErrors}
+                              isAuthenticated={session.isAuthenticated}
+                              handleSelectCountryChange={
+                                handleSelectCountryChange
+                              }
+                              selectedCountryValue={selectedCountryValue}
+                              countryList={countryList}
+                              cityList={cityList}
+                              handleSelectCityChange={handleSelectCityChange}
+                              selectedCityValue={selectedCityValue}
+                              isUseAccountBillingAddresss={
+                                isUseAccountBillingAddresss
+                              }
+                            />
                           </div>
 
                           <div className='checkoutSection'>
@@ -934,137 +935,6 @@ const Checkout = ({
                             ) : (
                               ''
                             )}
-                          </div>
-
-                          <div className='checkoutSection'>
-                            <div
-                              className='block-title authTitle'
-                              style={{
-                                margin: '20px 0',
-                              }}
-                            >
-                              <span>Payment Methods</span>
-                            </div>
-
-                            <div className='paymentMethods'>
-                              <RadioGroup
-                                onChange={onRadioGroupChange}
-                                value={paymentMethod}
-                                horizontal={windowWidth > 380 ? true : false}
-                              >
-                                <ReversedRadioButton
-                                  rootColor={'rgba(0, 102, 51, 0.35)'}
-                                  pointColor={'#006633'}
-                                  value='cod'
-                                  padding={9}
-                                >
-                                  <div
-                                    style={{
-                                      ...(windowWidth < 380 && {
-                                        width: '100%',
-                                        height: '20px',
-                                      }),
-                                    }}
-                                  ></div>
-                                  Cash on Delivery
-                                </ReversedRadioButton>
-                                <ReversedRadioButton
-                                  rootColor={'rgba(0, 102, 51, 0.35)'}
-                                  pointColor={'#006633'}
-                                  value='nagad'
-                                  padding={12}
-                                >
-                                  <div
-                                    style={{
-                                      ...(windowWidth < 380 && {
-                                        width: '100%',
-                                        height: '30px',
-                                      }),
-                                      ...(windowWidth > 380 && {
-                                        height: '20px',
-                                      }),
-                                    }}
-                                  >
-                                    <img
-                                      alt='paymentImg'
-                                      style={{
-                                        width: '100%',
-                                        height: '100%',
-                                        objectFit: 'contain',
-                                      }}
-                                      src={require('../../assets/paymentMethodImages/nagadIcon.png')}
-                                    />
-                                  </div>
-                                </ReversedRadioButton>
-                                <ReversedRadioButton
-                                  rootColor={'rgba(0, 102, 51, 0.35)'}
-                                  pointColor={'#006633'}
-                                  value='rocket'
-                                  padding={12}
-                                >
-                                  <div
-                                    style={{
-                                      ...(windowWidth < 380 && {
-                                        width: '100%',
-                                        height: '30px',
-                                      }),
-                                      ...(windowWidth > 380 && {
-                                        height: '20px',
-                                      }),
-                                    }}
-                                  >
-                                    <img
-                                      alt='paymentImg'
-                                      style={{
-                                        width: '100%',
-                                        height: '100%',
-                                        objectFit: 'contain',
-                                      }}
-                                      src={require('../../assets/paymentMethodImages/rocketIcon.jpg')}
-                                    />
-                                  </div>
-                                </ReversedRadioButton>
-                                <ReversedRadioButton
-                                  rootColor={'rgba(0, 102, 51, 0.35)'}
-                                  pointColor={'#006633'}
-                                  value='bkash'
-                                  padding={12}
-                                >
-                                  <div
-                                    style={{
-                                      ...(windowWidth < 380 && {
-                                        width: '100%',
-                                        height: '30px',
-                                      }),
-                                      ...(windowWidth > 380 && {
-                                        height: '20px',
-                                      }),
-                                    }}
-                                  >
-                                    <img
-                                      alt='paymentImg'
-                                      style={{
-                                        width: '100%',
-                                        height: '100%',
-                                        objectFit: 'contain',
-                                      }}
-                                      src={require('../../assets/paymentMethodImages/bkashIcon.png')}
-                                    />
-                                  </div>
-                                </ReversedRadioButton>
-                              </RadioGroup>
-                            </div>
-
-                            <PaymentForm
-                              isSubmitting={isSubmitting}
-                              paymentMethod={paymentMethod}
-                              values={values}
-                              handleChange={handleChange}
-                              errors={errors}
-                              serverErrors={serverErrors}
-                              setFieldTouched={setFieldTouched}
-                              touched={touched}
-                            />
                           </div>
 
                           <div className='orderOverview'>
@@ -1269,6 +1139,8 @@ const Checkout = ({
                                   ) : (
                                     ''
                                   )}
+
+                                  {deliveryChargeState.isLoading && <Spinner />}
                                 </div>
                                 <div className='deliveryProps'>
                                   <h3>Total : </h3>
@@ -1285,6 +1157,315 @@ const Checkout = ({
                                         )
                                       : totalPrice}
                                   </span>
+                                </div>
+
+                                <div className='checkoutSection'>
+                                  <div
+                                    className='block-title authTitle'
+                                    style={{
+                                      margin: '20px 0',
+                                    }}
+                                  >
+                                    <span>Payment Methods</span>
+                                  </div>
+
+                                  <div className='paymentMethods'>
+                                    <RadioGroup
+                                      onChange={onRadioGroupChange}
+                                      value={paymentMethod}
+                                      horizontal={
+                                        windowWidth > 380 ? true : false
+                                      }
+                                    >
+                                      <ReversedRadioButton
+                                        rootColor={'rgba(0, 102, 51, 0.35)'}
+                                        pointColor={'#006633'}
+                                        value='cod'
+                                        padding={9}
+                                      >
+                                        <div
+                                          style={{
+                                            ...(windowWidth < 380 && {
+                                              width: '100%',
+                                              height: '20px',
+                                            }),
+                                          }}
+                                        ></div>
+                                        Cash on Delivery
+                                      </ReversedRadioButton>
+                                      <ReversedRadioButton
+                                        rootColor={'rgba(0, 102, 51, 0.35)'}
+                                        pointColor={'#006633'}
+                                        value='nagad'
+                                        padding={12}
+                                      >
+                                        <div
+                                          style={{
+                                            ...(windowWidth < 380 && {
+                                              width: '100%',
+                                              height: '30px',
+                                            }),
+                                            ...(windowWidth > 380 && {
+                                              height: '20px',
+                                            }),
+                                          }}
+                                        >
+                                          <img
+                                            alt='paymentImg'
+                                            style={{
+                                              width: '100%',
+                                              height: '100%',
+                                              objectFit: 'contain',
+                                            }}
+                                            src={require('../../assets/paymentMethodImages/nagadIcon.png')}
+                                          />
+                                        </div>
+                                      </ReversedRadioButton>
+                                      <ReversedRadioButton
+                                        rootColor={'rgba(0, 102, 51, 0.35)'}
+                                        pointColor={'#006633'}
+                                        value='rocket'
+                                        padding={12}
+                                      >
+                                        <div
+                                          style={{
+                                            ...(windowWidth < 380 && {
+                                              width: '100%',
+                                              height: '30px',
+                                            }),
+                                            ...(windowWidth > 380 && {
+                                              height: '20px',
+                                            }),
+                                          }}
+                                        >
+                                          <img
+                                            alt='paymentImg'
+                                            style={{
+                                              width: '100%',
+                                              height: '100%',
+                                              objectFit: 'contain',
+                                            }}
+                                            src={require('../../assets/paymentMethodImages/rocketIcon.jpg')}
+                                          />
+                                        </div>
+                                      </ReversedRadioButton>
+                                      <ReversedRadioButton
+                                        rootColor={'rgba(0, 102, 51, 0.35)'}
+                                        pointColor={'#006633'}
+                                        value='bkash'
+                                        padding={12}
+                                      >
+                                        <div
+                                          style={{
+                                            ...(windowWidth < 380 && {
+                                              width: '100%',
+                                              height: '30px',
+                                            }),
+                                            ...(windowWidth > 380 && {
+                                              height: '20px',
+                                            }),
+                                          }}
+                                        >
+                                          <img
+                                            alt='paymentImg'
+                                            style={{
+                                              width: '100%',
+                                              height: '100%',
+                                              objectFit: 'contain',
+                                            }}
+                                            src={require('../../assets/paymentMethodImages/bkashIcon.png')}
+                                          />
+                                        </div>
+                                      </ReversedRadioButton>
+                                    </RadioGroup>
+                                  </div>
+
+                                  {paymentMethod !== 'cod' && (
+                                    <div className='paymentMethodInstruction'>
+                                      <div className='paymentMethodInstruction-item'>
+                                        <h3>
+                                          {paymentMethod[0].toUpperCase() +
+                                            paymentMethod.slice(1)}{' '}
+                                          number :{' '}
+                                        </h3>
+                                        <span>
+                                          {paymentMethod === 'bkash' &&
+                                            dictionary.bkashNumber}
+                                          {paymentMethod === 'nagad' &&
+                                            dictionary.nagadNumber}
+                                          {paymentMethod === 'rocket' &&
+                                            dictionary.rocketNumber}
+                                        </span>
+                                      </div>
+
+                                      <div className='paymentMethodInstruction-item'>
+                                        <h3>Agent will take TK:</h3>
+
+                                        <span>
+                                          {paymentMethod === 'bkash' &&
+                                            getPercentage(
+                                              1.9,
+                                              selectedRegion &&
+                                                Object.keys(selectedRegion)
+                                                  .length > 0
+                                                ? getTotalPrice(
+                                                    totalPrice,
+                                                    getDeliveryChargeTotal(
+                                                      selectedRegion,
+                                                      totalPrice
+                                                    ) || 0
+                                                  )
+                                                : totalPrice
+                                            )}
+
+                                          {paymentMethod === 'nagad' &&
+                                            getPercentage(
+                                              1.5,
+                                              selectedRegion &&
+                                                Object.keys(selectedRegion)
+                                                  .length > 0
+                                                ? getTotalPrice(
+                                                    totalPrice,
+                                                    getDeliveryChargeTotal(
+                                                      selectedRegion,
+                                                      totalPrice
+                                                    ) || 0
+                                                  )
+                                                : totalPrice
+                                            )}
+
+                                          {paymentMethod === 'rocket' &&
+                                            getPercentage(
+                                              1.8,
+                                              selectedRegion &&
+                                                Object.keys(selectedRegion)
+                                                  .length > 0
+                                                ? getTotalPrice(
+                                                    totalPrice,
+                                                    getDeliveryChargeTotal(
+                                                      selectedRegion,
+                                                      totalPrice
+                                                    ) || 0
+                                                  )
+                                                : totalPrice
+                                            )}
+                                        </span>
+                                      </div>
+
+                                      <div className='paymentMethodInstruction-item'>
+                                        <h3>Pay TK:</h3>
+                                        <span>
+                                          {paymentMethod === 'bkash'
+                                            ? paytotalPrice(
+                                                getPercentage(
+                                                  1.9,
+                                                  selectedRegion &&
+                                                    Object.keys(selectedRegion)
+                                                      .length > 0
+                                                    ? getTotalPrice(
+                                                        totalPrice,
+                                                        getDeliveryChargeTotal(
+                                                          selectedRegion,
+                                                          totalPrice
+                                                        ) || 0
+                                                      )
+                                                    : totalPrice
+                                                ),
+                                                selectedRegion &&
+                                                  Object.keys(selectedRegion)
+                                                    .length > 0
+                                                  ? getTotalPrice(
+                                                      totalPrice,
+                                                      getDeliveryChargeTotal(
+                                                        selectedRegion,
+                                                        totalPrice
+                                                      ) || 0
+                                                    )
+                                                  : totalPrice
+                                              )
+                                            : ''}
+
+                                          {paymentMethod === 'rocket'
+                                            ? paytotalPrice(
+                                                getPercentage(
+                                                  1.8,
+                                                  selectedRegion &&
+                                                    Object.keys(selectedRegion)
+                                                      .length > 0
+                                                    ? getTotalPrice(
+                                                        totalPrice,
+                                                        getDeliveryChargeTotal(
+                                                          selectedRegion,
+                                                          totalPrice
+                                                        ) || 0
+                                                      )
+                                                    : totalPrice
+                                                ),
+                                                selectedRegion &&
+                                                  Object.keys(selectedRegion)
+                                                    .length > 0
+                                                  ? getTotalPrice(
+                                                      totalPrice,
+                                                      getDeliveryChargeTotal(
+                                                        selectedRegion,
+                                                        totalPrice
+                                                      ) || 0
+                                                    )
+                                                  : totalPrice
+                                              )
+                                            : ''}
+
+                                          {paymentMethod === 'nagad'
+                                            ? paytotalPrice(
+                                                getPercentage(
+                                                  1.5,
+                                                  selectedRegion &&
+                                                    Object.keys(selectedRegion)
+                                                      .length > 0
+                                                    ? getTotalPrice(
+                                                        totalPrice,
+                                                        getDeliveryChargeTotal(
+                                                          selectedRegion,
+                                                          totalPrice
+                                                        ) || 0
+                                                      )
+                                                    : totalPrice
+                                                ),
+                                                selectedRegion &&
+                                                  Object.keys(selectedRegion)
+                                                    .length > 0
+                                                  ? getTotalPrice(
+                                                      totalPrice,
+                                                      getDeliveryChargeTotal(
+                                                        selectedRegion,
+                                                        totalPrice
+                                                      ) || 0
+                                                    )
+                                                  : totalPrice
+                                              )
+                                            : ''}
+                                        </span>
+                                      </div>
+
+                                      <div className='paymentMethodInstruction-item'>
+                                        <h3>
+                                          Enter your Payment Mobile Number and
+                                          Transaction Id below
+                                        </h3>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  <PaymentForm
+                                    isSubmitting={isSubmitting}
+                                    paymentMethod={paymentMethod}
+                                    values={values}
+                                    handleChange={handleChange}
+                                    errors={errors}
+                                    serverErrors={serverErrors}
+                                    setFieldTouched={setFieldTouched}
+                                    touched={touched}
+                                  />
                                 </div>
                               </>
                             ) : (
@@ -1353,7 +1534,8 @@ const Checkout = ({
                                     : billingDeliveryCharge &&
                                         billingDeliveryCharge.length > 0 &&
                                         billingDeliveryCharge
-                                )
+                                ) ||
+                                !(cartItems.length > 0)
                               }
                             >
                               {isSubmitting ? 'Ordering...' : 'Place Order'}
