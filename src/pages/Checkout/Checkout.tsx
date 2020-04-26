@@ -863,27 +863,29 @@ const Checkout = ({
                               ''
                             )}
 
-                            <CheckoutForm
-                              isSubmitting={isSubmitting}
-                              setFieldTouched={setFieldTouched}
-                              values={values}
-                              handleChange={handleChange}
-                              touched={touched}
-                              errors={errors}
-                              serverErrors={serverErrors}
-                              isAuthenticated={session.isAuthenticated}
-                              handleSelectCountryChange={
-                                handleSelectCountryChange
-                              }
-                              selectedCountryValue={selectedCountryValue}
-                              countryList={countryList}
-                              cityList={cityList}
-                              handleSelectCityChange={handleSelectCityChange}
-                              selectedCityValue={selectedCityValue}
-                              isUseAccountBillingAddresss={
-                                isUseAccountBillingAddresss
-                              }
-                            />
+                            {!isUseAccountBillingAddresss && (
+                              <CheckoutForm
+                                isSubmitting={isSubmitting}
+                                setFieldTouched={setFieldTouched}
+                                values={values}
+                                handleChange={handleChange}
+                                touched={touched}
+                                errors={errors}
+                                serverErrors={serverErrors}
+                                isAuthenticated={session.isAuthenticated}
+                                handleSelectCountryChange={
+                                  handleSelectCountryChange
+                                }
+                                selectedCountryValue={selectedCountryValue}
+                                countryList={countryList}
+                                cityList={cityList}
+                                handleSelectCityChange={handleSelectCityChange}
+                                selectedCityValue={selectedCityValue}
+                                isUseAccountBillingAddresss={
+                                  isUseAccountBillingAddresss
+                                }
+                              />
+                            )}
                           </div>
 
                           <div className='checkoutSection'>
@@ -979,166 +981,211 @@ const Checkout = ({
                                     </span>
                                   </div>
 
-                                  {isDeliveryChargeExists(
-                                    isShipToDifferentAddress
-                                      ? shippingDeliveryCharge &&
-                                          shippingDeliveryCharge.length > 0 &&
-                                          shippingDeliveryCharge
-                                      : billingDeliveryCharge &&
-                                          billingDeliveryCharge.length > 0 &&
-                                          billingDeliveryCharge
-                                  ) ? (
+                                  <div
+                                    style={{
+                                      borderTop: '1px solid #eee',
+                                    }}
+                                  >
                                     <div
+                                      className='block-title authTitle'
                                       style={{
-                                        borderTop: '1px solid #eee',
-                                        padding: '0 10px',
-                                        paddingTop: '20px',
+                                        margin: '10px 0',
                                       }}
                                     >
-                                      <h2
-                                        style={{
-                                          fontWeight: 500,
-                                          fontSize: '16px',
-                                          marginBottom: '15px',
-                                          marginTop: '10px',
-                                        }}
-                                      >
-                                        Region List
-                                      </h2>
-                                      <div className='paymentMethods'>
-                                        <RadioGroup
-                                          onChange={onDeviliveryRegionChange}
-                                          value={deliveryRegionName}
-                                          horizontal={
-                                            windowWidth > 380 ? true : false
-                                          }
-                                        >
-                                          {isShipToDifferentAddress
-                                            ? shippingDeliveryCharge &&
-                                              shippingDeliveryCharge.length >
-                                                0 &&
-                                              shippingDeliveryCharge.map(
-                                                (item) => {
-                                                  return (
-                                                    <ReversedRadioButton
-                                                      rootColor={
-                                                        'rgba(0, 102, 51, 0.35)'
-                                                      }
-                                                      pointColor={'#006633'}
-                                                      value={item['name']}
-                                                      padding={10}
-                                                    >
-                                                      <div
-                                                        style={{
-                                                          ...(windowWidth <
-                                                            380 && {
-                                                            width: '100%',
-                                                            height: '30px',
-                                                          }),
-                                                          ...(windowWidth >
-                                                            380 && {
-                                                            width: '20%',
-                                                            height: '20px',
-                                                          }),
-                                                        }}
-                                                      >
-                                                        <h2>{item['name']}</h2>
-                                                      </div>
-                                                    </ReversedRadioButton>
-                                                  );
-                                                }
-                                              )
-                                            : billingDeliveryCharge &&
-                                              billingDeliveryCharge.length >
-                                                0 &&
-                                              billingDeliveryCharge.map(
-                                                (item) => {
-                                                  return (
-                                                    <ReversedRadioButton
-                                                      rootColor={
-                                                        'rgba(0, 102, 51, 0.35)'
-                                                      }
-                                                      pointColor={'#006633'}
-                                                      value={item['name']}
-                                                      padding={10}
-                                                    >
-                                                      <div
-                                                        style={{
-                                                          ...(windowWidth <
-                                                            380 && {
-                                                            width: '100%',
-                                                            height: '30px',
-                                                          }),
-                                                          ...(windowWidth >
-                                                            380 && {
-                                                            height: '20px',
-                                                          }),
-                                                        }}
-                                                      >
-                                                        <h2>{item['name']}</h2>
-                                                      </div>
-                                                    </ReversedRadioButton>
-                                                  );
-                                                }
-                                              )}
-                                        </RadioGroup>
-                                      </div>
-
-                                      {selectedRegion &&
-                                        Object.keys(selectedRegion).length >
-                                          0 && (
-                                          <>
-                                            {selectedRegion[
-                                              'pickUpLocation'
-                                            ] && (
-                                              <div
-                                                className='deliveryProps'
-                                                style={{
-                                                  marginTop: '15px',
-                                                }}
-                                              >
-                                                <h3>Pick Up Location : </h3>
-                                                <span>
-                                                  {
-                                                    selectedRegion[
-                                                      'pickUpLocation'
-                                                    ]
-                                                  }
-                                                </span>
-                                              </div>
-                                            )}
-
-                                            {selectedRegion[
-                                              'pickUpLocation'
-                                            ] && (
-                                              <div className='deliveryProps'>
-                                                <h3>Time : </h3>
-                                                <span>
-                                                  {selectedRegion['time']}
-                                                </span>
-                                              </div>
-                                            )}
-
-                                            {selectedRegion[
-                                              'pickUpLocation'
-                                            ] && (
-                                              <div className='deliveryProps'>
-                                                <h3>Delivery Charge : </h3>
-                                                <span>
-                                                  ৳
-                                                  {getDeliveryChargeTotal(
-                                                    selectedRegion,
-                                                    totalPrice
-                                                  ) || 0}
-                                                </span>
-                                              </div>
-                                            )}
-                                          </>
-                                        )}
+                                      <span>Delivery Details</span>
                                     </div>
-                                  ) : (
-                                    ''
-                                  )}
+
+                                    {isUseAccountBillingAddresss && (
+                                      <CheckoutForm
+                                        isSubmitting={isSubmitting}
+                                        setFieldTouched={setFieldTouched}
+                                        values={values}
+                                        handleChange={handleChange}
+                                        touched={touched}
+                                        errors={errors}
+                                        serverErrors={serverErrors}
+                                        isAuthenticated={
+                                          session.isAuthenticated
+                                        }
+                                        handleSelectCountryChange={
+                                          handleSelectCountryChange
+                                        }
+                                        selectedCountryValue={
+                                          selectedCountryValue
+                                        }
+                                        countryList={countryList}
+                                        cityList={cityList}
+                                        handleSelectCityChange={
+                                          handleSelectCityChange
+                                        }
+                                        selectedCityValue={selectedCityValue}
+                                        isUseAccountBillingAddresss={
+                                          isUseAccountBillingAddresss
+                                        }
+                                      />
+                                    )}
+                                    {isDeliveryChargeExists(
+                                      isShipToDifferentAddress
+                                        ? shippingDeliveryCharge &&
+                                            shippingDeliveryCharge.length > 0 &&
+                                            shippingDeliveryCharge
+                                        : billingDeliveryCharge &&
+                                            billingDeliveryCharge.length > 0 &&
+                                            billingDeliveryCharge
+                                    ) ? (
+                                      <>
+                                        <div
+                                          className='block-title authTitle sm'
+                                          style={{
+                                            margin: '20px 0',
+                                          }}
+                                        >
+                                          <span>Region List</span>
+                                        </div>
+
+                                        <div className='paymentMethods'>
+                                          <RadioGroup
+                                            onChange={onDeviliveryRegionChange}
+                                            value={deliveryRegionName}
+                                            horizontal={
+                                              windowWidth > 380 ? true : false
+                                            }
+                                          >
+                                            {isShipToDifferentAddress
+                                              ? shippingDeliveryCharge &&
+                                                shippingDeliveryCharge.length >
+                                                  0 &&
+                                                shippingDeliveryCharge.map(
+                                                  (item) => {
+                                                    return (
+                                                      <ReversedRadioButton
+                                                        rootColor={
+                                                          'rgba(0, 102, 51, 0.35)'
+                                                        }
+                                                        pointColor={'#006633'}
+                                                        value={item['name']}
+                                                        padding={10}
+                                                      >
+                                                        <div
+                                                          style={{
+                                                            ...(windowWidth <
+                                                              380 && {
+                                                              width: '100%',
+                                                              height: '30px',
+                                                            }),
+                                                            ...(windowWidth >
+                                                              380 && {
+                                                              width: '20%',
+                                                              height: '20px',
+                                                            }),
+                                                          }}
+                                                        >
+                                                          <h2>
+                                                            {item['name']}
+                                                          </h2>
+                                                        </div>
+                                                      </ReversedRadioButton>
+                                                    );
+                                                  }
+                                                )
+                                              : billingDeliveryCharge &&
+                                                billingDeliveryCharge.length >
+                                                  0 &&
+                                                billingDeliveryCharge.map(
+                                                  (item) => {
+                                                    return (
+                                                      <ReversedRadioButton
+                                                        rootColor={
+                                                          'rgba(0, 102, 51, 0.35)'
+                                                        }
+                                                        pointColor={'#006633'}
+                                                        value={item['name']}
+                                                        padding={10}
+                                                      >
+                                                        <div
+                                                          style={{
+                                                            ...(windowWidth <
+                                                              380 && {
+                                                              width: '100%',
+                                                              height: '30px',
+                                                            }),
+                                                            ...(windowWidth >
+                                                              380 && {
+                                                              height: '20px',
+                                                            }),
+                                                          }}
+                                                        >
+                                                          <h2>
+                                                            {item['name']}
+                                                          </h2>
+                                                        </div>
+                                                      </ReversedRadioButton>
+                                                    );
+                                                  }
+                                                )}
+                                          </RadioGroup>
+                                        </div>
+
+                                        {selectedRegion &&
+                                          Object.keys(selectedRegion).length >
+                                            0 && (
+                                            <>
+                                              {selectedRegion[
+                                                'pickUpLocation'
+                                              ] && (
+                                                <div
+                                                  className='deliveryProps'
+                                                  style={{
+                                                    marginTop: '15px',
+                                                  }}
+                                                >
+                                                  <h3>Pick Up Location : </h3>
+                                                  <span>
+                                                    {
+                                                      selectedRegion[
+                                                        'pickUpLocation'
+                                                      ]
+                                                    }
+                                                  </span>
+                                                </div>
+                                              )}
+
+                                              {selectedRegion[
+                                                'pickUpLocation'
+                                              ] && (
+                                                <div className='deliveryProps'>
+                                                  <h3>Time : </h3>
+                                                  <span>
+                                                    {selectedRegion['time']}
+                                                  </span>
+                                                </div>
+                                              )}
+
+                                              {selectedRegion[
+                                                'pickUpLocation'
+                                              ] && (
+                                                <div className='deliveryProps'>
+                                                  <h3>Delivery Charge : </h3>
+                                                  <span>
+                                                    ৳
+                                                    {getDeliveryChargeTotal(
+                                                      selectedRegion,
+                                                      totalPrice
+                                                    ) || 0}
+                                                  </span>
+                                                </div>
+                                              )}
+                                            </>
+                                          )}
+                                      </>
+                                    ) : (
+                                      <div className='order-summary-price'>
+                                        <h3>
+                                          Delivery is not available in your area
+                                        </h3>
+                                      </div>
+                                    )}
+                                  </div>
 
                                   {deliveryChargeState.isLoading && <Spinner />}
                                 </div>
