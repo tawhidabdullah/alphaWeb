@@ -15,7 +15,7 @@ import { Spinner } from '../../components/Loading';
 import { AuthButton } from '../../components/Button';
 import Checkbox from '../../components/Checkbox';
 import { cacheOperations } from '../../state/ducks/cache';
-import { checkIfItemExistsInCache } from '../../utils';
+import { checkIfItemExistsInCache, getDeliveryChargeTotal } from '../../utils';
 import { cartOperations } from '../../state/ducks/cart';
 import PaymentForm from './PaymentForm';
 
@@ -274,13 +274,17 @@ const Checkout = ({
   );
 
   const [cityListState, handleCityListFetch] = useHandleFetch([], 'cityList');
+
   const [deliveryChargeState, handleDeliveryChargeFetch] = useHandleFetch(
     [],
     'getDeliveryCharge'
   );
 
-  const [billingDeliveryCharge, setBillingDeliveryCharge] = useState({});
-  const [shippingDeliveryCharge, setShippingDeliveryCharge] = useState({});
+  const [billingDeliveryCharge, setBillingDeliveryCharge] = useState([]);
+  const [shippingDeliveryCharge, setShippingDeliveryCharge] = useState([]);
+
+  const [deliveryRegionName, setDeliveryRegionName] = useState('');
+  const [selectedRegion, setSelectedRegion] = useState({});
 
   const [countryList, setCountryList] = useState([]);
   const [cityList, setCityList] = useState([]);
@@ -426,8 +430,7 @@ const Checkout = ({
         const billingDeliveryCharge = await handleDeliveryChargeFetch({
           urlOptions: {
             placeHolders: {
-              country: selectedCountryValue.value,
-              city: selectedCityValue.value,
+              cityName: selectedCityValue.value,
             },
           },
         });
@@ -459,8 +462,7 @@ const Checkout = ({
         const shippingDeliveryCharge = await handleDeliveryChargeFetch({
           urlOptions: {
             placeHolders: {
-              country: selectedShippingCountryValue.value,
-              city: selectedShippingCityValue.value,
+              cityName: selectedShippingCityValue.value,
             },
           },
         });
@@ -523,9 +525,68 @@ const Checkout = ({
     }
   };
 
+  const isDeliveryChargeExists = (regions) => {
+    console.log('isDelivery1', regions);
+    console.log('isDelivery2', billingDeliveryCharge);
+    if (!regions) {
+      return false;
+    } else return true;
+  };
+
   const onRadioGroupChange = (value) => {
     setPaymentMethod(value);
   };
+
+  const onDeviliveryRegionChange = (value) => {
+    setDeliveryRegionName(value);
+    if (
+      isDeliveryChargeExists(
+        isShipToDifferentAddress
+          ? shippingDeliveryCharge &&
+              shippingDeliveryCharge.length > 0 &&
+              shippingDeliveryCharge
+          : billingDeliveryCharge &&
+              billingDeliveryCharge.length > 0 &&
+              billingDeliveryCharge
+      )
+    ) {
+      const deliveryRegions = isShipToDifferentAddress
+        ? shippingDeliveryCharge
+        : billingDeliveryCharge;
+
+      const selectedRegion = deliveryRegions.find(
+        (region) => region['name'] === value
+      );
+      if (selectedRegion) {
+        setSelectedRegion(selectedRegion);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (
+      isDeliveryChargeExists(
+        isShipToDifferentAddress
+          ? shippingDeliveryCharge &&
+              shippingDeliveryCharge.length > 0 &&
+              shippingDeliveryCharge
+          : billingDeliveryCharge &&
+              billingDeliveryCharge.length > 0 &&
+              billingDeliveryCharge
+      )
+    ) {
+      const deliveryRegions = isShipToDifferentAddress
+        ? shippingDeliveryCharge
+        : billingDeliveryCharge;
+
+      const selectedRegion = deliveryRegions.find(
+        (region, index) => 0 === index
+      );
+      if (selectedRegion) {
+        setSelectedRegion(selectedRegion);
+      }
+    }
+  }, [shippingDeliveryCharge, billingDeliveryCharge]);
 
   const handleCheckout = async (values, actions) => {
     if (values) {
@@ -712,17 +773,14 @@ const Checkout = ({
 
   const getTotalPrice = (total, charge) => {
     if (charge) {
-      return parseInt(total) + charge;
+      return parseInt(total) + parseInt(charge);
     } else {
       return total;
     }
   };
 
-  const isDeliveryChargeExists = (charge) => {
-    if (charge) {
-      return true;
-    } else return false;
-  };
+  console.log('selectedRegion', selectedRegion);
+  console.log('billingcharge', billingDeliveryCharge);
 
   return (
     <>
@@ -749,8 +807,8 @@ const Checkout = ({
               <div className='checkout'>
                 <div className='container'>
                   <div className='row'>
-                    <div className='col-md-7 createOrderContainer'>
-                      <div>
+                    <div className='col-md-12 '>
+                      <div className='createOrderContainer'>
                         <div>
                           {!session.isAuthenticated ? (
                             <div
@@ -1009,61 +1067,15 @@ const Checkout = ({
                             />
                           </div>
 
-                          {isDeliveryChargeExists(
-                            isShipToDifferentAddress
-                              ? shippingDeliveryCharge['charge'] &&
-                                  shippingDeliveryCharge['charge']
-                              : billingDeliveryCharge['charge'] &&
-                                  billingDeliveryCharge['charge']
-                          ) ? (
-                            ''
-                          ) : (
-                            <div className='alertText'>
-                              <i className='fa fa-exclamation-circle'></i>
-                              <h3>Delivery is not available in your area</h3>
-                            </div>
-                          )}
-                          <div
-                            style={{
-                              width: '100px',
-                            }}
-                          >
-                            <AuthButton
-                              onclick={handleSubmit}
-                              disabled={
-                                !isValid ||
-                                !isDeliveryChargeExists(
-                                  isShipToDifferentAddress
-                                    ? shippingDeliveryCharge['charge'] &&
-                                        shippingDeliveryCharge['charge']
-                                    : billingDeliveryCharge['charge'] &&
-                                        billingDeliveryCharge['charge']
-                                )
-                              }
-                            >
-                              {isSubmitting ? 'Checkout...' : 'Checkout'}
-                            </AuthButton>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className='col-md-5 order-md-1'>
-                      <div className='row'>
-                        <div className='col-md-12 '>
-                          <div className='order-summary'>
-                            <h2
+                          <div className='orderOverview'>
+                            <div
+                              className='block-title authTitle'
                               style={{
-                                fontSize: '20px',
-                                color: '#444',
-                                paddingBottom: '15px',
-                                paddingTop: '5px',
-                                fontWeight: 400,
-                                marginBottom: '10px',
-                                borderBottom: '1px solid #ddd',
+                                marginBottom: '40px',
                               }}
                             >
-                              Order Summary
-                            </h2>
+                              <span>Order Overview</span>
+                            </div>
 
                             {cartItems.length > 0 ? (
                               <>
@@ -1075,12 +1087,18 @@ const Checkout = ({
                                         <SmallItem
                                           productItem={product}
                                           isOrder={true}
+                                          history={history}
                                         />
                                       );
                                     })}
                                 </div>
                                 <div className='order-price'>
-                                  <div className='order-summary-price'>
+                                  <div
+                                    className='order-summary-price'
+                                    style={{
+                                      paddingBottom: '10px',
+                                    }}
+                                  >
                                     <h3>{cartItems.length} items in Cart</h3>
                                     <span
                                       style={{
@@ -1093,60 +1111,179 @@ const Checkout = ({
 
                                   {isDeliveryChargeExists(
                                     isShipToDifferentAddress
-                                      ? shippingDeliveryCharge['charge'] &&
-                                          shippingDeliveryCharge['charge']
-                                      : billingDeliveryCharge['charge'] &&
-                                          billingDeliveryCharge['charge']
+                                      ? shippingDeliveryCharge &&
+                                          shippingDeliveryCharge.length > 0 &&
+                                          shippingDeliveryCharge
+                                      : billingDeliveryCharge &&
+                                          billingDeliveryCharge.length > 0 &&
+                                          billingDeliveryCharge
                                   ) ? (
-                                    <div className='order-summary-price'>
-                                      <h3>Delivery Charge</h3>
-                                      <span
+                                    <div
+                                      style={{
+                                        borderTop: '1px solid #eee',
+                                        padding: '0 10px',
+                                        paddingTop: '20px',
+                                      }}
+                                    >
+                                      <h2
                                         style={{
                                           fontWeight: 500,
+                                          fontSize: '16px',
+                                          marginBottom: '15px',
+                                          marginTop: '10px',
                                         }}
                                       >
-                                        ৳
-                                        {isShipToDifferentAddress
-                                          ? shippingDeliveryCharge['charge'] &&
-                                            shippingDeliveryCharge['charge']
-                                          : billingDeliveryCharge['charge'] &&
-                                            billingDeliveryCharge['charge']}
-                                      </span>
+                                        Region List
+                                      </h2>
+                                      <div className='paymentMethods'>
+                                        <RadioGroup
+                                          onChange={onDeviliveryRegionChange}
+                                          value={deliveryRegionName}
+                                          horizontal={
+                                            windowWidth > 380 ? true : false
+                                          }
+                                        >
+                                          {isShipToDifferentAddress
+                                            ? shippingDeliveryCharge &&
+                                              shippingDeliveryCharge.length >
+                                                0 &&
+                                              shippingDeliveryCharge.map(
+                                                (item) => {
+                                                  return (
+                                                    <ReversedRadioButton
+                                                      rootColor={
+                                                        'rgba(0, 102, 51, 0.35)'
+                                                      }
+                                                      pointColor={'#006633'}
+                                                      value={item['name']}
+                                                      padding={10}
+                                                    >
+                                                      <div
+                                                        style={{
+                                                          ...(windowWidth <
+                                                            380 && {
+                                                            width: '100%',
+                                                            height: '30px',
+                                                          }),
+                                                          ...(windowWidth >
+                                                            380 && {
+                                                            width: '20%',
+                                                            height: '20px',
+                                                          }),
+                                                        }}
+                                                      >
+                                                        <h2>{item['name']}</h2>
+                                                      </div>
+                                                    </ReversedRadioButton>
+                                                  );
+                                                }
+                                              )
+                                            : billingDeliveryCharge &&
+                                              billingDeliveryCharge.length >
+                                                0 &&
+                                              billingDeliveryCharge.map(
+                                                (item) => {
+                                                  return (
+                                                    <ReversedRadioButton
+                                                      rootColor={
+                                                        'rgba(0, 102, 51, 0.35)'
+                                                      }
+                                                      pointColor={'#006633'}
+                                                      value={item['name']}
+                                                      padding={10}
+                                                    >
+                                                      <div
+                                                        style={{
+                                                          ...(windowWidth <
+                                                            380 && {
+                                                            width: '100%',
+                                                            height: '30px',
+                                                          }),
+                                                          ...(windowWidth >
+                                                            380 && {
+                                                            height: '20px',
+                                                          }),
+                                                        }}
+                                                      >
+                                                        <h2>{item['name']}</h2>
+                                                      </div>
+                                                    </ReversedRadioButton>
+                                                  );
+                                                }
+                                              )}
+                                        </RadioGroup>
+                                      </div>
+
+                                      {selectedRegion &&
+                                        Object.keys(selectedRegion).length >
+                                          0 && (
+                                          <>
+                                            {selectedRegion[
+                                              'pickUpLocation'
+                                            ] && (
+                                              <div
+                                                className='deliveryProps'
+                                                style={{
+                                                  marginTop: '15px',
+                                                }}
+                                              >
+                                                <h3>Pick Up Location : </h3>
+                                                <span>
+                                                  {
+                                                    selectedRegion[
+                                                      'pickUpLocation'
+                                                    ]
+                                                  }
+                                                </span>
+                                              </div>
+                                            )}
+
+                                            {selectedRegion[
+                                              'pickUpLocation'
+                                            ] && (
+                                              <div className='deliveryProps'>
+                                                <h3>Time : </h3>
+                                                <span>
+                                                  {selectedRegion['time']}
+                                                </span>
+                                              </div>
+                                            )}
+
+                                            {selectedRegion[
+                                              'pickUpLocation'
+                                            ] && (
+                                              <div className='deliveryProps'>
+                                                <h3>Delivery Charge : </h3>
+                                                <span>
+                                                  ৳
+                                                  {getDeliveryChargeTotal(
+                                                    selectedRegion,
+                                                    totalPrice
+                                                  ) || 0}
+                                                </span>
+                                              </div>
+                                            )}
+                                          </>
+                                        )}
                                     </div>
                                   ) : (
-                                    <div className='order-summary-price'>
-                                      <h3>
-                                        Delivery is not available in your area
-                                      </h3>
-                                    </div>
+                                    ''
                                   )}
                                 </div>
-                                <div className='order-summary-price'>
-                                  <h3
-                                    style={{
-                                      fontWeight: 700,
-                                    }}
-                                  >
-                                    Total
-                                  </h3>
-                                  <span
-                                    style={{
-                                      fontWeight: 700,
-                                    }}
-                                  >
+                                <div className='deliveryProps'>
+                                  <h3>Total : </h3>
+                                  <span>
                                     ৳
-                                    {getTotalPrice(
-                                      totalPrice,
-                                      isShipToDifferentAddress
-                                        ? shippingDeliveryCharge['charge'] &&
-                                            parseInt(
-                                              shippingDeliveryCharge['charge']
-                                            )
-                                        : billingDeliveryCharge['charge'] &&
-                                            parseInt(
-                                              billingDeliveryCharge['charge']
-                                            )
-                                    )}
+                                    {selectedRegion &&
+                                    Object.keys(selectedRegion).length > 0
+                                      ? getTotalPrice(
+                                          totalPrice,
+                                          getDeliveryChargeTotal(
+                                            selectedRegion,
+                                            totalPrice
+                                          ) || 0
+                                        )
+                                      : totalPrice}
                                   </span>
                                 </div>
                               </>
@@ -1180,6 +1317,47 @@ const Checkout = ({
                                 </button>
                               </div>
                             )}
+                          </div>
+
+                          {isDeliveryChargeExists(
+                            isShipToDifferentAddress
+                              ? shippingDeliveryCharge &&
+                                  shippingDeliveryCharge.length > 0 &&
+                                  shippingDeliveryCharge
+                              : billingDeliveryCharge &&
+                                  billingDeliveryCharge.length > 0 &&
+                                  billingDeliveryCharge
+                          ) ? (
+                            ''
+                          ) : (
+                            <div className='alertText'>
+                              <i className='fa fa-exclamation-circle'></i>
+                              <h3>Delivery is not available in your area</h3>
+                            </div>
+                          )}
+                          <div
+                            style={{
+                              width: '200px',
+                              marginTop: '15px',
+                            }}
+                          >
+                            <AuthButton
+                              onclick={handleSubmit}
+                              disabled={
+                                !isValid ||
+                                !isDeliveryChargeExists(
+                                  isShipToDifferentAddress
+                                    ? shippingDeliveryCharge &&
+                                        shippingDeliveryCharge.length > 0 &&
+                                        shippingDeliveryCharge
+                                    : billingDeliveryCharge &&
+                                        billingDeliveryCharge.length > 0 &&
+                                        billingDeliveryCharge
+                                )
+                              }
+                            >
+                              {isSubmitting ? 'Ordering...' : 'Place Order'}
+                            </AuthButton>
                           </div>
                         </div>
                       </div>

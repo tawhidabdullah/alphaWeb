@@ -11,6 +11,19 @@
   background-color: #fff;
   border-radius: 5px;
   padding: 0 10px 10px 10px;
+  margin: 0 200px;
+}
+
+@media screen and (max-width: 1200px) {
+  .createOrderContainer {
+    margin: 0 0;
+  }
+}
+
+@media screen and (max-width: 985px) {
+  .createOrderContainer {
+    margin: 0 0;
+  }
 }
 
 .checkout .shipping-heading {
@@ -95,7 +108,20 @@
   }
 }
 
-.paymentMethods {
-  // display: flex;
-  // flex-wrap: wrap;
+.paymentMethods div div {
+  max-width: 150px !important;
+}
+
+.deliveryProps {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px;
+
+  h3 {
+    margin-right: 10px;
+    color: #666;
+  }
+  span {
+    font-weight: 700;
+  }
 }

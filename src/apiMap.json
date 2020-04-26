@@ -95,7 +95,7 @@
       "method": "get"
     },
     "getDeliveryCharge": {
-      "url": "/api/delivery/:country/:city",
+      "url": "/api/delivery/city/:cityName",
       "method": "get"
     },
     "signup": {
@@ -144,6 +144,22 @@
     },
     "clearCart": {
       "url": "/api/cart/update/clear",
+      "method": "get"
+    },
+    "getWishlist": {
+      "url": "/customer/api/wishlist",
+      "method": "get"
+    },
+    "addWishlist": {
+      "url": "/customer/api/wishlist/add",
+      "method": "post"
+    },
+    "removeFromWishlist": {
+      "url": "/customer/api/wishlist/update/remove/:id",
+      "method": "get"
+    },
+    "removeAllWishlist": {
+      "url": "/customer/api/wishlist/update/remove/all",
       "method": "get"
     },
     "logout": {
