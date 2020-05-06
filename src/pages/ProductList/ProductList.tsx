@@ -82,6 +82,7 @@ const ProductList = ({
   ] = useState(1);
   const [pageNumberOfTagProduct, setPageNumberOfTagProduct] = useState(1);
   const [pageNumberOfBrandProduct, setPageNumberOfBrandProduct] = useState(1);
+  const [activeSubCategoryId, setActiveSubCategoryId] = useState('');
 
   const id = match.params.id;
 
@@ -197,6 +198,7 @@ const ProductList = ({
           params: {
             limitNumber: 15,
             pageNumber: pageNumber ? pageNumber : pageNumberOfCategoryProduct,
+            isRecursive: true,
           },
         },
       });
@@ -383,12 +385,6 @@ const ProductList = ({
       });
     }
 
-    const categoryItem = {
-      name: 'All Categories',
-      id: 'all',
-      [`isall`]: id ? false : true,
-    };
-
     const tempCategories =
       (categories.length > 0 &&
         categories.map((cat: object) => {
@@ -399,7 +395,16 @@ const ProductList = ({
         })) ||
       [];
 
-    return [categoryItem, ...tempCategories];
+    if (tempCategories && tempCategories.length > 0) {
+      const categoryItem = {
+        name: 'All Categories',
+        id: 'all',
+        [`isall`]: id ? false : true,
+      };
+
+      return [categoryItem, ...tempCategories];
+    }
+    return [...tempCategories];
   };
 
   const getTags = async () => {
@@ -411,12 +416,6 @@ const ProductList = ({
       tags = await handleTagListFetch({});
     }
 
-    const tagItem = {
-      name: 'All Tags',
-      id: 'all',
-      [`isall`]: id ? false : true,
-    };
-
     const tempTags =
       (tags.length > 0 &&
         tags.map((tagItem: object) => {
@@ -427,7 +426,15 @@ const ProductList = ({
         })) ||
       [];
 
-    return [tagItem, ...tempTags];
+    if (tempTags && tempTags.length > 0) {
+      const tagItem = {
+        name: 'All Tags',
+        id: 'all',
+        [`isall`]: id ? false : true,
+      };
+      return [tagItem, ...tempTags];
+    }
+    return [...tempTags];
   };
 
   const getBrands = async () => {
@@ -443,12 +450,6 @@ const ProductList = ({
       }
     }
 
-    const brandItem = {
-      name: 'All Brands',
-      id: 'all',
-      [`isall`]: id ? false : true,
-    };
-
     const tempBrands =
       (brands.length > 0 &&
         brands.map((brandItem: object) => {
@@ -459,7 +460,15 @@ const ProductList = ({
         })) ||
       [];
 
-    return [brandItem, ...tempBrands];
+    if (tempBrands && tempBrands.length > 0) {
+      const brandItem = {
+        name: 'All Brands',
+        id: 'all',
+        [`isall`]: id ? false : true,
+      };
+      return [brandItem, ...tempBrands];
+    }
+    return [...tempBrands];
   };
 
   React.useEffect(() => {
@@ -467,7 +476,7 @@ const ProductList = ({
       setIsLoading(true);
       let cat = [];
 
-      if (!(categories && categories.length > 0)) {
+      if (!(categoryListState.done)) {
         // fetch and set the categories is they haven't been seted yet
         // @ts-ignore
         cat = await getCategories();
@@ -475,7 +484,7 @@ const ProductList = ({
       }
 
       let t = [];
-      if (!(tags && tags.length > 0)) {
+      if (!(tagListState.done)) {
         // fetch and set the tags is they haven't been seted yet
 
         // @ts-ignore
@@ -484,7 +493,7 @@ const ProductList = ({
       }
 
       let b = [];
-      if (!(brands && brands.length > 0)) {
+      if (!(brandListState.done)) {
         // fetch and set the brands is they haven't been seted yet
 
         // @ts-ignore
@@ -512,11 +521,25 @@ const ProductList = ({
                 cat[`is${cat['id']}`] = true;
                 // @ts-ignore
 
-                if (cat['subCategory'] && cat['subCategory'].length > 0) {
+                if (cat['subCategory']) {
                   subCategories = cat['subCategory'];
                 }
                 // @ts-ignore
               } else cat[`is${cat['id']}`] = false;
+
+              // @ts-ignore
+              if (cat['id'] !== categoryId) {
+                const newSubCat = cat['subCategory'] || [];
+                newSubCat['length'] > 0 &&
+                  // @ts-ignore
+                  newSubCat.forEach((item) => {
+                    if (categoryId === item['id']) {
+                      setActiveSubCategoryId(categoryId);
+                      // @ts-ignore
+                      cat[`is${cat['id']}`] = true;
+                    }
+                  });
+              }
             });
 
             setCategories(newCategories);
@@ -644,6 +667,7 @@ const ProductList = ({
       }
       setUiSelectItemDeactive('tag');
       setUiSelectItemDeactive('brand');
+      setActiveSubCategoryId('');
     } else if (type === 'tag') {
       if (tags.length > 0) {
         const tagId = id;
@@ -661,6 +685,7 @@ const ProductList = ({
       setSubcategories([]);
       setUiSelectItemDeactive('category');
       setUiSelectItemDeactive('brand');
+      setActiveSubCategoryId('');
     } else if (type === 'brand') {
       if (brands.length > 0) {
         const brandId = id;
@@ -679,17 +704,34 @@ const ProductList = ({
       setSubcategories([]);
       setUiSelectItemDeactive('category');
       setUiSelectItemDeactive('tag');
+      setActiveSubCategoryId('');
     }
   };
 
   const handleUiSelectSubCategory = (subCatId: string) => {
-    setSubcategories([]);
+    let newSubCategories = subcategories.length > 0 ? subcategories : false;
+    if (newSubCategories) {
+      let activeSubId = '';
+      subcategories.forEach((item: any) => {
+        if (item['id'] === subCatId) {
+          activeSubId = subCatId;
+        }
+      });
+
+      setActiveSubCategoryId(activeSubId);
+      setUiSelectItemDeactive('tag');
+      setUiSelectItemDeactive('brand');
+    } else {
+      setSubcategories([]);
+    }
 
     setPageNumberOfCategoryProduct(1);
     setIsNext(true);
   };
 
   const handleSelectCategory = (categoryId) => {
+    setActiveSubCategoryId('');
+
     history.push({
       pathname: `/productList/${categoryId}`,
       state: { isCategory: true },
@@ -697,7 +739,6 @@ const ProductList = ({
 
     setPageNumberOfCategoryProduct(1);
     setIsNext(true);
-
     setUiSelectItemActive('category', categoryId);
   };
 
@@ -742,13 +783,14 @@ const ProductList = ({
     <>
       <div className='Bcak-bg'>
         <div
-          className={`${windowWidth < 1000 ? 'container-fluid' : 'container'}`}
+          className={'container-fluid'}
           style={{
             paddingTop: `${windowWidth < 1000 ? '15px' : '0'}`,
           }}
         >
           <div className='row'>
             <SideFilterBar
+              subcategories={subcategories}
               handleSelectCategory={handleSelectCategory}
               categories={categories}
               handleSelectTag={handleSelectTag}
@@ -757,6 +799,14 @@ const ProductList = ({
               brands={brands}
               windowWidth={windowWidth}
               history={history}
+              activeSubCategoryId={activeSubCategoryId}
+              handleUiSelectSubCategory={handleUiSelectSubCategory}
+              setActiveSubCategoryId={setActiveSubCategoryId}
+              setPageNumberOfCategoryProduct={setPageNumberOfCategoryProduct}
+              setUiSelectItemActive={setUiSelectItemActive}
+              setIsNext={setIsNext}
+              setPageNumberOfTagProduct={setPageNumberOfTagProduct}
+              setPageNumberOfBrandProduct={setPageNumberOfBrandProduct}
             />
             <div className='col-sm-8 col-md-9'>
               <div
@@ -768,6 +818,7 @@ const ProductList = ({
               >
                 {!isLoading &&
                   subcategories.length > 0 &&
+                  !activeSubCategoryId &&
                   subcategories.map((subCat) => {
                     return (
                       <Fragment key={subCat['id']}>

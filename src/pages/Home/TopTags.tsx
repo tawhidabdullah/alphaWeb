@@ -32,7 +32,9 @@ const TopTags = ({ history, tag, addTag }: Props) => {
 
   return (
     <div className='top-tags'>
-      <h5 className='top-tags-desc'>Top Tags:</h5>
+
+
+      {tags.length > 0 && <h5 className='top-tags-desc'>Top Tags:</h5>}
 
       <div className='tags'>
         {tags.length > 0 &&

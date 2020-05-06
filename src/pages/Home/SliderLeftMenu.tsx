@@ -11,21 +11,21 @@ const SliderLefMenu = ({ history, category }: Props) => {
     <div className='col-md-2 col-sm-12 image-slider-section-carousel'>
       <ul className='sliderLeft'>
         {category.length > 0
-          ? category.slice(0, 7).map((categoryItem) => {
-              return (
-                <li
-                  key={categoryItem.id}
-                  onClick={() => {
-                    history.push({
-                      pathname: `/productList/${categoryItem.id}`,
-                      state: { isCategory: true },
-                    });
-                  }}
-                >
-                  <a href='##'>{categoryItem.name}</a>
-                </li>
-              );
-            })
+          ? category.slice(0, 6).map((categoryItem) => {
+            return (
+              <li
+                key={categoryItem.id}
+                onClick={() => {
+                  history.push({
+                    pathname: `/productList/${categoryItem.id}`,
+                    state: { isCategory: true },
+                  });
+                }}
+              >
+                <a href='##'>{categoryItem.name}</a>
+              </li>
+            );
+          })
           : ''}
       </ul>
     </div>

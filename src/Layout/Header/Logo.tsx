@@ -35,17 +35,15 @@ const Logo = ({ addItemToCache, cache }: Props) => {
     }
   }, []);
 
-  console.log('logofuck', logo);
-
   return (
     <div className='navbar-center-logoBox'>
       {Object.keys(logo).length > 0 ? (
         <>
           {logo['target'] ? (
             urlToString(logo['target']).includes(
-              urlToString(config.baseURL)
+              urlToString(config.baseURL2)
             ) ? (
-              <Link to={logo['target'].replace(config.baseURL, '')}>
+              <Link to={logo['target'].replace(config.baseURL2, '')}>
                 <img
                   style={{
                     width: '100%',

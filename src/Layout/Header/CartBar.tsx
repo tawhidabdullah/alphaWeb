@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { cartOperations, cartSelectors } from '../../state/ducks/cart';
-import { wishListOperations } from '../../state/ducks/wishList';
 import { numberWithCommas } from '../../utils';
 import CartOverLayCartItem from './CartOverLayCartItem';
 import { useHandleFetch } from '../../hooks';
@@ -18,8 +17,6 @@ interface Props {
   totalPrice?: number;
   changeQuantity?: (object, number) => void;
   addProductsToCart?: (any) => void;
-  addWishlist: (any) => void;
-  wishList: any;
 }
 
 const CartBar = ({
@@ -33,14 +30,8 @@ const CartBar = ({
   removeFromCart,
   changeQuantity,
   addProductsToCart,
-  addWishlist,
-  wishList,
 }: Props) => {
   const [getCart, handlegetCartFetch] = useHandleFetch([], 'getCart');
-  const [getWishlistState, handlegetWishlistFetch] = useHandleFetch(
-    [],
-    'getWishlist'
-  );
 
   useEffect(() => {
     const getAndSetToCart = async () => {
@@ -70,18 +61,6 @@ const CartBar = ({
     };
     getAndSetToCart();
   }, [isAuthenticated]);
-
-  useEffect(() => {
-    const getAndSetToWishlist = async () => {
-      const getWishlistRes = await handlegetWishlistFetch({});
-      // @ts-ignore
-      if (getWishlistRes && getWishlistRes.length > 0) {
-        addWishlist && addWishlist(getWishlistRes);
-      }
-    };
-    getAndSetToWishlist();
-  }, [isAuthenticated]);
-
   return (
     <div className={isShowCartBar ? 'show-cart-bar' : ''}>
       <div
@@ -180,14 +159,12 @@ const CartBar = ({
 const mapStateToProps = (state) => ({
   cartItems: state.cart,
   totalPrice: cartSelectors.getTotalPriceOfCartItems(state.cart),
-  wishList: state.wishList,
 });
 
 const mapDispatchToProps = {
   removeFromCart: cartOperations.removeFromCart,
   changeQuantity: cartOperations.changeQuantity,
   addProductsToCart: cartOperations.addProductsToCart,
-  addWishlist: wishListOperations.addWishlist,
 };
 
 // @ts-ignore

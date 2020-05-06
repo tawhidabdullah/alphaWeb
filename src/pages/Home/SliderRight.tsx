@@ -85,48 +85,48 @@ const SliderRight = ({ windowWidth, cache, addItemToCache }: Props) => {
           </div>
         </div>
       ) : (
-        <div
-          className='col-md-3 col-sm-12 image-slider-section-carousel'
-          style={{
-            height: '70vh',
-          }}
-        >
           <div
-            className='row'
+            className='col-md-3 col-sm-12 image-slider-section-carousel'
             style={{
-              height: '100%',
+              height: '50vh',
             }}
           >
-            {sliderRight.length > 0 &&
-              sliderRight.slice(0, 2).map(({ src, target }, index) => {
-                return (
-                  <div
-                    key={index}
-                    className='col-md-12'
-                    style={{
-                      height: '48%',
-                      alignSelf: `${index === 1 ? 'flex-end' : 'flex-start'}`,
-                      borderRadius: '5px',
-                    }}
-                  >
-                    <a href={target}>
-                      <img
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                          borderRadius: '5px',
-                        }}
-                        src={src}
-                        alt='Right Slider'
-                      />
-                    </a>
-                  </div>
-                );
-              })}
+            <div
+              className='row'
+              style={{
+                height: '100%',
+              }}
+            >
+              {sliderRight.length > 0 &&
+                sliderRight.slice(0, 2).map(({ src, target }, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className='col-md-12'
+                      style={{
+                        height: '48%',
+                        alignSelf: `${index === 1 ? 'flex-end' : 'flex-start'}`,
+                        borderRadius: '5px',
+                      }}
+                    >
+                      <a href={target}>
+                        <img
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            borderRadius: '5px',
+                          }}
+                          src={src}
+                          alt='Right Slider'
+                        />
+                      </a>
+                    </div>
+                  );
+                })}
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </>
   );
 };

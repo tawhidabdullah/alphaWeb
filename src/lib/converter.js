@@ -23,17 +23,17 @@ class Converter {
             category.subCategory.length > 0 &&
             category.subCategory[0] &&
             category.subCategory[0]['name'] && {
-              subCategory: category.subCategory.map((subCat) => {
-                return {
-                  id: subCat._id || '',
-                  name: subCat.name && subCat.name,
-                  description: subCat.description && subCat.description,
-                  cover: subCat.cover
-                    ? `${config['baseURL']}${subCat.cover.medium}`
-                    : '',
-                };
-              }),
+            subCategory: category.subCategory.map((subCat) => {
+              return {
+                id: subCat._id || '',
+                name: subCat.name && subCat.name,
+                description: subCat.description && subCat.description,
+                cover: subCat.cover
+                  ? `${config['baseURL']}${subCat.cover.medium}`
+                  : '',
+              };
             }),
+          }),
         };
       });
 
@@ -58,13 +58,13 @@ class Converter {
           name: product.name && product.name,
           description: product.description && product.description,
           cover: `${config['baseURL']}${
-            (product.cover && product.cover['medium']) || ''
-          }`,
+            (product.cover && product.cover['thumbnail']) || ''
+            }`,
           regularPrice: product.price && product.price['regular'],
           offerPrice: product.price && product.price['offer'],
           price:
             parseInt(product.price['offer']) >
-            parseInt(product.price['regular'])
+              parseInt(product.price['regular'])
               ? product.price['offer']
               : product.price['regular'],
           url: product.url,
@@ -257,13 +257,13 @@ class Converter {
           name: product.name && product.name,
           description: product.description && product.description,
           cover: `${config['baseURL']}${
-            (product.cover && product.cover['medium']) || ''
-          }`,
+            (product.cover && product.cover['thumbnail']) || ''
+            }`,
           regularPrice: product.price && product.price['regular'],
           offerPrice: product.price && product.price['offer'],
           price:
             parseInt(product.price['offer']) >
-            parseInt(product.price['regular'])
+              parseInt(product.price['regular'])
               ? product.price['offer']
               : product.price['regular'],
           url: product.url,
@@ -295,13 +295,13 @@ class Converter {
           name: product.name && product.name,
           description: product.description && product.description,
           cover: `${config['baseURL']}${
-            (product.cover && product.cover['medium']) || ''
-          }`,
+            (product.cover && product.cover['thumbnail']) || ''
+            }`,
           regularPrice: product.price && product.price['regular'],
           offerPrice: product.price && product.price['offer'],
           price:
             parseInt(product.price['offer']) >
-            parseInt(product.price['regular'])
+              parseInt(product.price['regular'])
               ? product.price['offer']
               : product.price['regular'],
           url: product.url,
@@ -332,7 +332,7 @@ class Converter {
             id: product._id || '',
             name: product.name && product.name,
             description: product.description && product.description,
-            cover: `${config['baseURL']}${product.cover.medium}`,
+            cover: `${config['baseURL']}${product.cover.thumbnail}`,
             regularPrice: product.price && product.price['regular'],
             offerPrice: product.price && product.price['offer'],
             url: product.url,
@@ -365,8 +365,8 @@ class Converter {
           name: product.name && product.name,
           description: product.description && product.description,
           cover: `${config['baseURL']}${
-            (product.cover && product.cover['medium']) || ''
-          }`,
+            (product.cover && product.cover['thumbnail']) || ''
+            }`,
           regularPrice: product.price && product.price['regular'],
           offerPrice: product.price && product.price['offer'],
           url: product.url,
@@ -479,6 +479,18 @@ class Converter {
 
     return convertedData;
   }
+
+  /**
+   * @public
+   * @method forAnalytics convert api data from API to general format based on config server
+   * @param {Object} data response objectc from alpha
+   * @returns {Object}  converted data
+   */
+  async forAnalytics(resData) {
+    return resData;
+  }
+
+  forAnalytics;
 
   /**
    * @public
@@ -614,18 +626,18 @@ class Converter {
       productCount: data.count || data.productCount,
       subCategory:
         data.subCategory.length > 0 &&
-        data.subCategory[0] &&
-        data.subCategory[0]['name']
+          data.subCategory[0] &&
+          data.subCategory[0]['name']
           ? data.subCategory.map((subCat) => {
-              return {
-                id: subCat._id || '',
-                name: subCat.name && subCat.name,
-                description: subCat.description && subCat.description,
-                cover: subCat.cover
-                  ? `${config['baseURL']}${subCat.cover.medium}`
-                  : '',
-              };
-            })
+            return {
+              id: subCat._id || '',
+              name: subCat.name && subCat.name,
+              description: subCat.description && subCat.description,
+              cover: subCat.cover
+                ? `${config['baseURL']}${subCat.cover.medium}`
+                : '',
+            };
+          })
           : [],
       image:
         (data.image &&
@@ -927,11 +939,11 @@ class Converter {
 
   /**
    * @public
-   * @method Services convert api data from API to general format based on config server
+   * @method Links convert api data from API to general format based on config server
    * @param {Object} data response objectc from wc
    * @returns {Object}  converted data
    */
-  async Services(data) {
+  async Links(data) {
     const servicesItems = data.items;
     if (!servicesItems.length > 0) {
       return servicesItems;

@@ -1,4 +1,5 @@
 {
   "server": "alpha",
-  "baseURL": "https://homebazarshibchar.com"
+  "baseURL": "http://homebazarshibchar.com",
+  "baseURL2": "https://homebazarshibchar.com"
 }
