@@ -16,7 +16,6 @@ const MenuBar = ({ isShowMenuBar, handleToggleMenuBar, category, addCategory, hi
   const navLinksState = useFetch([], [], 'navLinks');
 
 
-  console.log('navLinksState', navLinksState)
   const [categoryListState, handleCategoryListFetch] = useHandleFetch(
     [],
     'categoryList'
@@ -47,7 +46,6 @@ const MenuBar = ({ isShowMenuBar, handleToggleMenuBar, category, addCategory, hi
   }, [category]);
 
 
-  console.log('localCategory', localCategory)
   return (
     <div className={isShowMenuBar ? 'show-menu-bar' : ''}>
       <div
@@ -99,18 +97,20 @@ const MenuBar = ({ isShowMenuBar, handleToggleMenuBar, category, addCategory, hi
               {localCategory.map(cat => {
                 return (
                   <li key={cat['id']}>
-                    <a onClick={() => {
-                      handleToggleMenuBar();
-                      history.push({
-                        pathname: `/productList/${cat['id']}`,
-                        state: { isCategory: true },
-                      });
-                    }}>{cat['name']}</a>
+                    <a
+                      onClick={() => {
+                        handleToggleMenuBar();
+                        history.push({
+                          pathname: `/productList/${cat['id']}`,
+                          state: { isCategory: true },
+                        });
+                      }}>{cat['name']}</a>
 
                     {cat['subCategory'] &&
                       // @ts-ignore
                       cat['subCategory'].length > 0 && cat['subCategory'].map(subCat => {
                         return <a
+                          key={subCat['id']}
                           onClick={() => {
                             handleToggleMenuBar();
 
