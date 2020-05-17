@@ -309,6 +309,12 @@ const Checkout = ({
     'createOrder'
   );
 
+
+  const [paymentState, handlePaymentFetch] = useHandleFetch(
+    [],
+    'payment'
+  );
+
   const getWindowWidth = () => {
     return Math.max(
       document.documentElement.clientWidth,
@@ -331,6 +337,14 @@ const Checkout = ({
 
     return () => window.removeEventListener('resize', onResize);
   }, []);
+
+
+  useLayoutEffect(() => {
+    handlePaymentFetch({});
+
+  }, []);
+
+
 
   useEffect(() => {
     if (
@@ -866,6 +880,19 @@ const Checkout = ({
   };
 
 
+
+
+
+  const renderNumber = (numberType) => {
+    if (paymentState.data && paymentState.data.length > 0) {
+      const numberItem = paymentState.data.find(item => item['name'].toLowerCase() === numberType);
+      if (numberItem) {
+        return numberItem['number']
+      }
+      return ""
+    }
+    return ""
+  }
 
   return (
     <>
@@ -1584,11 +1611,11 @@ const Checkout = ({
                                     <h3>To</h3>
                                     <span>
                                       {paymentMethod === 'bkash' &&
-                                        dictionary.bkashNumber}
+                                        renderNumber('bkash')}
                                       {paymentMethod === 'nagad' &&
-                                        dictionary.nagadNumber}
+                                        renderNumber('nagad')}
                                       {paymentMethod === 'rocket' &&
-                                        dictionary.rocketNumber}
+                                        renderNumber('rocket')}
                                     </span>
                                   </div>
 

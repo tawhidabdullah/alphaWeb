@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { SliderCarousel } from '../../components/Carousel';
 import { useFetch, useHandleFetch } from '../../hooks';
 import { checkIfItemExistsInCache } from '../../utils';
+import ReactPlayer from "react-player"
+
+
 interface Props {
   addItemToCache: (any) => void;
   cache: any;
@@ -35,7 +38,11 @@ const Slider = ({ addItemToCache, cache }: Props) => {
 
   return (
     <div className='col-md-7 col-sm-12 image-slider-section-carousel'>
-      {slider.length > 0 && <SliderCarousel imagesContents={slider} />}
+      <ReactPlayer
+        width='100%'
+        height='100%'
+        url="https://youtu.be/0cbo0f0pZgw?autoplay=1&color=white&controls=0&rel=0"
+      />
     </div>
   );
 };

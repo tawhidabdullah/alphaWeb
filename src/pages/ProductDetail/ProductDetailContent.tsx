@@ -209,7 +209,7 @@ const ProductDetailContent = ({
                 )}
               <h2
                 className={
-                  offerPrice && !parseInt(offerPrice)
+                  regularPrice && !parseInt(offerPrice)
                     ? 'special-price'
                     : 'old-price'
                 }
@@ -217,7 +217,6 @@ const ProductDetailContent = ({
                 ৳{numberWithCommas(regularPrice)}
               </h2>
             </div>
-
             {brand && brand.length > 0 && (
               <div className='attibutes'>
                 {brand && brand.length > 0 && 'Brand :'}

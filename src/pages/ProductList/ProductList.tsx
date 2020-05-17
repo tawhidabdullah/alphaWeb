@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { useHandleFetch } from '../../hooks';
 import { SubCategoryCard } from '../../components/Category';
 import { cacheOperations } from '../../state/ducks/cache';
+import { categoryOperations } from '../../state/ducks/category';
 import { brandOperations } from '../../state/ducks/brand';
 import { checkIfItemExistsInCache } from '../../utils';
 
@@ -21,6 +22,7 @@ interface Props {
   tag: any;
   addBrand: (any) => void;
   brand: any;
+  addCategory: (any) => void;
 }
 
 const ProductList = ({
@@ -33,6 +35,7 @@ const ProductList = ({
   tag,
   addBrand,
   brand,
+  addCategory
 }: Props) => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -372,6 +375,7 @@ const ProductList = ({
   const getCategories = async () => {
     let categories = [];
 
+
     if (category.length > 0) {
       categories = category;
     } else {
@@ -384,6 +388,9 @@ const ProductList = ({
         },
       });
     }
+
+
+    addCategory(categories)
 
     const tempCategories =
       (categories.length > 0 &&
@@ -404,6 +411,7 @@ const ProductList = ({
 
       return [categoryItem, ...tempCategories];
     }
+
     return [...tempCategories];
   };
 
@@ -779,6 +787,7 @@ const ProductList = ({
     }
   };
 
+
   return (
     <>
       <div className='Bcak-bg'>
@@ -849,6 +858,7 @@ const ProductList = ({
 const mapDispatchToProps = {
   addItemToCache: cacheOperations.addItemToCache,
   addBrand: brandOperations.addBrand,
+  addCategory: categoryOperations.addCategory
 };
 
 const mapStateToProps = (state) => ({
