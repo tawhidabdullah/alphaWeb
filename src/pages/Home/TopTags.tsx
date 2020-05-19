@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHandleFetch } from '../../hooks';
+import { useFetch, useHandleFetch } from '../../hooks';
 
 interface Props {
   history: any;

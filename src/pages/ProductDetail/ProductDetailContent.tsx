@@ -308,9 +308,7 @@ const ProductDetailContent = ({
                       className='action-button'
                       onClick={handleOnClickToWishlist}
                       href='##'
-                      style={{
-                        marginLeft: '20px'
-                      }}
+
                     >
                       {!addWishlistState.isLoading &&
                         !removeFromWishlistState.isLoading && (

@@ -85,47 +85,47 @@ const Signin = (props: Props) => {
             setFieldTouched,
             handleReset,
           }) => (
-            <>
-              <TextFeildGroup
-                label='Username'
-                name='username'
-                placeholder='Enter your username'
-                type='text'
-                value={values.username}
-                onChange={(e) => {
-                  handleChange(e);
-                  setFieldTouched('username');
-                }}
-                errors={
-                  (touched.username && errors.username) ||
-                  (!isSubmitting && signinState.error['error']['username'])
-                }
-              />
+              <>
+                <TextFeildGroup
+                  label='Phone or Email'
+                  name='username'
+                  placeholder='phone or email address..'
+                  type='text'
+                  value={values.username}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setFieldTouched('username');
+                  }}
+                  errors={
+                    (touched.username && errors.username) ||
+                    (!isSubmitting && signinState.error['error']['username'])
+                  }
+                />
 
-              <TextFeildGroup
-                label='Password'
-                name='password'
-                placeholder='Enter your password'
-                type='password'
-                value={values.password}
-                onChange={(e) => {
-                  handleChange(e);
-                  setFieldTouched('password');
-                }}
-                errors={
-                  (touched.password && errors.password) ||
-                  (!isSubmitting && signinState.error['error']['password'])
-                }
-              />
+                <TextFeildGroup
+                  label='Password'
+                  name='password'
+                  placeholder='Enter your password'
+                  type='password'
+                  value={values.password}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setFieldTouched('password');
+                  }}
+                  errors={
+                    (touched.password && errors.password) ||
+                    (!isSubmitting && signinState.error['error']['password'])
+                  }
+                />
 
-              <AuthButton
-                onclick={handleSubmit}
-                disabled={!isValid || !values.username || !values.password}
-              >
-                {isSubmitting ? 'Signin...' : 'Signin'}
-              </AuthButton>
-            </>
-          )}
+                <AuthButton
+                  onclick={handleSubmit}
+                  disabled={!isValid || !values.username || !values.password}
+                >
+                  {isSubmitting ? 'Signin...' : 'Signin'}
+                </AuthButton>
+              </>
+            )}
         </Formik>
       </div>
       <p className='lead text-center authtextInfo'>

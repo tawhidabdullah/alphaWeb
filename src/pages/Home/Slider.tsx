@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SliderCarousel } from '../../components/Carousel';
-import { useFetch, useHandleFetch } from '../../hooks';
+import { useHandleFetch } from '../../hooks';
 import { checkIfItemExistsInCache } from '../../utils';
 import ReactPlayer from "react-player"
 
