@@ -1,7 +1,7 @@
 const dictionary = {
-  title: 'Homebazar',
-  signinTitle: 'Signin to Homebazar Sibchar',
-  signupTitle: 'Signup to Homebazar Sibchar',
+  title: 'MyStyle',
+  signinTitle: 'Signin to MyStyle',
+  signupTitle: 'Signup to MyStyle',
   bkashNumber: '01980907868',
   nagadNumber: '01980907868',
   rocketNumber: '01980907868',
