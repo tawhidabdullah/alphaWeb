@@ -245,7 +245,7 @@ const MyAccount = ({ customerDetail, cache, addItemToCache, alert, session }: Pr
         if (session.isAuthenticated && Object.keys(customerData).length > 0) {
           return city.name === customerData['city']
         }
-        else return city.name === 'Mādārīpur'
+        else return city.name === 'Dhaka'
 
       });
 
@@ -282,7 +282,7 @@ const MyAccount = ({ customerDetail, cache, addItemToCache, alert, session }: Pr
             if (session.isAuthenticated && Object.keys(customerData).length > 0) {
               return city.name === customerData['city']
             }
-            else return city.name === 'Mādārīpur'
+            else return city.name === 'Dhaka'
 
           });
 

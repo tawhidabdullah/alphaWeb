@@ -458,7 +458,7 @@ const Checkout = ({
         if (session.isAuthenticated && Object.keys(customerData).length > 0) {
           return city.name === customerData['city']
         }
-        else return city.name === 'Mādārīpur'
+        else return city.name === 'Dhaka'
 
       });
 
@@ -495,7 +495,7 @@ const Checkout = ({
             if (session.isAuthenticated && Object.keys(customerData).length > 0) {
               return city.name === customerData['city']
             }
-            else return city.name === 'Mādārīpur'
+            else return city.name === 'Dhaka'
 
           });
 
@@ -535,7 +535,7 @@ const Checkout = ({
       setShippingCityList(shippingCityList);
       // @ts-ignore
       // @ts-ignore
-      const cityValue = shippingCityList.length > 0 && shippingCityList.find(city => city.name === 'Mādārīpur');
+      const cityValue = shippingCityList.length > 0 && shippingCityList.find(city => city.name === 'Dhaka');
 
       if (cityValue) {
         setSelectedShippingCityValue({
@@ -566,7 +566,7 @@ const Checkout = ({
           setShippingCityList(shippingCityList);
 
           // @ts-ignore
-          const cityValue = shippingCityList.length > 0 && shippingCityList.find(city => city.name === 'Mādārīpur');
+          const cityValue = shippingCityList.length > 0 && shippingCityList.find(city => city.name === 'Dhaka');
 
           if (cityValue) {
             setSelectedShippingCityValue({

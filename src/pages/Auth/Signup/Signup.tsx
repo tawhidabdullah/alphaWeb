@@ -144,7 +144,7 @@ const Signup = ({ addItemToCache, cache, history, alert }: Props) => {
       const cityList = cache[`cityList/${selectedCountryValue.value}`];
       setCityList(cityList);
       // @ts-ignore
-      const cityValue = cityList.length > 0 && cityList.find(city => city.name === 'Mādārīpur');
+      const cityValue = cityList.length > 0 && cityList.find(city => city.name === 'Dhaka');
 
       if (cityValue) {
         setSelectedCityValue({
@@ -174,7 +174,7 @@ const Signup = ({ addItemToCache, cache, history, alert }: Props) => {
           // @ts-ignore
           setCityList(cityList);
           // @ts-ignore
-          const cityValue = cityList.length > 0 && cityList.find(city => city.name === 'Mādārīpur');
+          const cityValue = cityList.length > 0 && cityList.find(city => city.name === 'Dhaka');
 
           if (cityValue) {
             setSelectedCityValue({
