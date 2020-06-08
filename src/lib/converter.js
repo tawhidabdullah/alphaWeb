@@ -505,7 +505,7 @@ class Converter {
       (Object.keys(data).length > 0 && {
         id: data._id || data.id || '',
         name: data.name || '',
-        description: data.description.replace(/<[^>]+>/g, '') || '',
+        description: data.description || '',
         regularPrice: data.price && data.price['regular'],
         offerPrice: data.price && data.price['offer'],
         url: data.url,

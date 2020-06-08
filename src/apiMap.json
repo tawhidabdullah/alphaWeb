@@ -97,7 +97,7 @@
       "method": "get"
     },
     "getDeliveryCharge": {
-      "url": "/api/delivery/city/:cityName",
+      "url": "/api/delivery",
       "method": "get"
     },
     "forAnalytics": {

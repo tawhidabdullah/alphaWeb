@@ -157,13 +157,19 @@ const ProductCard = ({
         </div>}
 
 
-        <div className='product-top-overlay' onClick={handleOnClickAddToCart}>
+        <div
+          onClick={(e) => {
+            e.preventDefault();
+            history.push(url);
+          }}
+          className='product-top-overlay'>
 
         </div>
 
         <div className='overlay-right'>
           <button
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               history.push(url);
             }}
             type='button'

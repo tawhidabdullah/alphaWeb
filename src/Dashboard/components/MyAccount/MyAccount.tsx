@@ -2,13 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-import Select from 'react-select';
 import { TextFeildGroup } from '../../../components/Field';
 import { useHandleFetch } from '../../../hooks';
 import { AuthButton } from '../../../components/Button';
 import { checkIfItemExistsInCache, saveCity, saveCustomerData } from '../../../utils';
 import { cacheOperations } from '../../../state/ducks/cache';
-import { sessionOperations } from '../../../state/ducks/session';
 import { withAlert } from 'react-alert';
 
 const personalInfoInitialValues = {
@@ -399,55 +397,7 @@ const MyAccount = ({ customerDetail, cache, addItemToCache, alert, session }: Pr
                     </div>
                   </div>
 
-                  <div className='formContainerOfTwo'>
-                    <div className='formContainerOfTwoItem'>
-                      {countryList.length > 0 && (
-                        <div>
-                          <label className='formLabel'>Country</label>
-                          <Select
 
-                            value={selectedCountryValue}
-                            defaultValue={customerData['country'] || ''}
-
-                            onChange={(value) => handleSelectCountryChange(value)}
-                            options={countryList.map((country) => ({
-                              value: country['name'],
-                              label: country['name'],
-                            }))}
-                          />
-
-                          <div className='select-invalid-feedback'>
-                            {errors.country ||
-                              (!isSubmitting &&
-                                updateCurrentCustomerData.error['error'][
-                                'country'
-                                ])}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    <div className='formContainerOfTwoItem'>
-                      {cityList.length > 0 && (
-                        <div>
-                          <label className='formLabel'>City</label>
-                          <Select
-                            value={selectedCityValue}
-
-                            onChange={(value) => handleSelectCityChange(value)}
-                            options={cityList.map((city) => ({
-                              value: city['name'],
-                              label: city['name'],
-                            }))}
-                          />
-                          <div className='select-invalid-feedback'>
-                            {errors.city ||
-                              (!isSubmitting &&
-                                updateCurrentCustomerData.error['error']['city'])}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
 
                   <TextFeildGroup
                     label='Address'
@@ -525,23 +475,6 @@ const MyAccount = ({ customerDetail, cache, addItemToCache, alert, session }: Pr
                 />
               )}
 
-              {customerData['country'] && !customerData['city'] && (
-                <TextFeildGroup
-                  label='Country'
-                  name='country'
-                  value={customerData['country']}
-                  disabled={true}
-                />
-              )}
-
-              {customerData['city'] && !customerData['country'] && (
-                <TextFeildGroup
-                  label='City'
-                  name='city'
-                  value={customerData['city']}
-                  disabled={true}
-                />
-              )}
 
               {customerData['firstName'] && customerData['lastName'] && (
                 <div className='formContainerOfTwo'>
@@ -564,26 +497,6 @@ const MyAccount = ({ customerDetail, cache, addItemToCache, alert, session }: Pr
                 </div>
               )}
 
-              {customerData['country'] && customerData['city'] && (
-                <div className='formContainerOfTwo'>
-                  <div className='formContainerOfTwoItem'>
-                    <TextFeildGroup
-                      label='Country'
-                      name='country'
-                      value={customerData['country']}
-                      disabled={true}
-                    />
-                  </div>
-                  <div className='formContainerOfTwoItem'>
-                    <TextFeildGroup
-                      label='City'
-                      name='city'
-                      value={customerData['city']}
-                      disabled={true}
-                    />
-                  </div>
-                </div>
-              )}
             </>
           )}
 

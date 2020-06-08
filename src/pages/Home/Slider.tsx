@@ -3,11 +3,10 @@ import ReactPlayer from "react-player"
 
 
 interface Props {
-  addItemToCache: (any) => void;
-  cache: any;
+
 }
 
-const Slider = ({ addItemToCache, cache }: Props) => {
+const Slider = ({ }: Props) => {
 
 
   return (

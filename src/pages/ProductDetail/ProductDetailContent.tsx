@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { withAlert } from 'react-alert';
 import { cartOperations } from '../../state/ducks/cart';
 import { wishListOperations } from '../../state/ducks/wishList';
+import HtmlString from "../../components/HtmlString";
 import {
   checkIfItemExistsInCartItemById,
   getCartKeyFromCartItems,
@@ -217,60 +218,64 @@ const ProductDetailContent = ({
                 ৳{numberWithCommas(regularPrice)}
               </h2>
             </div>
-            {brand && brand.length > 0 && (
-              <div className='attibutes'>
-                {brand && brand.length > 0 && 'Brand :'}
-                {brand.map((item) => (
-                  <span key={item.name} className='attibute'>
-                    {item.name},
-                  </span>
-                ))}
-              </div>
-            )}
 
-            {category && category.length > 0 && (
-              <div className='attibutes'>
-                {category && category.length > 0 && 'Category :'}
-                {category.map((item) => (
-                  <span
-                    key={item.name}
-                    className='attibute'
-                    onClick={() => {
-                      history.push({
-                        pathname: `/productList/${item.id}`,
-                        state: { isCategory: true },
-                      });
-                    }}
-                  >
-                    {item.name},
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {tags && tags.length > 0 && (
-              <div className='attibutes'>
-                {tags && tags.length > 0 && 'Tags :'}
-                {tags.map((item) => (
-                  <span
-                    key={item.name}
-                    className='attibute'
-                    onClick={() => {
-                      history.push({
-                        pathname: `/productList/${item.id}`,
-                        state: { isTag: true },
-                      });
-                    }}
-                  >
-                    {item.name},
-                  </span>
-                ))}
-              </div>
-            )}
           </div>
           <div className='product-description'>
-            <p>{description}</p>
+            <p>
+              <HtmlString string={description} />
+            </p>
           </div>
+
+          {brand && brand.length > 0 && (
+            <div className='attibutes'>
+              {brand && brand.length > 0 && 'Brand :'}
+              {brand.map((item) => (
+                <span key={item.name} className='attibute'>
+                  {item.name},
+                </span>
+              ))}
+            </div>
+          )}
+
+          {category && category.length > 0 && (
+            <div className='attibutes'>
+              {category && category.length > 0 && 'Category :'}
+              {category.map((item) => (
+                <span
+                  key={item.name}
+                  className='attibute'
+                  onClick={() => {
+                    history.push({
+                      pathname: `/productList/${item.id}`,
+                      state: { isCategory: true },
+                    });
+                  }}
+                >
+                  {item.name},
+                </span>
+              ))}
+            </div>
+          )}
+
+          {tags && tags.length > 0 && (
+            <div className='attibutes'>
+              {tags && tags.length > 0 && 'Tags :'}
+              {tags.map((item) => (
+                <span
+                  key={item.name}
+                  className='attibute'
+                  onClick={() => {
+                    history.push({
+                      pathname: `/productList/${item.id}`,
+                      state: { isTag: true },
+                    });
+                  }}
+                >
+                  {item.name},
+                </span>
+              ))}
+            </div>
+          )}
           <div className='product-options-bottom'>
             {parseInt(availableStock) === 0 ? (
               <div className='alertText'>

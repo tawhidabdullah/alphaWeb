@@ -42,6 +42,7 @@ const App = () => {
             path='/productList'
             render={() => <Redirect to='/productList/all' />}
           />
+
           <Route exact path={'/productList/:id'} component={ProductList} />
           <Route exact path={'/productSearch'} component={ProductSearch} />
 
@@ -54,10 +55,13 @@ const App = () => {
           <Route exact path={'/dashboard'} component={Dashboard} />
 
           <Route path='*' component={NotFoundPage} />
+
         </Switch>
         <Footer />
       </React.Fragment>
     </BrowserRouter>
   );
 };
+
+
 export default App;

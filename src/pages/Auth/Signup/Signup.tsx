@@ -64,26 +64,6 @@ interface Props {
 const Signup = ({ addItemToCache, cache, history, alert }: Props) => {
   const [signupState, handlePost] = useHandleFetch({}, 'signup');
 
-  const [selectedCountryValue, setSelectedCountryValue] = useState({
-    value: 'Bangladesh',
-    label: 'Bangladesh',
-  });
-
-  const [selectedCityValue, setSelectedCityValue] = useState({
-    value: 'city',
-    label: 'City',
-  });
-
-  const [countryListState, handleCountryListFetch] = useHandleFetch(
-    [],
-    'countryList'
-  );
-
-  const [cityListState, handleCityListFetch] = useHandleFetch([], 'cityList');
-
-  const [countryList, setCountryList] = useState([]);
-  const [cityList, setCityList] = useState([]);
-
   const handleSubmit = async (values, actions) => {
     const signupRes = await handlePost({
       body: {
@@ -95,8 +75,6 @@ const Signup = ({ addItemToCache, cache, history, alert }: Props) => {
         address2: values.address2,
         firstName: values.firstName,
         lastName: values.lastName,
-        country: selectedCountryValue.value,
-        city: selectedCityValue.value,
       },
     });
 
@@ -116,97 +94,6 @@ const Signup = ({ addItemToCache, cache, history, alert }: Props) => {
     actions.setSubmitting(false);
   };
 
-  useEffect(() => {
-    if (checkIfItemExistsInCache(`countryList`, cache)) {
-      const countryList = cache['countryList'];
-      setCountryList(countryList);
-    } else {
-      const getAndSetCountryList = async () => {
-        const countryList = await handleCountryListFetch({});
-        // @ts-ignore
-        if (countryList) {
-          // @ts-ignore
-          setCountryList(countryList);
-          addItemToCache({
-            countryList: countryList,
-          });
-        }
-      };
-
-      getAndSetCountryList();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (
-      checkIfItemExistsInCache(`cityList/${selectedCountryValue.value}`, cache)
-    ) {
-      const cityList = cache[`cityList/${selectedCountryValue.value}`];
-      setCityList(cityList);
-      // @ts-ignore
-      const cityValue = cityList.length > 0 && cityList.find(city => city.name === 'Dhaka');
-
-      if (cityValue) {
-        setSelectedCityValue({
-          value: cityValue['name'],
-          label: cityValue['name'],
-        });
-      }
-      else {
-        // @ts-ignore
-        const indexZerocityValue = cityList.length > 0 && cityList[0];
-        setSelectedCityValue({
-          value: indexZerocityValue['name'],
-          label: indexZerocityValue['name'],
-        });
-      }
-    } else {
-      const getAndSetCityList = async () => {
-        const cityList = await handleCityListFetch({
-          urlOptions: {
-            placeHolders: {
-              country: selectedCountryValue.value,
-            },
-          },
-        });
-        // @ts-ignore
-        if (cityList) {
-          // @ts-ignore
-          setCityList(cityList);
-          // @ts-ignore
-          const cityValue = cityList.length > 0 && cityList.find(city => city.name === 'Dhaka');
-
-          if (cityValue) {
-            setSelectedCityValue({
-              value: cityValue['name'],
-              label: cityValue['name'],
-            });
-          }
-          else {
-            // @ts-ignore
-            const indexZerocityValue = cityList.length > 0 && cityList[0];
-            setSelectedCityValue({
-              value: indexZerocityValue['name'],
-              label: indexZerocityValue['name'],
-            });
-          }
-          addItemToCache({
-            [`cityList/${selectedCountryValue.value}`]: cityList,
-          });
-        }
-      };
-
-      getAndSetCityList();
-    }
-  }, [selectedCountryValue]);
-
-  const handleSelectCountryChange = (value) => {
-    setSelectedCountryValue(value);
-  };
-
-  const handleSelectCityChange = (value) => {
-    setSelectedCityValue(value);
-  };
 
   return (
     <div className='auth'>
@@ -278,46 +165,6 @@ const Signup = ({ addItemToCache, cache, history, alert }: Props) => {
                   </div>
                 </div>
 
-                <div className='formContainerOfTwo'>
-                  <div className='formContainerOfTwoItem'>
-                    {countryList.length > 0 && (
-                      <div>
-                        <label className='formLabel'>Country</label>
-                        <Select
-                          value={selectedCountryValue}
-                          onChange={(value) => handleSelectCountryChange(value)}
-                          options={countryList.map((country) => ({
-                            value: country['name'],
-                            label: country['name'],
-                          }))}
-                        />
-                        <div className='select-invalid-feedback'>
-                          {!isSubmitting && signupState.error['error']['country']}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className='formContainerOfTwoItem formContainterSelect'>
-                    {cityList.length > 0 && (
-                      <div>
-                        <label className='formLabel'>City</label>
-
-                        <Select
-                          value={selectedCityValue}
-                          onChange={(value) => handleSelectCityChange(value)}
-                          options={cityList.map((city) => ({
-                            value: city['name'],
-                            label: city['name'],
-                          }))}
-                        />
-                        <div className='select-invalid-feedback'>
-                          {!isSubmitting && signupState.error['error']['city']}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
 
                 <TextFeildGroup
                   label='Address'

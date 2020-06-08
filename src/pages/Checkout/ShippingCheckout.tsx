@@ -83,48 +83,7 @@ const CheckoutForm = ({
         </div>
       </div>
 
-      <div className='formContainerOfTwo'>
-        <div className='formContainerOfTwoItem'>
-          {countryList.length > 0 && (
-            <div>
-              <label className='formLabel'>Country</label>
 
-              <Select
-                value={selectedShippingCountryValue}
-                onChange={(value) => handleSelectShippingCountryChange(value)}
-                options={countryList.map((country) => ({
-                  value: country['name'],
-                  label: country['name'],
-                }))}
-              />
-              <div className='select-invalid-feedback'>
-                {errors.shippingCountry ||
-                  (!isSubmitting && serverErrors.shippingCountry)}
-              </div>
-            </div>
-          )}
-        </div>
-        <div className='formContainerOfTwoItem formContainterSelect'>
-          {shippingCityList.length > 0 && (
-            <div>
-              <label className='formLabel'>City</label>
-              <Select
-                value={selectedShippingCityValue}
-                onChange={(value) => handleSelectShippingCityChange(value)}
-                options={shippingCityList.map((city) => ({
-                  value: city['name'],
-                  label: city['name'],
-                }))}
-              />
-
-              <div className='select-invalid-feedback'>
-                {errors.shippingCity ||
-                  (!isSubmitting && serverErrors.shippingCity)}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
 
       <TextFeildGroup
         label='Address'

@@ -62,7 +62,7 @@ const Home = ({
       <section className='image-slider-section'>
         <div className='row'>
           <SliderLeftMenu history={history} category={category} />
-          <Slider addItemToCache={addItemToCache} cache={cache} />
+          <Slider />
           <SliderRight
             windowWidth={windowWidth}
             addItemToCache={addItemToCache}
@@ -100,28 +100,4 @@ export default connect(
   // @ts-ignore
 )(Home);
 
-/*
-1. where the fuck is delivery charge????
 
-/productList/:id ei url koitheke anso
-
-tmare na bolsilm url shob jeno database er url hoy??
-
-category er product view korle oita url category/:id
-
-brand view korle brand/:id
-
-
-// nesscessary polishing
-cart page e clear shopping cart dile only locally cart clear hoitese
-
-
-
-reload dile abar ager moto
-
-
-search page e search bar e onno kono keyword search dile kono action hocche na
-
-quantity control gula majhe majhe kaj kore majhe majhe kore na
-////
-*/

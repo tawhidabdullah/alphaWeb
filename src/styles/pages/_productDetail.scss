@@ -181,7 +181,6 @@
   color: $color-primary-1 !important;
   text-align: left;
   margin-top: 5px;
-
   font-size: 15px;
 }
 
@@ -246,8 +245,8 @@
   background-color: #272e30;
 }
 
-.action-button:last-child {
-  // margin-left: 20px;
+.action-button:first-child {
+  margin-right: 20px;
 }
 
 @media screen and (max-width: 1095px) {

@@ -86,46 +86,6 @@ const CheckoutForm = ({
           </div>
         </div>
 
-        <div className='formContainerOfTwo'>
-          <div className='formContainerOfTwoItem'>
-            {countryList.length > 0 && (
-              <div>
-                <label className='formLabel'>Country</label>
-                <Select
-                  value={selectedCountryValue}
-                  onChange={(value) => handleSelectCountryChange(value)}
-                  options={countryList.map((country) => ({
-                    value: country['name'],
-                    label: country['name'],
-                  }))}
-                />
-
-                <div className='select-invalid-feedback'>
-                  {errors.country || (!isSubmitting && serverErrors.country)}
-                </div>
-              </div>
-            )}
-          </div>
-          <div className='formContainerOfTwoItem formContainterSelect'>
-            {cityList.length > 0 && (
-              <div>
-                <label className='formLabel'>City</label>
-                <Select
-                  value={selectedCityValue}
-                  onChange={(value) => handleSelectCityChange(value)}
-                  options={cityList.map((city) => ({
-                    value: city['name'],
-                    label: city['name'],
-                  }))}
-                />
-
-                <div className='select-invalid-feedback'>
-                  {errors.city || (!isSubmitting && serverErrors.city)}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
 
         <TextFeildGroup
           label='Address'

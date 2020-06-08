@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useHandleFetch } from '../../hooks';
 import { checkIfItemExistsInCache } from '../../utils';
+import { urlToString } from "../../utils";
+import config from "../../config.json";
+import { Link } from "react-router-dom";
 
 interface Props {
   windowWidth: number;
@@ -67,18 +70,35 @@ const SliderRight = ({ windowWidth, cache, addItemToCache }: Props) => {
                       borderRadius: '5px',
                     }}
                   >
-                    <a href={target}>
-                      <img
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                          borderRadius: '5px',
-                        }}
-                        src={src}
-                        alt='Right Slider'
-                      />
-                    </a>
+                    {urlToString(target).includes(
+                      urlToString(config.baseURL2)
+                    ) ? (
+                        <Link to={`${target}`.replace(config.baseURL2, '')}>
+                          <img
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover',
+                              borderRadius: '5px',
+                            }}
+                            src={src}
+                            alt='Right Slider'
+                          />
+                        </Link>
+                      ) : (
+                        <a href={target}>
+                          <img
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover',
+                              borderRadius: '5px',
+                            }}
+                            src={src}
+                            alt='Right Slider'
+                          />
+                        </a>
+                      )}
                   </div>
                 );
               })}
@@ -109,18 +129,36 @@ const SliderRight = ({ windowWidth, cache, addItemToCache }: Props) => {
                         borderRadius: '5px',
                       }}
                     >
-                      <a href={target}>
-                        <img
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            borderRadius: '5px',
-                          }}
-                          src={src}
-                          alt='Right Slider'
-                        />
-                      </a>
+                      {urlToString(target).includes(
+                        urlToString(config.baseURL2)
+                      ) ? (
+                          <Link to={`${target}`.replace(config.baseURL2, '')}>
+                            <img
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                borderRadius: '5px',
+                              }}
+                              src={src}
+                              alt='Right Slider'
+                            />
+                          </Link>
+                        ) : (
+                          <a href={target}>
+                            <img
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                borderRadius: '5px',
+                              }}
+                              src={src}
+                              alt='Right Slider'
+                            />
+                          </a>
+                        )}
+
                     </div>
                   );
                 })}

@@ -120,6 +120,10 @@ const ProductDetail = (props: Props) => {
     }
   }, [categoryName, productName]);
 
+
+
+  console.log('productDetailState', productDetailState)
+
   return (
     <>
 
