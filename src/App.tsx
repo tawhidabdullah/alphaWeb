@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter, Switch, Route, Redirect, } from 'react-router-dom';
 
 // import Layout
 import Header from './layout/Header';
@@ -15,7 +15,8 @@ import Signup from './pages/Auth/Signup';
 import Checkout from './pages/Checkout';
 import Dashboard from './Dashboard';
 import { NotFoundPage } from './pages/NotFound';
-import Footer from './layout/Footer';
+const Footer = React.lazy(() => import('./layout/Footer'));
+
 
 const App = () => {
   return (
@@ -57,9 +58,12 @@ const App = () => {
           <Route path='*' component={NotFoundPage} />
 
         </Switch>
-        <Footer />
+        <Suspense fallback={<div></div>}>
+          <Footer />
+        </Suspense>
+
       </React.Fragment>
-    </BrowserRouter>
+    </BrowserRouter >
   );
 };
 

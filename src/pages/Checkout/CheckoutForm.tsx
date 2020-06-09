@@ -39,14 +39,14 @@ const CheckoutForm = ({
   return (
     <>
       <>
-        <div
+        {/* <div
           className='block-title authTitle sm'
           style={{
             margin: '20px 0',
           }}
         >
           <span>Personal Information</span>
-        </div>
+        </div> */}
 
         <div className='formContainerOfTwo'>
           <div className='formContainerOfTwoItem'>
@@ -116,14 +116,14 @@ const CheckoutForm = ({
           }
         /> */}
 
-        <div
+        {/* <div
           className='block-title authTitle sm'
           style={{
             margin: '20px 0',
           }}
         >
           <span>Contact Information</span>
-        </div>
+        </div> */}
 
         <TextFeildGroup
           label='Phone'
@@ -141,7 +141,7 @@ const CheckoutForm = ({
           }
         />
 
-        <TextFeildGroup
+        {/* <TextFeildGroup
           label='Email'
           name='email'
           placeholder='Email address'
@@ -155,7 +155,9 @@ const CheckoutForm = ({
             (touched.email && errors.email) ||
             (!isSubmitting && serverErrors.email)
           }
-        />
+        /> */}
+
+
         {/* 
         {!isAuthenticated && (
           <>

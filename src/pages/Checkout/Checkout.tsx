@@ -3,7 +3,6 @@ import { withAlert } from 'react-alert';
 
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import ShippingCheckout from './ShippingCheckout';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { RadioGroup, ReversedRadioButton } from 'react-radio-buttons';
@@ -26,7 +25,6 @@ import PaymentForm from './PaymentForm';
 // import checkout component
 import CheckoutSuccessModal from './CheckoutSuccessModal';
 import CheckoutForm from './CheckoutForm';
-
 // validation schemeas
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
@@ -184,11 +182,11 @@ const otherPaymentMethodIntialValues = {
 
 const otherPaymentMethodNotSigninIntialValues = {
   phone: '',
-  email: '',
   firstName: '',
   lastName: '',
+  password: 'tiethemupthenbeatthemtodeathandafterthathavesexwiththeircorpse',
+  passwordConfirmation: 'tiethemupthenbeatthemtodeathandafterthathavesexwiththeircorpse',
   address1: '',
-  address2: '',
   paymentAccountNumber: '',
   transactionId: '',
 };
@@ -206,11 +204,11 @@ const codInitialValues = {
 
 const codInitialNotSigninValues = {
   phone: '',
-  email: '',
   firstName: '',
   lastName: '',
   address1: '',
-  address2: '',
+  password: 'tiethemupthenbeatthemtodeathandafterthathavesexwiththeircorpse',
+  passwordConfirmation: 'tiethemupthenbeatthemtodeathandafterthathavesexwiththeircorpse',
 };
 
 interface Props {
@@ -778,8 +776,8 @@ const Checkout = ({
           phone: values.phone,
           email: values.email,
           ...(!session['isAuthenticated'] && {
-            password: values.password,
-            password2: values.passwordConfirmation,
+            password: 'tiethemupthenbeatthemtodeathandafterthathavesexwiththeircorpse',
+            password2: 'tiethemupthenbeatthemtodeathandafterthathavesexwiththeircorpse',
           }),
           address1: values.address1,
           address2: values.address2,
@@ -816,8 +814,8 @@ const Checkout = ({
           phone: values.phone,
           email: values.email,
           ...(!session['isAuthenticated'] && {
-            password: values.password,
-            password2: values.passwordConfirmation,
+            password: 'tiethemupthenbeatthemtodeathandafterthathavesexwiththeircorpse',
+            password2: 'tiethemupthenbeatthemtodeathandafterthathavesexwiththeircorpse',
           }),
           address1: values.address1,
           address2: values.address2,
@@ -851,43 +849,10 @@ const Checkout = ({
   };
 
   const getInitialValues = () => {
-    if (session.isAuthenticated) {
-      if (paymentMethod === 'cod') {
-        if (customerData && Object.keys(customerData).length > 0) {
-          return {
-            ...codInitialValues,
-            phone: customerData['phone'],
-            email: customerData['email'],
-            firstName: customerData['firstName'],
-            lastName: customerData['lastName'],
-            address1: customerData['address1'],
-            address2: customerData['address2'],
-          }
-        }
-        return codInitialValues;
-
-      } else {
-        if (customerData && Object.keys(customerData).length > 0) {
-          return {
-            ...otherPaymentMethodIntialValues,
-            phone: customerData['phone'],
-            email: customerData['email'],
-            firstName: customerData['firstName'],
-            lastName: customerData['lastName'],
-            address1: customerData['address1'],
-            address2: customerData['address2'],
-          }
-        }
-
-
-        return otherPaymentMethodIntialValues;
-      }
+    if (paymentMethod === 'cod') {
+      return codInitialNotSigninValues;
     } else {
-      if (paymentMethod === 'cod') {
-        return codInitialNotSigninValues;
-      } else {
-        return otherPaymentMethodNotSigninIntialValues;
-      }
+      return otherPaymentMethodNotSigninIntialValues;
     }
   };
 
@@ -901,18 +866,10 @@ const Checkout = ({
   };
 
   const getValidationSchema = () => {
-    if (session.isAuthenticated) {
-      if (paymentMethod === 'cod') {
-        return validationSchemaForCod;
-      } else {
-        return validationSchemaForOtherPaymentMethods;
-      }
+    if (paymentMethod === 'cod') {
+      return validationSchemaForNotSigninCod;
     } else {
-      if (paymentMethod === 'cod') {
-        return validationSchemaForNotSigninCod;
-      } else {
-        return validationSchemaForNotSigninOtherPaymentMethods;
-      }
+      return validationSchemaForNotSigninOtherPaymentMethods;
     }
   };
 
@@ -1083,9 +1040,9 @@ const Checkout = ({
                             margin: '20px 0',
                           }}
                         >
-                          <span>Billing Address</span>
+                          <span>Address</span>
                         </div>
-
+                        {/* 
                         {session.isAuthenticated ? (
                           <Checkbox
                             name={'useAccountBillingAddresss'}
@@ -1101,7 +1058,7 @@ const Checkout = ({
                           />
                         ) : (
                             ''
-                          )}
+                          )} */}
 
                         {!isUseAccountBillingAddresss && (
                           <CheckoutForm
@@ -1126,7 +1083,7 @@ const Checkout = ({
                         )}
                       </div>
 
-                      <div className='checkoutSection'>
+                      {/* <div className='checkoutSection'>
                         <div
                           className='block-title authTitle'
                           style={{
@@ -1175,7 +1132,7 @@ const Checkout = ({
                         ) : (
                             ''
                           )}
-                      </div>
+                      </div> */}
 
                       <div className='orderOverview'>
                         <div

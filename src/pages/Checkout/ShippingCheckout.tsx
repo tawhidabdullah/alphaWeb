@@ -36,14 +36,14 @@ const CheckoutForm = ({
 }: Props) => {
   return (
     <>
-      <div
+      {/* <div
         className='block-title authTitle sm'
         style={{
           margin: '20px 0',
         }}
       >
         <span>personal Information</span>
-      </div>
+      </div> */}
 
       <div className='formContainerOfTwo'>
         <div className='formContainerOfTwoItem'>
@@ -115,14 +115,17 @@ const CheckoutForm = ({
         }
       /> */}
 
-      <div
+      {/* <div
         className='block-title authTitle sm'
         style={{
           margin: '20px 0',
         }}
       >
         <span>Contact Information</span>
-      </div>
+      </div> */}
+
+
+
       <TextFeildGroup
         label='Phone'
         name='shippingPhone'
@@ -138,7 +141,8 @@ const CheckoutForm = ({
           (!isSubmitting && serverErrors.shippingPhone)
         }
       />
-      <TextFeildGroup
+
+      {/* <TextFeildGroup
         label='Email'
         name='shippingEmail'
         placeholder='Email address'
@@ -152,7 +156,7 @@ const CheckoutForm = ({
           (touched.shippingEmail && errors.shippingEmail) ||
           (!isSubmitting && serverErrors.shippingEmail)
         }
-      />
+      /> */}
     </>
   );
 };
