@@ -695,11 +695,7 @@ const Checkout = ({
   const handleCloseModal = () => {
     setIsModalShown(false);
 
-    if (!session.isAuthenticated) {
-      history.push('/dashboard');
-    } else {
-      history.push('/');
-    }
+    history.push('/');
   };
 
   const isDeliveryChargeExists = (regions) => {
