@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import queryString from 'query-string';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -73,6 +73,7 @@ const ProductSearch = ({
       pathname: '/productSearch',
       search: `?searchCategory=${id}&query=${queryValue}`,
     });
+    window.scrollTo(0, 0)
   };
 
   const setSortBySelect = (value) => {
@@ -260,7 +261,7 @@ const ProductSearch = ({
         ) {
           const productsRes =
             cache[
-              `productSearch/${selectedValueForSort.value}/${searchCategoryValue}/${queryValue}`
+            `productSearch/${selectedValueForSort.value}/${searchCategoryValue}/${queryValue}`
             ];
 
           // @ts-ignore
@@ -339,6 +340,11 @@ const ProductSearch = ({
     setPageNumberOfCategoryProduct((pageNumber) => pageNumber + 1);
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
+
   return (
     <div
       style={{
@@ -405,8 +411,8 @@ const ProductSearch = ({
               </div>
             </div>
           ) : (
-            ''
-          )}
+              ''
+            )}
           <div className='col-sm-8 col-md-9'>
             {!isLoading && products ? (
               <>
@@ -441,8 +447,8 @@ const ProductSearch = ({
                         )}{' '}
                       </>
                     ) : (
-                      ''
-                    )}
+                        ''
+                      )}
                   </div>
 
                   <div className='sortBySelectorsContainer'>
@@ -462,8 +468,8 @@ const ProductSearch = ({
                 </div>
               </>
             ) : (
-              ''
-            )}
+                ''
+              )}
 
             {!isLoading && products && (
               <InfiniteScroll
@@ -556,8 +562,8 @@ const ProductSearch = ({
                   </a>
                 </div>
               ) : (
-                ''
-              )}
+                  ''
+                )}
             </div>
           </div>
         </div>

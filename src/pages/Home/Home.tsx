@@ -53,6 +53,11 @@ const Home = ({
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
+
   return (
     <>
       {windowWidth < 700 ? (

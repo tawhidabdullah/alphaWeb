@@ -122,7 +122,9 @@ const ProductDetail = (props: Props) => {
 
 
 
-  console.log('productDetailState', productDetailState)
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   return (
     <>
