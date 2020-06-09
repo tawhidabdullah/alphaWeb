@@ -48,8 +48,8 @@ const App = () => {
 
           <Route exact path={'/cart'} component={ShoppingCart} />
 
-          <Route exact path='/signin' component={Signin} />
-          <Route exact path='/signup' component={Signup} />
+          {/* <Route exact path='/signin' component={Signin} /> */}
+          {/* <Route exact path='/signup' component={Signup} /> */}
           <Route exact path={'/checkout'} component={Checkout} />
 
           <Route exact path={'/dashboard'} component={Dashboard} />

@@ -1,2 +1,3 @@
 import TextFeildGroup from './TextFeildGroup';
-export { TextFeildGroup };
+import TextAreaFeildGroup from './TextAreaFeildGroup';
+export { TextFeildGroup, TextAreaFeildGroup };

@@ -1,6 +1,5 @@
 import React from 'react';
-import Select from 'react-select';
-import { TextFeildGroup } from '../../components/Field';
+import { TextFeildGroup, TextAreaFeildGroup } from '../../components/Field';
 
 interface Props {
   values: any;
@@ -87,10 +86,10 @@ const CheckoutForm = ({
         </div>
 
 
-        <TextFeildGroup
+        <TextAreaFeildGroup
           label='Address'
           name='address1'
-          placeholder='Address line 1'
+          placeholder='your address..'
           type='text'
           value={values.address1}
           onChange={(e) => {
@@ -102,7 +101,7 @@ const CheckoutForm = ({
             (!isSubmitting && serverErrors.address1)
           }
         />
-        <TextFeildGroup
+        {/* <TextFeildGroup
           name='address2'
           placeholder='Address line 2'
           type='text'
@@ -115,7 +114,7 @@ const CheckoutForm = ({
             (touched.address2 && errors.address2) ||
             (!isSubmitting && serverErrors.address2)
           }
-        />
+        /> */}
 
         <div
           className='block-title authTitle sm'
@@ -157,7 +156,7 @@ const CheckoutForm = ({
             (!isSubmitting && serverErrors.email)
           }
         />
-
+        {/* 
         {!isAuthenticated && (
           <>
             <TextFeildGroup
@@ -193,7 +192,7 @@ const CheckoutForm = ({
               }
             />
           </>
-        )}
+        )} */}
       </>
     </>
   );

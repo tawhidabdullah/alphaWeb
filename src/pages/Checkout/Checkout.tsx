@@ -14,11 +14,10 @@ import { Spinner } from '../../components/Loading';
 import { AuthButton } from '../../components/Button';
 import Checkbox from '../../components/Checkbox';
 import { cacheOperations } from '../../state/ducks/cache';
+
 import {
   checkIfItemExistsInCache, getDeliveryChargeTotal,
-  getCity, saveCity,
-  deleteCity, getCustomerData, saveCustomerData,
-  deleteCustomerData
+  getCity, getCustomerData,
 } from '../../utils';
 import { cartOperations } from '../../state/ducks/cart';
 import { sessionOperations } from '../../state/ducks/session';
@@ -173,8 +172,8 @@ const shippingAddressInitialValues = {
 const otherPaymentMethodIntialValues = {
   phone: null,
   email: '',
-  password: '',
-  passwordConfirmation: '',
+  password: 'tiethemupthenbeatthemtodeathandafterthathavesexwiththeircorpse',
+  passwordConfirmation: 'tiethemupthenbeatthemtodeathandafterthathavesexwiththeircorpse',
   firstName: '',
   lastName: '',
   address1: '',
@@ -197,8 +196,8 @@ const otherPaymentMethodNotSigninIntialValues = {
 const codInitialValues = {
   phone: null,
   email: '',
-  password: '',
-  passwordConfirmation: '',
+  password: 'tiethemupthenbeatthemtodeathandafterthathavesexwiththeircorpse',
+  passwordConfirmation: 'tiethemupthenbeatthemtodeathandafterthathavesexwiththeircorpse',
   firstName: '',
   lastName: '',
   address1: '',
@@ -1056,7 +1055,7 @@ const Checkout = ({
                 <div className='checkout'>
                   <div className='createOrderContainer'>
                     <div>
-                      {!session.isAuthenticated ? (
+                      {/* {!session.isAuthenticated ? (
                         <div
                           onClick={() => history.push('/signin')}
                           className='alertText'
@@ -1076,7 +1075,7 @@ const Checkout = ({
                         </div>
                       ) : (
                           ''
-                        )}
+                        )} */}
                       <div className='checkoutSection'>
                         <div
                           className='block-title authTitle'

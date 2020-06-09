@@ -64,7 +64,7 @@ const TopHead = ({
             : ''}
         </span>
       </div>
-      <div className='trackorderandauthlinks'>
+      {/* <div className='trackorderandauthlinks'>
         {(isAuthenticated && (
           <>
             <p>
@@ -85,7 +85,7 @@ const TopHead = ({
               <span onClick={() => history.push('/signup')}>Signup</span>
             </p>
           )}
-      </div>
+      </div> */}
     </div>
   );
 };
