@@ -27,6 +27,7 @@ const TextAreaFeildGroup = ({
     onInput,
 }: Props) => {
     const [fieldType, setfieldType] = useState(type);
+
     return (
         <div className='frm'>
             {label ? <label className='label' style={{
