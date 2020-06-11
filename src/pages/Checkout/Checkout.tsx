@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { withAlert } from 'react-alert';
-
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Formik } from 'formik';
@@ -11,11 +10,10 @@ import SmallItem from '../../components/SmallItem';
 import { useHandleFetch } from '../../hooks';
 import { Spinner } from '../../components/Loading';
 import { AuthButton } from '../../components/Button';
-import Checkbox from '../../components/Checkbox';
 import { cacheOperations } from '../../state/ducks/cache';
-
 import {
-  checkIfItemExistsInCache, getDeliveryChargeTotal,
+  checkIfItemExistsInCache,
+  getDeliveryChargeTotal,
   getCity, getCustomerData,
 } from '../../utils';
 import { cartOperations } from '../../state/ducks/cart';
@@ -29,76 +27,19 @@ import CheckoutForm from './CheckoutForm';
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
-const validationSchemaForNotSigninCod = Yup.object().shape({
-  firstName: Yup.string()
-    .label('Name')
-    .required()
-    .min(2, 'Firstname must have at least 2 characters '),
-  lastName: Yup.string()
-    .label('Name')
-    .required()
-    .min(2, 'Lastname must have at least 2 characters '),
-  phone: Yup.string()
-    .required('Please tell us your mobile number.')
-    .max(13, 'Please enter a valid mobile number.'),
-  email: Yup.string().label('Email').email('Please enter a valid email'),
-  password: Yup.string()
-    .label('Password')
-    .required()
-    .min(6, 'Password must have at least 6 characters'),
-  passwordConfirmation: Yup.string().oneOf(
-    [Yup.ref('password'), null],
-    'Passwords must match'
-  ),
-  address1: Yup.string()
-    .label('Address line 1')
-    .required()
-    .min(3, 'Address line 1 must have at least 3 characters '),
-});
-
 const validationSchemaForCod = Yup.object().shape({
   firstName: Yup.string()
-    .label('Firstname')
+    .label('Name')
     .required()
     .min(2, 'Firstname must have at least 2 characters '),
   lastName: Yup.string()
-    .label('Lastname')
+    .label('Name')
     .required()
     .min(2, 'Lastname must have at least 2 characters '),
   phone: Yup.string()
     .required('Please tell us your mobile number.')
     .max(13, 'Please enter a valid mobile number.'),
   email: Yup.string().label('Email').email('Please enter a valid email'),
-  address1: Yup.string()
-    .label('Address line 1')
-    .required()
-    .min(3, 'Address line 1 must have at least 3 characters '),
-});
-
-const validationSchemaForNotSigninOtherPaymentMethods = Yup.object().shape({
-  firstName: Yup.string()
-    .label('Firstname')
-    .required()
-    .min(2, 'Firstname must have at least 2 characters '),
-  lastName: Yup.string()
-    .label('Lastname')
-    .required()
-    .min(2, 'Lastname must have at least 2 characters '),
-  phone: Yup.string()
-    .required('Please tell us your mobile number.')
-    .max(13, 'Please enter a valid mobile number.'),
-  email: Yup.string().label('Email').email('Please enter a valid email'),
-  address1: Yup.string()
-    .label('Address line 1')
-    .required()
-    .min(3, 'Address line 1 must have at least 3 characters '),
-
-  paymentAccountNumber: Yup.string()
-    .required('Please tell us your mobile number.')
-    .matches(phoneRegExp, 'Please enter a valid mobile number.'),
-  transactionId: Yup.string()
-    .label('Payment Id')
-    .required('Transaction id is Required'),
   password: Yup.string()
     .label('Password')
     .required()
@@ -107,7 +48,12 @@ const validationSchemaForNotSigninOtherPaymentMethods = Yup.object().shape({
     [Yup.ref('password'), null],
     'Passwords must match'
   ),
+  address1: Yup.string()
+    .label('Address line 1')
+    .required()
+    .min(3, 'Address line 1 must have at least 3 characters '),
 });
+
 
 const validationSchemaForOtherPaymentMethods = Yup.object().shape({
   firstName: Yup.string()
@@ -126,7 +72,6 @@ const validationSchemaForOtherPaymentMethods = Yup.object().shape({
     .label('Address line 1')
     .required()
     .min(3, 'Address line 1 must have at least 3 characters '),
-
   paymentAccountNumber: Yup.string()
     .required('Please tell us your mobile number.')
     .matches(phoneRegExp, 'Please enter a valid mobile number.'),
@@ -135,52 +80,10 @@ const validationSchemaForOtherPaymentMethods = Yup.object().shape({
     .required('Transaction id is Required'),
 });
 
-const shippingAddressValidationSchema = Yup.object().shape({
-  shippingFirstName: Yup.string()
-    .label('FirstName')
-    .required()
-    .min(2, 'FirstName name must have at least 2 characters '),
-  shippingLastName: Yup.string()
-    .label('LastName')
-    .required()
-    .min(2, 'LastName must have at least 2 characters '),
-  shippingPhone: Yup.string()
-    .required('Please tell us your mobile number.')
-    .max(13, 'Please enter a valid mobile number.'),
-  shippingEmail: Yup.string()
-    .label('Email')
-    .email('Please enter a valid email'),
-  shippingAddress1: Yup.string()
-    .label('Address line 1')
-    .required()
-    .min(3, 'Address line 1 must have at least 3 characters '),
-});
 
-const shippingAddressInitialValues = {
-  shippingFirstName: '',
-  shippingLastName: '',
-  shippingCountry: '',
-  shippingCity: '',
-  shippingAddress1: '',
-  shippingAddress2: '',
-  shippingPhone: '',
-  shippingEmail: '',
-};
+
 
 const otherPaymentMethodIntialValues = {
-  phone: null,
-  email: '',
-  password: 'tiethemupthenbeatthemtodeathandafterthathavesexwiththeircorpse',
-  passwordConfirmation: 'tiethemupthenbeatthemtodeathandafterthathavesexwiththeircorpse',
-  firstName: '',
-  lastName: '',
-  address1: '',
-  address2: '',
-  paymentAccountNumber: '',
-  transactionId: '',
-};
-
-const otherPaymentMethodNotSigninIntialValues = {
   phone: '',
   firstName: '',
   lastName: '',
@@ -190,25 +93,17 @@ const otherPaymentMethodNotSigninIntialValues = {
   paymentAccountNumber: '',
   transactionId: '',
 };
+
 
 const codInitialValues = {
-  phone: null,
-  email: '',
-  password: 'tiethemupthenbeatthemtodeathandafterthathavesexwiththeircorpse',
-  passwordConfirmation: 'tiethemupthenbeatthemtodeathandafterthathavesexwiththeircorpse',
-  firstName: '',
-  lastName: '',
-  address1: '',
-  address2: '',
-};
-
-const codInitialNotSigninValues = {
   phone: '',
   firstName: '',
   lastName: '',
   address1: '',
   password: 'tiethemupthenbeatthemtodeathandafterthathavesexwiththeircorpse',
   passwordConfirmation: 'tiethemupthenbeatthemtodeathandafterthathavesexwiththeircorpse',
+  paymentAccountNumber: '',
+  transactionId: '',
 };
 
 interface Props {
@@ -713,6 +608,7 @@ const Checkout = ({
     setPaymentMethod(value);
   };
 
+
   const onDeviliveryRegionChange = (value) => {
     setDeliveryRegionName(value);
     if (
@@ -844,42 +740,42 @@ const Checkout = ({
     }
   };
 
+
+
   const getInitialValues = () => {
     if (paymentMethod === 'cod') {
-      return codInitialNotSigninValues;
+      return codInitialValues;
     } else {
-      return otherPaymentMethodNotSigninIntialValues;
+      return otherPaymentMethodIntialValues;
     }
   };
 
+
   const getUltimateInitialValue = () => {
     let initialValue = getInitialValues();
-    if (isShipToDifferentAddress) {
-      initialValue = { ...initialValue, ...shippingAddressInitialValues };
-    }
 
     return initialValue;
   };
 
   const getValidationSchema = () => {
     if (paymentMethod === 'cod') {
-      return validationSchemaForNotSigninCod;
+      return validationSchemaForCod;
     } else {
-      return validationSchemaForNotSigninOtherPaymentMethods;
+      return validationSchemaForOtherPaymentMethods;
     }
   };
 
   const getUltimateValidationSchema = () => {
     let validationSchema = getValidationSchema();
-    if (isShipToDifferentAddress && !isUseAccountBillingAddresss) {
-      validationSchema = validationSchema.concat(
-        shippingAddressValidationSchema
-      );
-    } else if (isUseAccountBillingAddresss && !isShipToDifferentAddress) {
-      validationSchema = Yup.object();
-    } else if (isUseAccountBillingAddresss && isShipToDifferentAddress) {
-      return shippingAddressValidationSchema;
-    }
+    // if (isShipToDifferentAddress && !isUseAccountBillingAddresss) {
+    //   validationSchema = validationSchema.concat(
+    //     shippingAddressValidationSchema
+    //   );
+    // } else if (isUseAccountBillingAddresss && !isShipToDifferentAddress) {
+    //   validationSchema = Yup.object();
+    // } else if (isUseAccountBillingAddresss && isShipToDifferentAddress) {
+    //   return shippingAddressValidationSchema;
+    // }
 
     return validationSchema;
   };
@@ -966,9 +862,6 @@ const Checkout = ({
   };
 
 
-
-
-
   const renderNumber = (numberType) => {
     if (paymentState.data && paymentState.data.length > 0) {
       const numberItem = paymentState.data.find(item => item['name'].toLowerCase() === numberType);
@@ -983,7 +876,15 @@ const Checkout = ({
 
   useEffect(() => {
     window.scrollTo(0, 0)
-  }, [])
+  }, []);
+
+
+  const getIsValid = (isValid, errors) => {
+    if (!isValid && errors['paymentAccountNumber'] && errors['transactionId']) {
+      return true;
+    }
+    else return isValid;
+  }
 
 
 
@@ -992,7 +893,7 @@ const Checkout = ({
       {!isAuthLoading && (
         <Formik
           enableReinitialize={isShipToDifferentAddress ? false : true}
-          initialValues={getUltimateInitialValue()}
+          initialValues={codInitialValues}
           // @ts-ignore
           onSubmit={(values, actions) => handleCheckout(values, actions)}
           validationSchema={getUltimateValidationSchema()}
@@ -1009,6 +910,7 @@ const Checkout = ({
             setFieldTouched,
           }) => (
               <>
+                {console.log('isValidisValid', errors)}
                 <div className='checkout'>
                   <div className='createOrderContainer'>
                     <div>
@@ -1790,7 +1692,8 @@ const Checkout = ({
                         <AuthButton
                           onclick={handleSubmit}
                           disabled={
-                            !isValid ||
+                            !getIsValid(isValid, errors)
+                            ||
                             !isDeliveryChargeExists(
                               isShipToDifferentAddress
                                 ? shippingDeliveryCharge &&
